@@ -1,0 +1,6 @@
+/A_Livrables/
+/bin/
+/target/
+/logs/
+.*
+sonarCloud.txt
