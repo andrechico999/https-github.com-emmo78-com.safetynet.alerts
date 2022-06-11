@@ -38,8 +38,9 @@ To run the tests from maven, go to the folder that contains the pom.xml file and
 - $ mvn test		→ run Unit Tests
 - $ mvn verify		→ run Unit Tests, SIT and AIT
 - $ mvn package		→ build .jar + Jacoco report in ./target/site/jacoco/index.html
+					(run : $ java -jar target/alerts-0.0.1-SNAPSHOT.jar)
 - $ mvn site 		→ put project reports in ./target/site/index.html
-					( JavaDocs, SpotBigs, Surefire & Failsafe Reports, Jacoco & JaCoCo IT Reports)
+					( JavaDocs, SpotBugs, Surefire & Failsafe Reports, Jacoco & JaCoCo IT Reports)
 - $ mvn surefire-report:report → surefire report in	./target/site/ surefire-report
 - https://sonarcloud.io/project/overview?id=com.safetynet.alerts
 
