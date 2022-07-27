@@ -1,17 +1,35 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.safetynet</groupId>
-	<artifactId>alerts</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-	  
+	
 	<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
 	<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/getting-started-first-application.html#getting-started-first-application-pom -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.0</version>
+		<version>2.7.2</version>
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+	
+	<groupId>com.safetynet</groupId>
+	<artifactId>alerts</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>comSafetynetAlerts</name>
+	<description>SafetyNet Alert Spring Boot application</description>
+	<packaging>jar</packaging>
+	  
+	<properties>
+		<!-- Indicate encoding and project in Java 1.8 -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/using-boot-build-systems.html#using-boot-maven-java-version -->
+		<java.version>1.8</java.version>
+		<!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-spring -->
+		<dep.cucumber.version>7.4.1</dep.cucumber.version>
+		<!-- for sonarcloud -->
+		<sonar.organization>emmo78</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+	</properties>
 	
 	<dependencyManagement>
 		<dependencies>
@@ -20,38 +38,52 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.9.0-M1</version>
+				<version>5.9.0-RC1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	
-	<properties>
-		<!-- Indicate encoding and project in Java 1.8 -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/using-boot-build-systems.html#using-boot-maven-java-version -->
-		<java.version>1.8</java.version>
-		<!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-spring -->
-		<dep.cucumber.version>7.3.4</dep.cucumber.version>
-		<!-- for sonarcloud -->
-		<sonar.organization>emmo78</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-	</properties>
-	
 	<dependencies>
 		<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/using-boot-build-systems.html#using-boot-starter-poms -->
+		<dependency>
+			<!-- Support for exposing Spring Data repositories over REST via spring-data-rest-webmvc -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-rest</artifactId>
+		</dependency>
 		<dependency>
 			<!-- add Tomcat and Spring WebMvc -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
+			<!-- https://docs.spring.io/spring-boot/docs/1.5.16.RELEASE/reference/html/using-boot-devtools.html -->
+			<!-- Application automatically restarts whenever files on the classpath change -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+			<!-- https://projectlombok.org/features/all -->
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>		
+		<dependency>
+			<!-- https://github.com/FasterXML/jackson-docs -->
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
 			<!-- Support for common test dependencies, including JUnit, Hamcrest and Mockito -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
-		
 		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -62,7 +94,7 @@
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
-			<version>5.1.1</version>
+			<version>5.2.1</version>
 		</dependency>
 
 		<!-- https://junit.org/junit5/docs/current/user-guide/#dependency-metadata-junit-jupiter -->
@@ -129,10 +161,6 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
 		</dependency>
-		<dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-databind</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -141,8 +169,15 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
-
 			<!-- https://maven.apache.org/surefire/maven-surefire-plugin/usage.html -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -205,7 +240,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>4.0.0-M1</version>
+				<version>4.0.0-M3</version>
 			</plugin>
 		</plugins>
 	</build>
@@ -218,7 +253,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.4.0</version>
 			</plugin>
 
 			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-javadoc-plugin -->
@@ -248,7 +283,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.7.0.0</version>
+				<version>4.7.1.1</version>
 			</plugin>
 			
 			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-surefire-report-plugin -->
