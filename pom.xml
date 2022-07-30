@@ -277,7 +277,7 @@
 					</reportSet>
 				</reportSets>
 			</plugin>
-			
+
 			<!-- https://mvnrepository.com/artifact/com.github.spotbugs/spotbugs-maven-plugin -->
 			<!-- https://spotbugs.github.io/spotbugs-maven-plugin/usage.html -->
 			<plugin>
