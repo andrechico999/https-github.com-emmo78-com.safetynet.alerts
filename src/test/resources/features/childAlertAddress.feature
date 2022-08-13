@@ -2,7 +2,7 @@
 #language: fr
 
 @http://localhost:8080/childAlert?address=<address>
-Fonctionnalité: 2-childAlert?addres
+Fonctionnalité: 2-childAlert?address
 Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse.
 S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide
 

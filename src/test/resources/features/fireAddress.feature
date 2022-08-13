@@ -16,7 +16,7 @@ médicaux) vivant à l’adresse donnée avec le numéro de la caserne de pompie
 		|"Tony"   |"Boyd"  |"12"|"1509 Culver St"|"Culver"|"97451"|"841-874-6512"|"jboyd@email.com"|                          |              |
 		|"Tessa"  |"Carman"|"20"|"834 Binoc Ave" |"Culver"|"97451"|"841-874-6514"|"tenz@email.com" |                          |              |
 		Étant donné les stations contexte 4:
-	|num |address         |
+		|num |address         |
 		|"1" |"1509 Culver St"|
 		|"2" |"834 Binoc Ave" |
 
