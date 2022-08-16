@@ -7,24 +7,24 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Firestation {
 	
-	@EqualsAndHashCode.Include
 	private int stationNumber;
 	
 	@Setter(AccessLevel.NONE)
 	private Map<String, Address> addressS;
 	
-	public Firestation() {
+	public Firestation(int stationNumber) {
+		this.stationNumber = stationNumber;
 		addressS = new HashMap<>();
 	}
 	
-	public Address attachAddress(Address address) {
-		return addressS.putIfAbsent(address.getAddress(), address);
+	public void attachAddress(Address address) {
+		addressS.put(address.getAddress(), address);
 	}
 	
 }

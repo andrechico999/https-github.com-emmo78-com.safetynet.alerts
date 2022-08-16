@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,17 +13,30 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
 public class Person {
 
-	@EqualsAndHashCode.Include
 	private String id;
-
 	private String firstName;
 	private String lastName;
-	private Address address;
 	private String phone;
 	private String email;
-	private Medicalrecord medicalrecord;	
+	@ToString.Exclude
+	private Medicalrecord medicalrecord;
+	
+	@Setter(AccessLevel.NONE)
+	private Address address;
+	
+	public Person (String firstName, String lastName, String phone, String email) {
+		this.firstName=firstName;
+		this.lastName=lastName;
+		this.phone=phone;
+		this.email=email;
+		id = this.firstName+" "+this.lastName;		
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+		this.address.attachPerson(this);
+	}
 }

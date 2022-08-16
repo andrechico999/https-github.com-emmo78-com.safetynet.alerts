@@ -2,11 +2,16 @@ package com.safetynet.alerts;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -24,11 +29,35 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.fasterxml.jackson.databind.util.RawValue;
+import com.safetynet.alerts.model.Address;
+import com.safetynet.alerts.model.Firestation;
+import com.safetynet.alerts.model.Medicalrecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.EntityNames;
+import com.safetynet.alerts.repository.GetFromFile;
+import com.safetynet.alerts.repository.GetFromFileImpl;
+import com.safetynet.alerts.repository.WriteToFile;
+import com.safetynet.alerts.repository.WriteToFileImpl;
+import com.safetynet.alerts.service.ConvertJsonToClass;
+import com.safetynet.alerts.service.ConvertJsonToClassImpl;
+import com.safetynet.alerts.service.FindByFireStation;
+import com.safetynet.alerts.service.FindPersonByField;
+import com.safetynet.alerts.service.SetMedicalrecordsForPersons;
 
 @Service
 public class CommandLR {
+	
+	@Autowired
+	ConvertJsonToClass cj;
+	
+	@Autowired
+	SetMedicalrecordsForPersons smrp;
+	
+	@Autowired
+	FindPersonByField fpbf;
+	
+	@Autowired
+	FindByFireStation fbf;
 	
 	@Bean
 	public CommandLineRunner readFromFile() {
@@ -41,13 +70,27 @@ public class CommandLR {
 
 			//JsonNode jsonNodeRoot= mapper.valueToTree(map2);
 						
+			/*
+			Map<String, Address> allAddressS = new HashMap<>();
+			Map<Integer, Firestation> firestations = cj.convertFireStations(allAddressS);
+			Map<String, Person> persons =cj.convertPersons(allAddressS);
+			smrp.setPersonsMedicalrecords(persons);
+			fpbf.selectPersonsByName("Boyd", persons);
+			
+			persons.forEach((id,p) ->{
+				System.out.print(p.getId()+" : "+p.getMedicalrecord().getBirthdate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+				System.out.println();
+			});
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+			int age = Period.between(LocalDate.parse("02/21/1972", formatter), LocalDate.parse("02/21/1973", formatter)).getYears();
+			System.out.println("age = "+age);
+			*/
+			
 			//JsonNode jsonNodeRoot = readJsonRootFromFile();
 			
-			//JsonNode jsonArrayPersons = returnJsonEntityFromFile(EntityNames.persons);
 			//List<Person> persons = mapper.convertValue(jsonArrayPersons, new TypeReference<List<Person>>() {});
 			//persons.forEach(p -> System.out.println(p.toString()));
-			//JsonNode jsonNodeFireStations = jsonNodeRoot.get("firestations");
-			//JsonNode jsonArrayMedicalRecords = returnJsonEntityFromFile(EntityNames.medicalrecords);
+			
 			
 			//List<String> listFields = Arrays.asList("address");//(PersonFields.firstName.toString(), PersonFields.lastName.toString());
 			//List<String> listValues = Arrays.asList("1509 Culver St");//("John", "Boyd");
@@ -57,7 +100,7 @@ public class CommandLR {
 			//PrettyPrinter pp = new DefaultPrettyPrinter();
 			//((DefaultPrettyPrinter) pp).indentArraysWith(new DefaultIndenter("",""));
 			//((DefaultPrettyPrinter) pp).indentObjectsWith(new DefaultIndenter("","\n"));
-			//mapper.writer(pp).writeValue(new File("./resources/input/dataOut.json"), jsonArrayPersons);
+			//mapper.writer(pp).writeValue(new File("./resources/input/dataOut.json"), fbf.findPersonsByFireStation(1));
 				
 			//((ObjectNode) essaiNode).set("MedicalsRecors", jsonNodeMedicalRecords);
 			//JsonNode essaiNode = jsonNodeRoot.deepCopy();
@@ -108,41 +151,8 @@ public class CommandLR {
 		}
 	}
 	
-	public JsonNode returnJsonEntityFromFile(EntityNames entityName) {
-		
-		JsonNode jsonObjRoot = readJsonRootFromFile();
 
-		JsonNode jsonArrayEntity= JsonNodeFactory.instance.arrayNode();
-		((ArrayNode) jsonArrayEntity).addAll((ArrayNode) jsonObjRoot.get(entityName.toString()));  
-			
-		return jsonArrayEntity;
-	}
 
-	public JsonNode readJsonRootFromFile() {
-		
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode jsonObjectRoot = mapper.createObjectNode();
-
-		try {
-			jsonObjectRoot = mapper.readTree(new File("./resources/input/data.json"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return jsonObjectRoot;
-	}
 	
-	public boolean writeToFile(JsonNode jsonNode) {
-		ObjectMapper mapper = new ObjectMapper();
-		PrettyPrinter pp = new DefaultPrettyPrinter();
-		((DefaultPrettyPrinter) pp).indentArraysWith(new DefaultIndenter("",""));
-		((DefaultPrettyPrinter) pp).indentObjectsWith(new DefaultIndenter("","\n"));
-		try {
-			mapper.writer(pp).writeValue(new File("./resources/input/dataOut.json"), jsonNode);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return false;
-	}
+
 }

@@ -5,5 +5,5 @@ import java.util.Map;
 import com.safetynet.alerts.model.Person;
 
 public interface SetMedicalrecordsForPersons {
-	boolean SetPersonsMedicalrecords(Map<String, Person> persons);
+	boolean setPersonsMedicalrecords(Map<String, Person> persons);
 }

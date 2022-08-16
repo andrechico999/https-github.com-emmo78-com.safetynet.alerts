@@ -1,34 +1,41 @@
 package com.safetynet.alerts.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.safetynet.alerts.service.FindByFireStation;
 
 @RestController
 public class ByFireStationController {
 	
+	@Autowired
+	FindByFireStation findByFS;
+	
 	@GetMapping("/firestation")
-	public JsonNode firestationstationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
+	public List<Map<String,String>> firestationstationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
 		/*
 		 * Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers correspondante avec un
 		 * décompte du nombre d'adultes et du nombre d'enfants (âge <= 18 ans)
 		 */ 
 		
 		if (stationNumber.isEmpty()) {
-			
-			return TextNode.valueOf("Query parameter is : /firestation?stationNumber=<station_number>");
+			List<Map<String,String>> listPersons = new ArrayList<>();
+			Map<String,String> mapPerson = new HashMap<>();
+			mapPerson.put("Query parameter is "," /firestation?stationNumber=<station_number>");
+			listPersons.add(mapPerson);
+			return listPersons;
 		}
-		return TextNode.valueOf("stationNumber = " + stationNumber.get());
+		return findByFS.findPersonsByFireStation(Integer.parseInt(stationNumber.get()));
 	}
 	
 	@GetMapping("/childAlert")
@@ -43,13 +50,15 @@ public class ByFireStationController {
 	}
 	
 	@GetMapping("/phoneAlert")
-	public JsonNode phoneAlertFirestationNumber(@RequestParam(name = "firestation") Optional<String> stationNumber) {
+	public List<String> phoneAlertFirestationNumber(@RequestParam(name = "firestation") Optional<String> stationNumber) {
 		/*Cette url doit retourner une liste des numéros de téléphone des résidents desservis par la caserne de pompiers
 		 */
 		if (stationNumber.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /phoneAlert?firestation=<firestation_number>");
+			List<String> list = new ArrayList<>();
+			list.add("Query parameter is : /phoneAlert?firestation=<firestation_number>");
+			return list;
 		}
-		return TextNode.valueOf("stationNumber = " + stationNumber.get());
+		return findByFS.findPhoneNumbersByFireStation(Integer.parseInt(stationNumber.get()));
 	}
 	
 	@GetMapping("/fire")
@@ -64,14 +73,18 @@ public class ByFireStationController {
 	}
 	
 	@GetMapping("/flood/stations")
-	public JsonNode floodStationNumbers(@RequestParam(name = "stations") Optional<List<String>> stationNumbers) {
+	public List<Map<String,String>> floodStationNumbers(@RequestParam(name = "stations") Optional<List<String>> stationNumbers) {
 		/*Cette url doit retourner une liste de tous les foyers desservis par les casernes.
 		 * Cette liste doit regrouper les personnes par adresse.
 		 */		
 		if (stationNumbers.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /flood/stations?stations=<a list of station_numbers>");
+			List<Map<String,String>> listAddressPersons = new ArrayList<>();
+			Map<String,String> mapAddressPerson = new HashMap<>();
+			mapAddressPerson.put("Query parameter is","/flood/stations?stations=<a list of station_numbers>");
+			listAddressPersons.add(mapAddressPerson);
+			return listAddressPersons;
 		}
-		return TextNode.valueOf("stationNumber = " + stationNumbers.get());
+		return null;
 	}
 	
 	@GetMapping("/personInfo")
