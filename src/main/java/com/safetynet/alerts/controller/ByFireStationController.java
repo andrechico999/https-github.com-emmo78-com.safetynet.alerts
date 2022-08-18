@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.safetynet.alerts.service.FindByAddress;
 import com.safetynet.alerts.service.FindByFireStation;
 
 @RestController
@@ -19,6 +20,9 @@ public class ByFireStationController {
 	
 	@Autowired
 	FindByFireStation findByFS;
+	
+	@Autowired
+	FindByAddress findByAddress;
 	
 	@GetMapping("/firestation")
 	public List<String> firestationstationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
@@ -36,14 +40,16 @@ public class ByFireStationController {
 	}
 	
 	@GetMapping("/childAlert")
-	public JsonNode childAlertAddress(@RequestParam(name = "address") Optional<String> address) {
+	public List<String> childAlertAddress(@RequestParam(name = "address") Optional<String> address) {
 		/*Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse. S'il n'y a pas d'enfant,
 		 * cette url peut renvoyer une chaîne vide
 		 */
 		if (address.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /childAlert?address=<address>");
+			List<String> query = new ArrayList<>();
+			query.add("Query parameter is : /childAlert?address=<address>");
+			return query;
 		}
-		return TextNode.valueOf("address = "+address.get());
+		return findByAddress.findChildrenByAddress(address.get());
 	}
 	
 	@GetMapping("/phoneAlert")

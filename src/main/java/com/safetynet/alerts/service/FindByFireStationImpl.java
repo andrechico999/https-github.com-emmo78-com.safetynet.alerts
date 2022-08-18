@@ -40,7 +40,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 	@Override
 	public List<String> findPersonsByFireStation(int stationNum) {
 		List<String> listPersons = new ArrayList<>();
-		int numAdult = 0;
+		int numAdult = 0; //Local variable length defined in an enclosing scope must be final or effectively final
 		int numChildren = 0;
 		allAddressS = new HashMap<>();
 		firestations = convJsToClass.convertFireStations(allAddressS);
@@ -53,7 +53,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 			while (itPerson.hasNext()) {
 				Person person = itPerson.next();
 				StringBuffer stringFieldsPerson = new StringBuffer();
-				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList(Arrays.asList(Fields.Id, Fields.Address, Fields.Phone)));
+				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Address, Fields.Phone)));
 				listPersons.add(stringFieldsPerson.toString());
 				if (person.getAge() > 18) {
 					 numAdult++;
@@ -99,7 +99,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 
 	@Override
 	public List<String> findAddressPersonsByFiresations(List<Integer> stationNumbers) {
-		List<String> listAddressPersons = new ArrayList<>();
+		List<String> listAddressPersonsFSs = new ArrayList<>();
 		allAddressS = new HashMap<>();
 		firestations = convJsToClass.convertFireStations(allAddressS);
 		persons = convJsToClass.convertPersons(allAddressS);
@@ -113,16 +113,16 @@ public class FindByFireStationImpl implements FindByFireStation {
 		addressS.values().forEach(address -> {
 			address.getPersons().values().forEach(person -> {
 				StringBuffer stringFieldsPerson = new StringBuffer();
-				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList(Arrays.asList(Fields.Address, Fields.LastName, Fields.Phone, Fields.Age, Fields.LastName, Fields.Medicalrecords)));
-				listAddressPersons.add(stringFieldsPerson.toString());
+				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Address, Fields.LastName, Fields.Phone, Fields.Age, Fields.LastName, Fields.Medicalrecords)));
+				listAddressPersonsFSs.add(stringFieldsPerson.toString());
 			});
 		});
 		
-		jsonWritter.writeToFile(listAddressPersons);
+		jsonWritter.writeToFile(listAddressPersonsFSs);
 		allAddressS = null;
 		firestations = null;
 		persons = null;		
-		return listAddressPersons;
+		return listAddressPersonsFSs;
 	}
 
 }

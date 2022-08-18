@@ -1,9 +1,9 @@
 package com.safetynet.alerts.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 
 public interface FindByAddress {
-	JsonNode findChildrenByAddress(String address);
-	JsonNode findPersonsByAdaddress(String address);
-	JsonNode findemailPersonsByCity(String city); 
+	List<String> findChildrenByAddress(String address);
+	List<String> findPersonsByAddress(String address);
+	List<String> findemailPersonsByCity(String city); 
 }

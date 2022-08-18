@@ -1,7 +1,5 @@
 package com.safetynet.alerts.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -42,9 +40,12 @@ public class AppendToStringBufferImpl implements AppendToStringBuffer {
 			case Medicalrecords:
 				stringFieldsPerson.append("medications : ");
 				person.getMedicalrecord().getMedications().forEach(medication -> stringFieldsPerson.append(medication+", "));
+				if (person.getMedicalrecord().getMedications().size() == 0 ) {
+					stringFieldsPerson.append(", ");
+				}
 				stringFieldsPerson.append("allergies : ");
 				person.getMedicalrecord().getAllergies().forEach(allergie -> stringFieldsPerson.append(allergie+", "));
-				int length = stringFieldsPerson.length();
+				int length = stringFieldsPerson.length(); //Local variable length defined in an enclosing scope must be final or effectively final
 				int index;
 				if (person.getMedicalrecord().getAllergies().size() == 0) {
 					index = length;

@@ -41,7 +41,7 @@ import com.safetynet.alerts.repository.WriteToStirngAndFileImpl;
 import com.safetynet.alerts.service.ConvertJsonToClass;
 import com.safetynet.alerts.service.ConvertJsonToClassImpl;
 import com.safetynet.alerts.service.FindByFireStation;
-import com.safetynet.alerts.service.SelectPersonByField;
+import com.safetynet.alerts.service.SelectRemovePersonByField;
 import com.safetynet.alerts.service.SetMedicalrecordsForPersons;
 
 @Service
@@ -54,7 +54,7 @@ public class CommandLR {
 	SetMedicalrecordsForPersons smrp;
 	
 	@Autowired
-	SelectPersonByField fpbf;
+	SelectRemovePersonByField fpbf;
 	
 	@Autowired
 	FindByFireStation fbf;
