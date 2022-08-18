@@ -1,5 +1,7 @@
 package com.safetynet.alerts.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,14 @@ public class SetMedicalrecordsForPersonsImpl implements SetMedicalrecordsForPers
 		Map<String, Medicalrecord> medicalrecords = convertJsonToClass.convertMedicalrecords();
 		persons.forEach((id,person) ->{
 			person.setMedicalrecord(medicalrecords.get(id));
+			setAge(person);
 		});
 		return true; //I consider there is always a medical record for a person
 	}
 
+	@Override
+	public boolean setAge(Person person) {
+		person.setAge(Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears());
+		return true; // I consider birthdate is alway befor now
+	}
 }

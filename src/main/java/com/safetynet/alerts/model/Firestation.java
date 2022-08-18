@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter

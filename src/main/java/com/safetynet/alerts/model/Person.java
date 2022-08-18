@@ -1,13 +1,7 @@
 package com.safetynet.alerts.model;
 
-import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -23,6 +17,7 @@ public class Person {
 	private String email;
 	@ToString.Exclude
 	private Medicalrecord medicalrecord;
+	private int age;
 	
 	@Setter(AccessLevel.NONE)
 	private Address address;

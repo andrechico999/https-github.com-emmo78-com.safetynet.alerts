@@ -36,12 +36,12 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.EntityNames;
 import com.safetynet.alerts.repository.GetFromFile;
 import com.safetynet.alerts.repository.GetFromFileImpl;
-import com.safetynet.alerts.repository.WriteToFile;
-import com.safetynet.alerts.repository.WriteToFileImpl;
+import com.safetynet.alerts.repository.WriteToStringAndFile;
+import com.safetynet.alerts.repository.WriteToStirngAndFileImpl;
 import com.safetynet.alerts.service.ConvertJsonToClass;
 import com.safetynet.alerts.service.ConvertJsonToClassImpl;
 import com.safetynet.alerts.service.FindByFireStation;
-import com.safetynet.alerts.service.FindPersonByField;
+import com.safetynet.alerts.service.SelectPersonByField;
 import com.safetynet.alerts.service.SetMedicalrecordsForPersons;
 
 @Service
@@ -54,7 +54,7 @@ public class CommandLR {
 	SetMedicalrecordsForPersons smrp;
 	
 	@Autowired
-	FindPersonByField fpbf;
+	SelectPersonByField fpbf;
 	
 	@Autowired
 	FindByFireStation fbf;
