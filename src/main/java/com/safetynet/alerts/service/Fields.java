@@ -7,6 +7,5 @@ public enum Fields {
 	Email,
 	Age,
 	Address,
-	Medicalrecords,
-	stationNumber;
+	Medicalrecords;
 }

@@ -2,6 +2,6 @@ package com.safetynet.alerts.repository;
 
 import java.util.List;
 
-public interface WriteToStringAndFile {
+public interface WriteToFile {
 	boolean writeToFile(List<String> dataOut);
 }

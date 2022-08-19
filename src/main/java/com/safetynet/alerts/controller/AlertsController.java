@@ -16,7 +16,7 @@ import com.safetynet.alerts.service.FindByAddress;
 import com.safetynet.alerts.service.FindByFireStation;
 
 @RestController
-public class ByFireStationController {
+public class AlertsController {
 	
 	@Autowired
 	FindByFireStation findByFS;
@@ -65,14 +65,16 @@ public class ByFireStationController {
 	}
 	
 	@GetMapping("/fire")
-	public JsonNode fireAddress(@RequestParam(name = "address") Optional<String> address) {
+	public List<String> fireAddress(@RequestParam(name = "address") Optional<String> address) {
 		/*Cette url doit retourner la liste des habitants vivant à l’adresse donnée ainsi que le numéro de la caserne
 		 * de pompiers la desservant
 		 */
 		if (address.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /fire?address=<address>");
+			List<String> query = new ArrayList<>();
+			query.add("Query parameter is : /fire?address=<address>");
+			return query;
 		}
-		return TextNode.valueOf("address = "+address.get());
+		return findByAddress.findPersonsByAddress(address.get());
 	}
 	
 	@GetMapping("/flood/stations")

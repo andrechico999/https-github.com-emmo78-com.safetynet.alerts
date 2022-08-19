@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.WriteToStringAndFile;
+import com.safetynet.alerts.repository.WriteToFile;
 
 @Service
 public class FindByFireStationImpl implements FindByFireStation {
@@ -28,7 +28,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 	private SetMedicalrecordsForPersons setMedrecForP;
 	
 	@Autowired
-	private WriteToStringAndFile jsonWritter;
+	private WriteToFile fileWritter;
 	
 	@Autowired
 	private AppendToStringBuffer appendToStrBuf;
@@ -39,7 +39,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 	
 	@Override
 	public List<String> findPersonsByFireStation(int stationNum) {
-		List<String> listPersons = new ArrayList<>();
+		List<String> listFirestationPersons = new ArrayList<>();
 		int numAdult = 0; //Local variable length defined in an enclosing scope must be final or effectively final
 		int numChildren = 0;
 		allAddressS = new HashMap<>();
@@ -54,7 +54,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 				Person person = itPerson.next();
 				StringBuffer stringFieldsPerson = new StringBuffer();
 				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Address, Fields.Phone)));
-				listPersons.add(stringFieldsPerson.toString());
+				listFirestationPersons.add(stringFieldsPerson.toString());
 				if (person.getAge() > 18) {
 					 numAdult++;
 				} else {
@@ -67,22 +67,22 @@ public class FindByFireStationImpl implements FindByFireStation {
 		stats.append("Adult = "+String.valueOf(numAdult));
 		stats.append(", ");
 		stats.append("Children = "+String.valueOf(numChildren));
-		listPersons.add(stats.toString());
+		listFirestationPersons.add(stats.toString());
 
-		jsonWritter.writeToFile(listPersons);
+		fileWritter.writeToFile(listFirestationPersons);
 		allAddressS = null;
 		firestations = null;
 		persons = null;
-		return listPersons;
+		return listFirestationPersons;
 	}
 
 	@Override
 	public List<String> findPhoneNumbersByFireStation(int stationNum) {
+		Set<String> phonesSet = new HashSet<>();
 		allAddressS = new HashMap<>();
 		firestations = convJsToClass.convertFireStations(allAddressS);
 		persons = convJsToClass.convertPersons(allAddressS);
 		
-		Set<String> phonesSet = new HashSet<>();
 		firestations.get(stationNum).getAddressS().values().forEach(address -> {
 			address.getPersons().values().forEach(person -> {
 				phonesSet.add(person.getPhone()); //"phone"
@@ -90,7 +90,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 		});
 		List<String> listPhones = phonesSet.stream().collect(Collectors.toList());
 		
-		jsonWritter.writeToFile(listPhones);
+		fileWritter.writeToFile(listPhones);
 		allAddressS = null;
 		firestations = null;
 		persons = null;		
@@ -100,12 +100,12 @@ public class FindByFireStationImpl implements FindByFireStation {
 	@Override
 	public List<String> findAddressPersonsByFiresations(List<Integer> stationNumbers) {
 		List<String> listAddressPersonsFSs = new ArrayList<>();
+		Map<String, Address> addressS = new HashMap<>();
 		allAddressS = new HashMap<>();
 		firestations = convJsToClass.convertFireStations(allAddressS);
 		persons = convJsToClass.convertPersons(allAddressS);
 		setMedrecForP.setPersonsMedicalrecords(persons);
 				
-		Map<String, Address> addressS = new HashMap<>();
 		stationNumbers.forEach(stationNumber ->
 			firestations.get(stationNumber).getAddressS().values().forEach(address ->
 				addressS.put(address.getAddress(),address)));
@@ -118,11 +118,10 @@ public class FindByFireStationImpl implements FindByFireStation {
 			});
 		});
 		
-		jsonWritter.writeToFile(listAddressPersonsFSs);
+		fileWritter.writeToFile(listAddressPersonsFSs);
 		allAddressS = null;
 		firestations = null;
 		persons = null;		
 		return listAddressPersonsFSs;
 	}
-
 }

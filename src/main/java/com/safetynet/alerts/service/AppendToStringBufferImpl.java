@@ -12,6 +12,8 @@ public class AppendToStringBufferImpl implements AppendToStringBuffer {
 	@Override
 	public StringBuffer appendFields(StringBuffer stringFieldsPerson, Person person, List<Fields> fields) {
 		fields.forEach(field -> {
+			int length;
+			int index;
 			switch (field) {
 			case Id:
 				stringFieldsPerson.append(person.getId());
@@ -45,18 +47,13 @@ public class AppendToStringBufferImpl implements AppendToStringBuffer {
 				}
 				stringFieldsPerson.append("allergies : ");
 				person.getMedicalrecord().getAllergies().forEach(allergie -> stringFieldsPerson.append(allergie+", "));
-				int length = stringFieldsPerson.length(); //Local variable length defined in an enclosing scope must be final or effectively final
-				int index;
+				length = stringFieldsPerson.length();
 				if (person.getMedicalrecord().getAllergies().size() == 0) {
 					index = length;
 				} else {
 					index = length-2;
 				}
 				stringFieldsPerson.delete(index, length);
-				break;
-			case stationNumber:
-				stringFieldsPerson.append("station number : ");
-				//person.getAddress().getFirestations()
 				break;
 			default:
 				break;

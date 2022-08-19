@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
-public class WriteToStirngAndFileImpl implements WriteToStringAndFile {
+public class WriteToFileImpl implements WriteToFile {
 
 	@Override
 	public boolean writeToFile(List<String> dataOut) {
