@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.model.Person;
 
 @Service
-public class AppendToStringBufferImpl implements AppendToStringBuffer {
+public class StringProcessingImpl implements StringProcessing {
 
 	@Override
 	public StringBuffer appendFields(StringBuffer stringFieldsPerson, Person person, List<Fields> fields) {
@@ -63,5 +63,10 @@ public class AppendToStringBufferImpl implements AppendToStringBuffer {
 		int length = stringFieldsPerson.length();
 		stringFieldsPerson.delete(length-2, length);
 		return stringFieldsPerson;
+	}
+
+	@Override
+	public String upperCasingFirstLetter(String word) {
+		return word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
 	}
 }

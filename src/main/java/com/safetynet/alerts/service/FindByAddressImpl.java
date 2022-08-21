@@ -31,7 +31,7 @@ public class FindByAddressImpl implements FindByAddress {
 	private WriteToFile fileWritter;
 	
 	@Autowired
-	private AppendToStringBuffer appendToStrBuf;
+	private StringProcessing stringProc;
 	
 	@Autowired
 	private SelectRemovePersonByField selectPByF;
@@ -66,12 +66,12 @@ public class FindByAddressImpl implements FindByAddress {
 					childNameOpt = Optional.of(childName);
 					parentsOfChildren.addAll(selectPByF.selectRemovePersonsByName(childName, personsAddress).values());
 					stringFieldsPerson = new StringBuffer();
-					appendToStrBuf.appendFields(stringFieldsPerson, entry.getValue(), new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Age)));
+					stringProc.appendFields(stringFieldsPerson, entry.getValue(), new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Age)));
 					listAddressChildren.add(stringFieldsPerson.toString());
 					childrenAdrdressIterator.remove();
 				} else if(childName.equals(childNameOpt.get())) {
 					stringFieldsPerson = new StringBuffer();
-					appendToStrBuf.appendFields(stringFieldsPerson, entry.getValue(), new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Age)));
+					stringProc.appendFields(stringFieldsPerson, entry.getValue(), new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Age)));
 					listAddressChildren.add(stringFieldsPerson.toString());
 					childrenAdrdressIterator.remove();
 				}
@@ -80,7 +80,7 @@ public class FindByAddressImpl implements FindByAddress {
 
 		parentsOfChildren.forEach(person -> {
 			StringBuffer stringFieldsPersonLambda = new StringBuffer();
-			appendToStrBuf.appendFields(stringFieldsPersonLambda, person, new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Age)));
+			stringProc.appendFields(stringFieldsPersonLambda, person, new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Age)));
 			listAddressChildren.add(stringFieldsPersonLambda.toString());
 		});
 
@@ -100,7 +100,7 @@ public class FindByAddressImpl implements FindByAddress {
 		
 		allAddressS.get(address).getPersons().values().forEach(person -> {
 			StringBuffer stringFieldsPerson = new StringBuffer();
-			appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.LastName, Fields.Phone, Fields.Age, Fields.Medicalrecords)));
+			stringProc.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.LastName, Fields.Phone, Fields.Age, Fields.Medicalrecords)));
 			listAddressPersons.add(stringFieldsPerson.toString());
 		});
 		
@@ -130,25 +130,18 @@ public class FindByAddressImpl implements FindByAddress {
 		convJsToClass.convertFireStations(allAddressS);
 		persons = convJsToClass.convertPersons(allAddressS);
 		
-		// cityAddress.size = 0 if city not found
-		List<Address> cityAddress = allAddressS.values().stream().filter(address -> address.getCity().equals(city)).collect(Collectors.toList());
+		// cityAddress.size = 0 if City not found
+		List<Address> cityAddressS = allAddressS.values().stream().filter(address -> address.getCity().equals(stringProc.upperCasingFirstLetter(city))).collect(Collectors.toList());
 		
+		cityAddressS.forEach(address -> 
+			address.getPersons().values().forEach(person ->
+				emailsSet.add(person.getEmail())));
+		List<String> listEmails = emailsSet.stream().collect(Collectors.toList());
 		
-		
-		List<String> addressCity = cityAddress.stream().map(address -> address.toString()).collect(Collectors.toList());
-		/*
-		
-		firestations.get(stationNum).getAddressS().values().forEach(address -> {
-			address.getPersons().values().forEach(person -> {
-				phonesSet.add(person.getPhone()); //"phone"
-			});
-		});
-		List<String> listPhones = phonesSet.stream().collect(Collectors.toList());
-		*/
-		fileWritter.writeToFile(null);
+		fileWritter.writeToFile(listEmails);
 		allAddressS = null;
 		persons = null;		
-		return addressCity;
+		return listEmails;
 	}
 
 }

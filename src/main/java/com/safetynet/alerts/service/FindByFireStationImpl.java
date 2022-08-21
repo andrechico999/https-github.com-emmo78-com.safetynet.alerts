@@ -31,7 +31,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 	private WriteToFile fileWritter;
 	
 	@Autowired
-	private AppendToStringBuffer appendToStrBuf;
+	private StringProcessing stringProc;
 	
 	private Map<String, Address> allAddressS;
 	private Map<Integer, Firestation> firestations;
@@ -53,7 +53,7 @@ public class FindByFireStationImpl implements FindByFireStation {
 			while (itPerson.hasNext()) {
 				Person person = itPerson.next();
 				StringBuffer stringFieldsPerson = new StringBuffer();
-				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Address, Fields.Phone)));
+				stringProc.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Id, Fields.Address, Fields.Phone)));
 				listFirestationPersons.add(stringFieldsPerson.toString());
 				if (person.getAge() > 18) {
 					 numAdult++;
@@ -83,11 +83,9 @@ public class FindByFireStationImpl implements FindByFireStation {
 		firestations = convJsToClass.convertFireStations(allAddressS);
 		persons = convJsToClass.convertPersons(allAddressS);
 		
-		firestations.get(stationNum).getAddressS().values().forEach(address -> {
-			address.getPersons().values().forEach(person -> {
-				phonesSet.add(person.getPhone()); //"phone"
-			});
-		});
+		firestations.get(stationNum).getAddressS().values().forEach(address -> 
+			address.getPersons().values().forEach(person ->
+				phonesSet.add(person.getPhone())));
 		List<String> listPhones = phonesSet.stream().collect(Collectors.toList());
 		
 		fileWritter.writeToFile(listPhones);
@@ -110,13 +108,12 @@ public class FindByFireStationImpl implements FindByFireStation {
 			firestations.get(stationNumber).getAddressS().values().forEach(address ->
 				addressS.put(address.getAddress(),address)));
 		
-		addressS.values().forEach(address -> {
+		addressS.values().forEach(address -> 
 			address.getPersons().values().forEach(person -> {
 				StringBuffer stringFieldsPerson = new StringBuffer();
-				appendToStrBuf.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Address, Fields.LastName, Fields.Phone, Fields.Age, Fields.LastName, Fields.Medicalrecords)));
+				stringProc.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.Address, Fields.LastName, Fields.Phone, Fields.Age, Fields.LastName, Fields.Medicalrecords)));
 				listAddressPersonsFSs.add(stringFieldsPerson.toString());
-			});
-		});
+			}));
 		
 		fileWritter.writeToFile(listAddressPersonsFSs);
 		allAddressS = null;

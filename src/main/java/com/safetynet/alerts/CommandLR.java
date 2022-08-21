@@ -55,11 +55,7 @@ public class CommandLR {
 	public CommandLineRunner readFromFile() {
 		return args -> {
 			try {
-				List<String> address = fba.findemailPersonsByCity("Paris");
-				if (address.size() == 0) {
-					System.out.println("size 0");
-				}
-				address.forEach(string -> System.out.println(string));
+				
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

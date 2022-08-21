@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.safetynet.alerts.service.FindByAddress;
 import com.safetynet.alerts.service.FindByFireStation;
+import com.safetynet.alerts.service.FindByPerson;
 
 @RestController
 public class AlertsController {
@@ -23,6 +24,9 @@ public class AlertsController {
 	
 	@Autowired
 	FindByAddress findByAddress;
+	
+	@Autowired
+	FindByPerson findByP;
 	
 	@GetMapping("/firestation")
 	public List<String> firestationstationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
@@ -91,23 +95,27 @@ public class AlertsController {
 	}
 	
 	@GetMapping("/personInfo")
-	public JsonNode personInfoFirstNameLastName(@RequestParam(name = "firstName") Optional<String> firstName, @RequestParam(name = "lastName") Optional<String> lastName) {
+	public List<String> personInfoFirstNameLastName(@RequestParam(name = "firstName") Optional<String> firstName, @RequestParam(name = "lastName") Optional<String> lastName) {
 		/*Cette url doit retourner la liste des personnes vivant avec la personne donnée
 		 * ainsi que la liste des personnes portant le même nom.
 		 */		
 		if (firstName.isEmpty() || lastName.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /personInfo?firstName=<firstName>&lastName=<lastName>");
+			List<String> query = new ArrayList<>();
+			query.add("Query parameter is : /personInfo?firstName=<firstName>&lastName=<lastName>");
+			return query;
 		}
-		return TextNode.valueOf("firstName = " + firstName.get() + " - lastName = " + lastName.get());
+		return findByP.findPersonsByFirstNameAndLastName(firstName.get(), lastName.get());
 	}
 	
 	@GetMapping("/communityEmail")
-	public JsonNode communityEmailCity(@RequestParam(name = "city") Optional<String> city) {
+	public List<String> communityEmailCity(@RequestParam(name = "city") Optional<String> city) {
 		/*Cette url doit retourner les adresses mail de tous les habitants de la ville
 		 */
 		if (city.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /communityEmail?city=<city>");
+			List<String> query = new ArrayList<>();
+			query.add("Query parameter is : /communityEmail?city=<city>");
+			return query;
 		}
-		return TextNode.valueOf("city = "+city.get());
+		return findByAddress.findemailPersonsByCity(city.get());
 	}
 }

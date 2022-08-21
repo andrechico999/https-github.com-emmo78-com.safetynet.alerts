@@ -6,17 +6,11 @@ import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 public class Address {
 	
-	@Override
-	public String toString() {
-		return "Address [address=" + address + "]";
-	}
-
 	private String address;
 	private String city;
 	private String zip;
