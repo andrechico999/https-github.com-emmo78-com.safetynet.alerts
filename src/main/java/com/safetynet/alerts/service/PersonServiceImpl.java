@@ -10,26 +10,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetynet.alerts.model.Address;
+import com.safetynet.alerts.model.Fields;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.WriteToFile;
+import com.safetynet.alerts.repository.JsonNodeTo;
 
 @Service
-public class FindByPersonImpl implements FindByPerson {
+public class PersonServiceImpl implements PersonService {
 
 	@Autowired
-	private ConvertJsonToClass convJsToClass;
+	private JsonNodeService convJsToClass;
 	
 	@Autowired
-	private SetMedicalrecordsForPersons setMedrecForP;
+	private MedicalrecordPersonService setMedrecForP;
 	
 	@Autowired
-	private WriteToFile fileWritter;
+	private JsonNodeTo fileWritter;
 	
 	@Autowired
-	private StringProcessing stringProc;
+	private DataProcessingService stringProc;
 	
 	@Autowired
-	private SelectRemovePersonByField selectPByF;
+	private PersonFieldService selectPByF;
 	
 	private Map<String, Address> allAddressS;
 	private Map<String, Person> persons;
@@ -60,7 +61,7 @@ public class FindByPersonImpl implements FindByPerson {
 		
 		addressOrNamePersonsId.forEach(person -> {
 			StringBuffer stringFieldsPerson = new StringBuffer();
-			stringProc.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.LastName, Fields.Address, Fields.Age, Fields.Email, Fields.Medicalrecords)));
+			//stringProc.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.LastName, Fields.Address, Fields.Age, Fields.Email, Fields.Medicalrecords)));
 			addressOrNamePersonsIdStr.add(stringFieldsPerson.toString());
 		});
 				

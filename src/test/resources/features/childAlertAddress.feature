@@ -17,13 +17,17 @@ S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide
 		|"Tessa"  |"Carman"|"28"|"1509 Culver St"|"Culver"|"97451"|"841-874-6514"|"tenz@email.com" |
 		|"Tony"   |"Boyd"  |"12"|"1509 Culver St"|"Culver"|"97451"|"841-874-6512"|"jboyd@email.com"|
 		|"Eric"   |"Kadiga"|"25"|"844 Binoc Ave" |"Culver"|"97451"|"841-874-6515"|"kadi@email.com" |
-
+		|"Brad"   |"Voisin"|" 2"|"1509 Culver St"|"Culver"|"97451"|"841-874-6515"|"kadi@email.com" |
+		|"Eric"   |"Voisin"|"24"|"1509 Culver St"|"Culver"|"97451"|"841-874-6515"|"kadi@email.com" |
 	Scénario: 2A : des enfants habitent à l’adresse
 		Quand utilisateur 2A requête l’addresse "1509 Culver St"
 		Alors la liste A des enfants est:
-		|firstName|lastName|age |others                                |
-		|"Tenley" |"Boyd"  |"18"|"John Boyd, Tessa Carman, Tony Boyd"  |
-		|"Tony"   |"Boyd"  |"12"|"John Boyd, Tenley Boyd, Tessa Carman"|
+		|firstName|lastName|age |
+		|"Tenley" |"Boyd"  |"18"|
+		|"Tony"   |"Boyd"  |"12"|
+		|"Brad"   |"Voisin"|" 2"|
+		|"John"   |"Boyd"  |"30"|
+		|"Eric"   |"Voisin"|"24"|
 	
 	Scénario: 2B : il n’y a pas d’enfant habitant à l’adresse
 		Quand utilisateur 2B requête l’addresse "844 Binoc Ave"

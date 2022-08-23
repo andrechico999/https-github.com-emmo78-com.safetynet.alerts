@@ -24,7 +24,7 @@ import com.safetynet.alerts.repository.GetFromFile;
 
 
 @Service
-public class ConvertJsonToClassImpl implements ConvertJsonToClass {
+public class JsonNodeServiceImpl implements JsonNodeService {
 
 	@Autowired
 	GetFromFile getFromFile;

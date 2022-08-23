@@ -1,3 +1,16 @@
 [
- "Carman, 834 Binoc Ave, 10 ans, tenz@email.com, medications : , allergies : "
+ {"lastName" : "Cooper","phone" : "841-874-6874","age" : 28,"medications" : [
+   "hydrapermazol:300mg",
+   "dodoxadin:30mg"
+  ],"allergies" : [
+   "shellfish"
+  ]},
+ {"lastName" : "Peters","phone" : "841-874-8888","age" : 57,"medications" : [ ],"allergies" : [ ]},
+ {"lastName" : "Boyd","phone" : "841-874-9888","age" : 57,"medications" : [
+   "aznol:200mg"
+  ],"allergies" : [
+   "nillacilan"
+  ]},
+ {"Station number" : "3"},
+ {"Station number" : "4"}
 ]

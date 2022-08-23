@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.model.Person;
 
 @Service
-public class SelectRemovePersonByFieldImpl implements SelectRemovePersonByField {
+public class PersonFieldServiceImpl implements PersonFieldService {
 
 	@Override
 	public Map<String, Person> selectRemovePersonsByName(String lastName, Map<String, Person> persons) {

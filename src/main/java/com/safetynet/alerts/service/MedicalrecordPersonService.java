@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.safetynet.alerts.model.Person;
 
-public interface SetMedicalrecordsForPersons {
+public interface MedicalrecordPersonService {
 	boolean setPersonsMedicalrecords(Map<String, Person> persons);
 	boolean setAge(Person person);
 }

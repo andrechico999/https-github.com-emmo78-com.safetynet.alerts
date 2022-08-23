@@ -11,10 +11,10 @@ import com.safetynet.alerts.model.Medicalrecord;
 import com.safetynet.alerts.model.Person;
 
 @Service
-public class SetMedicalrecordsForPersonsImpl implements SetMedicalrecordsForPersons {
+public class MedicalrecordPersonServiceImpl implements MedicalrecordPersonService {
 	
 	@Autowired
-	ConvertJsonToClass convertJsonToClass;
+	JsonNodeService convertJsonToClass;
 
 	@Override
 	public boolean setPersonsMedicalrecords(Map<String, Person> persons) {
