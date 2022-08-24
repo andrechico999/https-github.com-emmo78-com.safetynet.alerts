@@ -22,7 +22,7 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.JsonNodeTo;
 
 @Service
-public class FireStationServiceImpl implements FireStationService {
+public class FirestationServiceImpl implements FirestationService {
 
 	@Autowired
 	private JsonNodeService jsNodeService;
@@ -41,7 +41,7 @@ public class FireStationServiceImpl implements FireStationService {
 	private Map<String, Person> persons;
 		
 	@Override
-	public String findPersonsByFireStation(int stationNum) {
+	public JsonNode findPersonsByFireStation(int stationNum) {
 		JsonNode arrayNodeFsPersons = JsonNodeFactory.instance.arrayNode();
 		int numAdult = 0; //Local variable length defined in an enclosing scope must be final or effectively final
 		int numChildren = 0;
@@ -72,11 +72,11 @@ public class FireStationServiceImpl implements FireStationService {
 		allAddressS = null;
 		firestations = null;
 		persons = null;
-		return jsonNodeTo.jsonToString(arrayNodeFsPersons);
+		return arrayNodeFsPersons;
 	}
 
 	@Override
-	public String findPhoneNumbersByFireStation(int stationNum) {
+	public JsonNode findPhoneNumbersByFireStation(int stationNum) {
 		JsonNode arrayNodeFsPhones = JsonNodeFactory.instance.arrayNode();
 		Set<String> phonesSet = new HashSet<>();
 		allAddressS = new HashMap<>();
@@ -96,11 +96,11 @@ public class FireStationServiceImpl implements FireStationService {
 		allAddressS = null;
 		firestations = null;
 		persons = null;		
-		return jsonNodeTo.jsonToString(arrayNodeFsPhones);
+		return arrayNodeFsPhones;
 	}
 
 	@Override
-	public String findAddressPersonsByFiresations(List<Integer> stationNumbers) {
+	public JsonNode findAddressPersonsByFiresations(List<Integer> stationNumbers) {
 		JsonNode arrayNodeFSsAddressPersons = JsonNodeFactory.instance.arrayNode();
 		Map<String, Address> addressS = new HashMap<>();
 		allAddressS = new HashMap<>();
@@ -113,12 +113,12 @@ public class FireStationServiceImpl implements FireStationService {
 				addressS.put(address.getAddress(),address)));
 		
 		addressS.values().forEach(address -> 
-			address.getPersons().values().forEach(person -> ((ArrayNode) arrayNodeFSsAddressPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<>(Arrays.asList(Fields.address, Fields.lastName, Fields.phone, Fields.age, Fields.lastName, Fields.medicalrecords))))));
+			address.getPersons().values().forEach(person -> ((ArrayNode) arrayNodeFSsAddressPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<>(Arrays.asList(Fields.address, Fields.lastName, Fields.phone, Fields.age, Fields.medicalrecords))))));
 		
 		jsonNodeTo.writeToFile(arrayNodeFSsAddressPersons);
 		allAddressS = null;
 		firestations = null;
 		persons = null;		
-		return jsonNodeTo.jsonToString(arrayNodeFSsAddressPersons);
+		return arrayNodeFSsAddressPersons;
 	}
 }

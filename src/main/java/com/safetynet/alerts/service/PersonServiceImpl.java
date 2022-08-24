@@ -3,12 +3,17 @@ package com.safetynet.alerts.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Fields;
 import com.safetynet.alerts.model.Person;
@@ -18,57 +23,72 @@ import com.safetynet.alerts.repository.JsonNodeTo;
 public class PersonServiceImpl implements PersonService {
 
 	@Autowired
-	private JsonNodeService convJsToClass;
+	private JsonNodeService jsNodeService;
 	
 	@Autowired
-	private MedicalrecordPersonService setMedrecForP;
+	private MedicalrecordPersonService medrecPService;
 	
 	@Autowired
-	private JsonNodeTo fileWritter;
+	private JsonNodeTo jsonNodeTo;
 	
 	@Autowired
-	private DataProcessingService stringProc;
+	private DataProcessingService dataProcService;
 	
 	@Autowired
-	private PersonFieldService selectPByF;
+	private PersonFieldService personFieldService;
 	
 	private Map<String, Address> allAddressS;
 	private Map<String, Person> persons;
 
 	@Override
-	public List<String> findPersonsByFirstNameAndLastName(String firstName, String lastName) {
-		List<String> addressOrNamePersonsIdStr = new ArrayList<>();
-		List<Person> addressOrNamePersonsId = new ArrayList<>();
-		firstName = stringProc.upperCasingFirstLetter(firstName);
-		lastName = stringProc.upperCasingFirstLetter(lastName);
+	public JsonNode findPersonsByFirstNameAndLastName(String firstName, String lastName) {
+		JsonNode arrayNodeIdPersonsAddressOrName = JsonNodeFactory.instance.arrayNode();
+		List<Person> idPersonsAddressOrName = new ArrayList<>();
+		firstName = dataProcService.upperCasingFirstLetter(firstName);
+		lastName = dataProcService.upperCasingFirstLetter(lastName);
 		String id =firstName +" "+lastName;
 		allAddressS = new HashMap<>();
-		convJsToClass.convertFireStations(allAddressS);
-		persons = convJsToClass.convertPersons(allAddressS);
-		setMedrecForP.setPersonsMedicalrecords(persons);
-		Person personId = persons.get(id);
-		Map<String, Person> addressPersonsId = personId.getAddress().getPersons();
+		jsNodeService.convertFireStations(allAddressS);
+		persons = jsNodeService.convertPersons(allAddressS);
+		medrecPService.setPersonsMedicalrecords(persons);
+		Person idPerson = persons.get(id);
+		Map<String, Person> idPersonsAddress = idPerson.getAddress().getPersons();
+		String personLastName;
+		Optional<String> personLastNameOpt;
 
-		addressOrNamePersonsId.add(personId);
-		addressPersonsId.remove(id);
+		idPersonsAddressOrName.add(idPerson);
+		idPersonsAddress.remove(id);
 		persons.remove(id);
-		selectPByF.selectRemovePersonsByName(lastName, addressPersonsId).forEach((idLambda, person)-> {
-			addressOrNamePersonsId.add(person);
+		personFieldService.selectRemovePersonsByName(lastName, idPersonsAddress).forEach((idLambda, person)-> {
+			idPersonsAddressOrName.add(person);
 			persons.remove(idLambda);
 		});
-		addressOrNamePersonsId.addAll(addressPersonsId.values());
-		addressOrNamePersonsId.addAll(selectPByF.selectRemovePersonsByName(lastName, persons).values());
 		
-		addressOrNamePersonsId.forEach(person -> {
-			StringBuffer stringFieldsPerson = new StringBuffer();
-			//stringProc.appendFields(stringFieldsPerson, person, new ArrayList<Fields>(Arrays.asList(Fields.LastName, Fields.Address, Fields.Age, Fields.Email, Fields.Medicalrecords)));
-			addressOrNamePersonsIdStr.add(stringFieldsPerson.toString());
-		});
+		while (idPersonsAddress.size() > 0) {
+			personLastName = null;
+			personLastNameOpt = Optional.ofNullable(personLastName);
+			Iterator<Map.Entry<String, Person>> idPersonsAddressIterator = idPersonsAddress.entrySet().iterator();
+			while (idPersonsAddressIterator.hasNext()) {
+				Map.Entry<String, Person> entry = idPersonsAddressIterator.next();
+				personLastName = entry.getValue().getLastName();
+				if (personLastNameOpt.isEmpty()) {
+					personLastNameOpt = Optional.of(personLastName);
+					idPersonsAddressOrName.add(entry.getValue());
+					idPersonsAddressIterator.remove();
+				} else if (personLastName.equals(personLastNameOpt.get())) {
+					idPersonsAddressOrName.add(entry.getValue());
+					idPersonsAddressIterator.remove();
+				}
+			}
+		}
 				
-		fileWritter.writeToFile(addressOrNamePersonsIdStr);
+		idPersonsAddressOrName.addAll(personFieldService.selectRemovePersonsByName(lastName, persons).values());
+		
+		idPersonsAddressOrName.forEach(person -> ((ArrayNode) arrayNodeIdPersonsAddressOrName).add(dataProcService.buildObjectNodePerson(person, new ArrayList<Fields>(Arrays.asList(Fields.lastName, Fields.address, Fields.age, Fields.email, Fields.medicalrecords)))));
+				
+		jsonNodeTo.writeToFile(arrayNodeIdPersonsAddressOrName);
 		allAddressS = null;
 		persons = null;
-		return addressOrNamePersonsIdStr;
+		return arrayNodeIdPersonsAddressOrName;
 	}
-
 }

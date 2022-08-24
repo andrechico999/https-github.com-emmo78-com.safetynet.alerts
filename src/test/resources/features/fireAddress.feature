@@ -18,8 +18,9 @@ médicaux) vivant à l’adresse donnée avec le numéro de la caserne de pompie
 		Étant donné les stations contexte 4:
 		|num |address         |
 		|"1" |"1509 Culver St"|
-		|"2" |"834 Binoc Ave" |
-
+		|"2" |"1509 Culver St"|
+		|"3" |"834 Binoc Ave" |
+		
 	Scénario: 4A : l’adresse existe :
 		Quand utilisateur 4A requête l’addresse "1509 Culver St"
 		Alors la liste A des habitants est:
@@ -28,8 +29,8 @@ médicaux) vivant à l’adresse donnée avec le numéro de la caserne de pompie
 		|"Boyd"  |"841-874-6513"|"18"|"hyzol:100mg"             |"peanut"      |
 		|"Boyd"  |"841-874-6512"|"12"|                          |              |
 		 Alors le numéro A de la caserne de pompiers la desservant est:
-		|fireStation|
-		|"1"  |
+		|Station number|
+		|"1, 2"        |
 	
 	Scénario: 4B : l’adresse n’existe pas:
 		Quand utilisateur 4B requête l’addresse "112 Steppes Pl"

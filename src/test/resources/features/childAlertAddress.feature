@@ -3,10 +3,10 @@
 
 @http://localhost:8080/childAlert?address=<address>
 Fonctionnalité: 2-childAlert?address
-Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse.
+Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse ainsi que les autres membres du foyer
 S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide
 
-	En tant qu’utilisateur, je souhaite obtenir la liste des enfants (prénom, nom, âge, liste des autres membres du foyer)
+	En tant qu’utilisateur, je souhaite obtenir la liste des enfants (prénom, nom, âge)
 	habitant à une adresse donnée
 
 	Contexte:

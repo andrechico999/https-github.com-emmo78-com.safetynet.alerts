@@ -25,8 +25,8 @@ Cette url doit retourner une liste de tous les foyers desservis par les casernes
 	Scénario: 5 : les casernes sont existantes ou non
 		Quand utilisateur requête les stations numéro "1,2,3"
 		Alors la liste de tous les foyers desservis par les casernes est:
-		|address         |lastName|phone         |age |lastName|medications               |allergies     |
-		|"1509 Culver St"|"Boyd"  |"841-874-6512"|"30"|"Boyd"  |"aznol:350mg, hyzol:100mg"|"peanut, wasp"|
-		|"1509 Culver St"|"Boyd"  |"841-874-6513"|"18"|"Boyd"  |"hyzol:100mg"             |"peanut"      |
-		|"834 Binoc Ave" |"Carman"|"841-874-6514"|"20"|"Carman"|                          |              |
-		|"844 Binoc Ave" |"Kadiga"|"841-874-6515"|"25"|"Kadiga"|"onala:200mg, azil:50mg"  |"wasp, bee"   |
+		|address         |lastName|phone         |age |medications               |allergies     |
+		|"1509 Culver St"|"Boyd"  |"841-874-6512"|"30"|"aznol:350mg, hyzol:100mg"|"peanut, wasp"|
+		|"1509 Culver St"|"Boyd"  |"841-874-6513"|"18"|"hyzol:100mg"             |"peanut"      |
+		|"834 Binoc Ave" |"Carman"|"841-874-6514"|"20"|                          |              |
+		|"844 Binoc Ave" |"Kadiga"|"841-874-6515"|"25"|"onala:200mg, azil:50mg"  |"wasp, bee"   |

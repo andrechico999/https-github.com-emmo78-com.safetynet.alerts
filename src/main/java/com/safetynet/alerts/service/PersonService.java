@@ -1,7 +1,7 @@
 package com.safetynet.alerts.service;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface PersonService {
-	List<String> findPersonsByFirstNameAndLastName(String firstName, String lastName);
+	JsonNode findPersonsByFirstNameAndLastName(String firstName, String lastName);
 }

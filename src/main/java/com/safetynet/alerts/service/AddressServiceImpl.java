@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Fields;
 import com.safetynet.alerts.model.Person;
@@ -45,13 +46,13 @@ public class AddressServiceImpl implements AddressService {
 	private Map<String, Person> persons;
 
 	@Override
-	public String findChildrenByAddress(String address) {
+	public JsonNode findChildrenByAddress(String address) {
 		JsonNode arrayNodeAddressChildren = JsonNodeFactory.instance.arrayNode();
 		Map<String, Person> addressPersons;
 		Map<String, Person> addressChildren;
 		List<Person> parentsOfChildren = new ArrayList<>();
+		String childName;		
 		Optional<String> childNameOpt;
-		String childName;
 		allAddressS = new HashMap<>();
 		jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
@@ -83,12 +84,13 @@ public class AddressServiceImpl implements AddressService {
 		jsonNodeTo.writeToFile(arrayNodeAddressChildren);
 		allAddressS = null;
 		persons = null;
-		return jsonNodeTo.jsonToString(arrayNodeAddressChildren);
+		return arrayNodeAddressChildren;
 	}
 
 	@Override
-	public String findPersonsByAddress(String address) {
+	public JsonNode findPersonsByAddress(String address) {
 		JsonNode arrayNodeAddressPersons = JsonNodeFactory.instance.arrayNode();
+		JsonNode objectNodeStationNumber = JsonNodeFactory.instance.objectNode();
 		allAddressS = new HashMap<>();
 		jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
@@ -96,20 +98,17 @@ public class AddressServiceImpl implements AddressService {
 		
 		allAddressS.get(address).getPersons().values().forEach(person -> ((ArrayNode) arrayNodeAddressPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<Fields>(Arrays.asList(Fields.lastName, Fields.phone, Fields.age, Fields.medicalrecords)))));
 		
-		allAddressS.get(address).getFirestations().values().forEach(firestation -> {
-			JsonNode objectNodeStationNumber = JsonNodeFactory.instance.objectNode();
-			((ObjectNode) objectNodeStationNumber).put("Station number",String.valueOf(firestation.getStationNumber()));
-			((ArrayNode) arrayNodeAddressPersons).add(objectNodeStationNumber);
-			});
-		
+		((ObjectNode) objectNodeStationNumber).set("Station number", new ArrayNode(JsonNodeFactory.instance, allAddressS.get(address).getFirestations().values().stream().map(firestation -> TextNode.valueOf(String.valueOf(firestation.getStationNumber()))).collect(Collectors.toList())));
+		((ArrayNode) arrayNodeAddressPersons).add(objectNodeStationNumber);
 		jsonNodeTo.writeToFile(arrayNodeAddressPersons);
 		allAddressS = null;
 		persons = null;
-		return jsonNodeTo.jsonToString(arrayNodeAddressPersons);
+		return arrayNodeAddressPersons;
 	}
 
 	@Override
-	public List<String> findemailPersonsByCity(String city) {
+	public JsonNode findemailPersonsByCity(String city) {
+		JsonNode arrayNodeEmails = JsonNodeFactory.instance.arrayNode();
 		Set<String> emailsSet = new HashSet<>();
 		allAddressS = new HashMap<>();
 		jsNodeService.convertFireStations(allAddressS);
@@ -121,12 +120,14 @@ public class AddressServiceImpl implements AddressService {
 		cityAddressS.forEach(address -> 
 			address.getPersons().values().forEach(person ->
 				emailsSet.add(person.getEmail())));
-		List<String> listEmails = emailsSet.stream().collect(Collectors.toList());
+		emailsSet.forEach(email -> {
+			JsonNode objectNodeEmail = JsonNodeFactory.instance.objectNode();
+			((ArrayNode) arrayNodeEmails).add(((ObjectNode) objectNodeEmail).put(Fields.email.toString(), email));
+		});
 		
-		jsonNodeTo.writeToFile(listEmails);
+		jsonNodeTo.writeToFile(arrayNodeEmails);
 		allAddressS = null;
 		persons = null;		
-		return listEmails;
+		return arrayNodeEmails;
 	}
-
 }
