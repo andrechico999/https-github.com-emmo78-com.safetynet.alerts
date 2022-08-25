@@ -1,0 +1,43 @@
+[
+	{
+		"lastName" : "Peters",
+		"address" : "112 Steppes Pl",
+		"age" : 57,
+		"email" : "jpeter@email.com",
+		"medications" : [ ],
+		"allergies" : [ ]
+	},
+	{
+		"lastName" : "Cooper",
+		"address" : "112 Steppes Pl",
+		"age" : 28,
+		"email" : "tcoop@ymail.com",
+		"medications" : [
+			"hydrapermazol:300mg",
+			"dodoxadin:30mg"
+		],
+		"allergies" : [
+			"shellfish"
+		]
+	},
+	{
+		"lastName" : "Boyd",
+		"address" : "112 Steppes Pl",
+		"age" : 57,
+		"email" : "aly@imail.com",
+		"medications" : [
+			"aznol:200mg"
+		],
+		"allergies" : [
+			"nillacilan"
+		]
+	},
+	{
+		"lastName" : "Peters",
+		"address" : "908 73rd St",
+		"age" : 40,
+		"email" : "jpeter@email.com",
+		"medications" : [ ],
+		"allergies" : [ ]
+	}
+]

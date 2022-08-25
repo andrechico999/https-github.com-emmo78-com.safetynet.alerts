@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public interface FindByFireStation {
+public interface FirestationService {
 	JsonNode findPersonsByFireStation(int stationNum); 
-	JsonNode fiindPhoneNumbersByFireStation(int stationNum);
+	JsonNode findPhoneNumbersByFireStation(int stationNum);
 	JsonNode findAddressPersonsByFiresations(List<Integer> stationNumbers);
 }

@@ -14,7 +14,8 @@ public class Medicalrecord {
 	private List<String> medications;
 	private List<String> allergies;
 	
-	public Medicalrecord() {
+	public Medicalrecord(LocalDate birthdate) {
+		this.birthdate=birthdate;
 		medications = new ArrayList<>();
 		allergies = new ArrayList<>();
 	}
