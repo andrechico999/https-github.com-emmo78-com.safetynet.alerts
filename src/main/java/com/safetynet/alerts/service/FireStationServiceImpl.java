@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +18,7 @@ import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Fields;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.JsonNodeTo;
+import com.safetynet.alerts.repository.WriteToFile;
 
 @Service
 public class FirestationServiceImpl implements FirestationService {
@@ -31,7 +30,7 @@ public class FirestationServiceImpl implements FirestationService {
 	private MedicalrecordPersonService medrecPService;
 	
 	@Autowired
-	private JsonNodeTo jsonNodeTo;
+	private WriteToFile jsonNode;
 	
 	@Autowired
 	private DataProcessingService dataProcService;
@@ -41,44 +40,25 @@ public class FirestationServiceImpl implements FirestationService {
 	private Map<String, Person> persons;
 		
 	@Override
-	public JsonNode findPersonsByFireStation(int stationNum) {
-		JsonNode arrayNodeFsPersons = JsonNodeFactory.instance.arrayNode();
-		int numAdult = 0; //Local variable length defined in an enclosing scope must be final or effectively final
-		int numChildren = 0;
+	public List<Person> findPersonsByFireStation(int stationNum) {
+		List<Person> firestationPersons = new ArrayList<>();
 		allAddressS = new HashMap<>();
 		firestations = jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
-				
-		Iterator<Address> itAddress = firestations.get(stationNum).getAddressS().values().iterator();
-		while (itAddress.hasNext()) {
-			Iterator<Person> itPerson =	itAddress.next().getPersons().values().iterator();
-			while (itPerson.hasNext()) {
-				Person person = itPerson.next();
-				((ArrayNode) arrayNodeFsPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<Fields>(Arrays.asList(Fields.firstName, Fields.lastName, Fields.address, Fields.phone)))); 
-				if (person.getAge() > 18) {
-					 numAdult++;
-				} else {
-					numChildren++;
-				}
-			}			
-		}
+
+		firestations.get(stationNum).getAddressS().values().forEach(address ->
+			address.getPersons().values().forEach(person -> firestationPersons.add(person)));
 		
-		JsonNode objectNodeStats = JsonNodeFactory.instance.objectNode();
-		((ObjectNode) objectNodeStats).put("Adult",String.valueOf(numAdult)).put("Children",String.valueOf(numChildren));
-		((ArrayNode) arrayNodeFsPersons).add(objectNodeStats);
-		
-		jsonNodeTo.writeToFile(arrayNodeFsPersons);
 		allAddressS = null;
 		firestations = null;
-		persons = null;
-		return arrayNodeFsPersons;
+		persons = null;		
+		return firestationPersons;
 	}
 
 	@Override
-	public JsonNode findPhoneNumbersByFireStation(int stationNum) {
-		JsonNode arrayNodeFsPhones = JsonNodeFactory.instance.arrayNode();
-		Set<String> phonesSet = new HashSet<>();
+	public List<Person> findPhoneNumbersByFireStation(int stationNum) {
+		List<Person> firestationPersonPhones = new ArrayList<>();
 		allAddressS = new HashMap<>();
 		firestations = jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
@@ -87,12 +67,9 @@ public class FirestationServiceImpl implements FirestationService {
 			address.getPersons().values().forEach(person ->
 				phonesSet.add(person.getPhone())));
 		
-		phonesSet.forEach(phone -> {
-			JsonNode objectNodePhone = JsonNodeFactory.instance.objectNode();
-			((ArrayNode) arrayNodeFsPhones).add(((ObjectNode) objectNodePhone).put(Fields.phone.toString(), phone));
-		});
 		
-		jsonNodeTo.writeToFile(arrayNodeFsPhones);
+		
+
 		allAddressS = null;
 		firestations = null;
 		persons = null;		
@@ -115,7 +92,7 @@ public class FirestationServiceImpl implements FirestationService {
 		addressS.values().forEach(address -> 
 			address.getPersons().values().forEach(person -> ((ArrayNode) arrayNodeFSsAddressPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<>(Arrays.asList(Fields.address, Fields.lastName, Fields.phone, Fields.age, Fields.medicalrecords))))));
 		
-		jsonNodeTo.writeToFile(arrayNodeFSsAddressPersons);
+		jsonNode.writeToFile(arrayNodeFSsAddressPersons);
 		allAddressS = null;
 		firestations = null;
 		persons = null;		

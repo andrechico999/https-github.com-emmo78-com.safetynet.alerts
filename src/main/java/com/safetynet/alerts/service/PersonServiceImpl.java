@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Fields;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.JsonNodeTo;
+import com.safetynet.alerts.repository.WriteToFile;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -29,7 +29,7 @@ public class PersonServiceImpl implements PersonService {
 	private MedicalrecordPersonService medrecPService;
 	
 	@Autowired
-	private JsonNodeTo jsonNodeTo;
+	private WriteToFile jsonNodeTo;
 	
 	@Autowired
 	private DataProcessingService dataProcService;

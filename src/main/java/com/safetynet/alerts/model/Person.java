@@ -3,11 +3,9 @@ package com.safetynet.alerts.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public class Person {
 
 	private String id;
@@ -15,7 +13,6 @@ public class Person {
 	private String lastName;
 	private String phone;
 	private String email;
-	@ToString.Exclude
 	private Medicalrecord medicalrecord;
 	private int age;
 	

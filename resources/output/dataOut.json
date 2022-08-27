@@ -1,43 +1,42 @@
 [
 	{
-		"lastName" : "Peters",
-		"address" : "112 Steppes Pl",
-		"age" : 57,
-		"email" : "jpeter@email.com",
-		"medications" : [ ],
-		"allergies" : [ ]
-	},
-	{
-		"lastName" : "Cooper",
-		"address" : "112 Steppes Pl",
-		"age" : 28,
-		"email" : "tcoop@ymail.com",
-		"medications" : [
-			"hydrapermazol:300mg",
-			"dodoxadin:30mg"
-		],
-		"allergies" : [
-			"shellfish"
-		]
-	},
-	{
-		"lastName" : "Boyd",
-		"address" : "112 Steppes Pl",
-		"age" : 57,
-		"email" : "aly@imail.com",
-		"medications" : [
-			"aznol:200mg"
-		],
-		"allergies" : [
-			"nillacilan"
-		]
-	},
-	{
+		"firstName" : "Jamie",
 		"lastName" : "Peters",
 		"address" : "908 73rd St",
-		"age" : 40,
-		"email" : "jpeter@email.com",
-		"medications" : [ ],
-		"allergies" : [ ]
+		"phone" : "841-874-7462"
+	},
+	{
+		"firstName" : "Reginold",
+		"lastName" : "Walker",
+		"address" : "908 73rd St",
+		"phone" : "841-874-8547"
+	},
+	{
+		"firstName" : "Shawna",
+		"lastName" : "Stelzer",
+		"address" : "947 E. Rose Dr",
+		"phone" : "841-874-7784"
+	},
+	{
+		"firstName" : "Kendrik",
+		"lastName" : "Stelzer",
+		"address" : "947 E. Rose Dr",
+		"phone" : "841-874-7784"
+	},
+	{
+		"firstName" : "Brian",
+		"lastName" : "Stelzer",
+		"address" : "947 E. Rose Dr",
+		"phone" : "841-874-7784"
+	},
+	{
+		"firstName" : "Peter",
+		"lastName" : "Duncan",
+		"address" : "644 Gershwin Cir",
+		"phone" : "841-874-6512"
+	},
+	{
+		"adults" : 5,
+		"children" : 1
 	}
 ]
