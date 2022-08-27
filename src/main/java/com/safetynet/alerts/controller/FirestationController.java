@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.safetynet.alerts.dto.FirestationPersonDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTOPerson;
 import com.safetynet.alerts.dto.FirestationPersonDTOStats;
+import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
+import com.safetynet.alerts.dto.FirestationsPersonDTO;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.WriteToFile;
 import com.safetynet.alerts.service.FirestationService;
@@ -47,7 +49,7 @@ public class FirestationController {
 			FirestationPersonDTOPerson.setNumAdult(0);
 			FirestationPersonDTOPerson.setNumChildren(0);
 			modelMapper.typeMap(Person.class, FirestationPersonDTOPerson.class).<String>addMapping(src -> src.getAddress().getAddress(), (dest, v) -> dest.setAddress(v));
-			List<FirestationPersonDTO> firestationPersons = firestationService.findPersonsByFireStation(Integer.parseInt(stationNumber.get())).stream().map(this::convertFirePersonToDTO).collect(Collectors.toList());  
+			List<FirestationPersonDTO> firestationPersons = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(this::convertFirePersonToDTO).collect(Collectors.toList());  
 			firestationPersons.add(new FirestationPersonDTOStats(FirestationPersonDTOPerson.getNumAdult(),FirestationPersonDTOPerson.getNumChildren()));
 			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersons));
 			return firestationPersons;
@@ -56,26 +58,36 @@ public class FirestationController {
 	}
 	
 	@GetMapping("/phoneAlert")
-	public JsonNode phoneAlertFirestationNumber(@RequestParam(name = "firestation") Optional<String> stationNumber) {
+	public List<FirestationPersonPhoneDTO> phoneAlertFirestationNumber(@RequestParam(name = "firestation") Optional<String> stationNumber) {
 		/*Cette url doit retourner une liste des numéros de téléphone des résidents desservis par la caserne de pompiers
 		 */
-		if (stationNumber.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /phoneAlert?firestation=<firestation_number>");
+		if (stationNumber.isPresent()) {
+			List<FirestationPersonPhoneDTO> firestationPersonPhones = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(person -> modelMapper.map(person, FirestationPersonPhoneDTO.class)).distinct().collect(Collectors.toList());
+			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonPhones));
+			return firestationPersonPhones;
 		}
-		return firestationService.findPhoneNumbersByFireStation(Integer.parseInt(stationNumber.get()));
+		return null;
 	}
 	
 	@GetMapping("/flood/stations")
-	public JsonNode floodStationNumbers(@RequestParam(name = "stations") Optional<List<String>> stationNumbers) {
+	public List<FirestationsPersonDTO> floodStationNumbers(@RequestParam(name = "stations") Optional<List<String>> stationNumbers) {
 		/*
 		 * Cette url doit retourner une liste de tous les foyers desservis 
 		 * (address, lastName, phone, age, medications : , allergies : )
 		 * par les casernes. Cette liste doit regrouper les personnes par adresse.
 		 */		
-		if (stationNumbers.isEmpty()) {
-			return TextNode.valueOf("Query parameter is /flood/stations?stations=(a list of station_numbers)");
+		if (stationNumbers.isPresent()) {
+			modelMapper.typeMap(Person.class, FirestationsPersonDTO.class).addMappings(mapper -> {
+				mapper.<String>map(src -> src.getAddress().getAddress(), (dest, v) ->dest.setAddress(v));
+				mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge);
+				mapper.<List<String>>map(src -> src.getMedicalrecord().getMedications(), (dest, v) -> dest.setMedications(v));
+				mapper.<List<String>>map(src -> src.getMedicalrecord().getAllergies(), (dest, v) -> dest.setAllergies(v));
+			});	
+			List<FirestationsPersonDTO> firestationsAddressPersons = firestationService.findAddressPersonsByFiresations(stationNumbers.get().stream().map(stationNumber -> Integer.parseInt(stationNumber)).collect(Collectors.toList())).stream().map(person -> modelMapper.map(person, FirestationsPersonDTO.class)).collect(Collectors.toList());
+			fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersons));
+			return firestationsAddressPersons;
 		}
-		return firestationService.findAddressPersonsByFiresations(stationNumbers.get().stream().map(stationNumber -> Integer.parseInt(stationNumber)).collect(Collectors.toList()));
+		return null;
 	}
 	
 	private FirestationPersonDTO convertFirePersonToDTO(Person person) {

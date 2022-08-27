@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,73 +31,29 @@ public class FirestationServiceImpl implements FirestationService {
 	@Autowired
 	private MedicalrecordPersonService medrecPService;
 	
-	@Autowired
-	private WriteToFile jsonNode;
-	
-	@Autowired
-	private DataProcessingService dataProcService;
-	
 	private Map<String, Address> allAddressS;
 	private Map<Integer, Firestation> firestations;
 	private Map<String, Person> persons;
 		
 	@Override
-	public List<Person> findPersonsByFireStation(int stationNum) {
-		List<Person> firestationPersons = new ArrayList<>();
+	public List<Person> findPersonsByFirestation(int stationNum) {
+		
 		allAddressS = new HashMap<>();
 		firestations = jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 
-		firestations.get(stationNum).getAddressS().values().forEach(address ->
-			address.getPersons().values().forEach(person -> firestationPersons.add(person)));
-		
-		allAddressS = null;
-		firestations = null;
-		persons = null;		
-		return firestationPersons;
+		return firestations.get(stationNum).getAddressS().values().stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Person> findPhoneNumbersByFireStation(int stationNum) {
-		List<Person> firestationPersonPhones = new ArrayList<>();
-		allAddressS = new HashMap<>();
-		firestations = jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
-		
-		firestations.get(stationNum).getAddressS().values().forEach(address -> 
-			address.getPersons().values().forEach(person ->
-				phonesSet.add(person.getPhone())));
-		
-		
-		
+	public List<Person> findAddressPersonsByFiresations(List<Integer> stationNumbers) {
 
-		allAddressS = null;
-		firestations = null;
-		persons = null;		
-		return arrayNodeFsPhones;
-	}
-
-	@Override
-	public JsonNode findAddressPersonsByFiresations(List<Integer> stationNumbers) {
-		JsonNode arrayNodeFSsAddressPersons = JsonNodeFactory.instance.arrayNode();
-		Map<String, Address> addressS = new HashMap<>();
 		allAddressS = new HashMap<>();
 		firestations = jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 				
-		stationNumbers.forEach(stationNumber ->
-			firestations.get(stationNumber).getAddressS().values().forEach(address ->
-				addressS.put(address.getAddress(),address)));
-		
-		addressS.values().forEach(address -> 
-			address.getPersons().values().forEach(person -> ((ArrayNode) arrayNodeFSsAddressPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<>(Arrays.asList(Fields.address, Fields.lastName, Fields.phone, Fields.age, Fields.medicalrecords))))));
-		
-		jsonNode.writeToFile(arrayNodeFSsAddressPersons);
-		allAddressS = null;
-		firestations = null;
-		persons = null;		
-		return arrayNodeFSsAddressPersons;
+		return stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).distinct().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList());
 	}
 }

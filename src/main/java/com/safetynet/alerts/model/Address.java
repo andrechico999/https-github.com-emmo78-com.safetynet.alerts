@@ -4,14 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Address {
 	
+	@EqualsAndHashCode.Include
 	private String address;
+
 	private String city;
 	private String zip;
 	
