@@ -13,7 +13,7 @@ public class Person {
 	private String id;
 	private String firstName;
 	
-	@EqualsAndHashCode.Include
+	@EqualsAndHashCode.Include //for convenience to find same named person
 	private String lastName;
 	
 	private String phone;
@@ -21,7 +21,7 @@ public class Person {
 	private Medicalrecord medicalrecord;
 	private int age;
 	
-	@Setter(AccessLevel.NONE) //for convenience to find same named person 
+	@Setter(AccessLevel.NONE)
 	private Address address;
 	
 	public Person (String firstName, String lastName, String phone, String email) {

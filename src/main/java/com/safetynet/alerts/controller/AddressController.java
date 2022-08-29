@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.safetynet.alerts.dto.AddressPersonChildrenDTO;
 import com.safetynet.alerts.dto.AddressPersonDTO;
 import com.safetynet.alerts.dto.AddressPersonDTOPerson;
 import com.safetynet.alerts.dto.AddressPersonDTOStationNumbers;
+import com.safetynet.alerts.dto.AddressPersonEmailDTO;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.WriteToFile;
 import com.safetynet.alerts.service.AddressService;
@@ -34,7 +33,7 @@ public class AddressController {
 	private WriteToFile fileWriter;
 	
     @Autowired
-	AddressService addressService;
+	private AddressService addressService;
 	
 	@GetMapping("/childAlert")
 	public List<AddressPersonChildrenDTO> childAlertAddress(@RequestParam(name = "address") Optional<String> address) {
@@ -71,13 +70,14 @@ public class AddressController {
 	}
 	
 	@GetMapping("/communityEmail")
-	public JsonNode communityEmailCity(@RequestParam(name = "city") Optional<String> city) {
+	public List<AddressPersonEmailDTO> communityEmailCity(@RequestParam(name = "city") Optional<String> city) {
 		/*Cette url doit retourner les adresses mail de tous les habitants de la ville
 		 */
-		if (city.isEmpty()) {
-			return TextNode.valueOf("Query parameter is : /communityEmail?city=<city>");
+		if (city.isPresent()) {
+			List<AddressPersonEmailDTO> firestationPersonPhones = addressService.findemailPersonsByCity(city.get()).stream().map(person -> modelMapper.map(person, AddressPersonEmailDTO.class)).distinct().collect(Collectors.toList());
+			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonPhones));
+			return firestationPersonPhones;
 		}
-		return null; //addressService.findemailPersonsByCity(city.get());
+		return null;
 	}
-	
 }

@@ -33,7 +33,7 @@ public class FirestationController {
 	private WriteToFile fileWriter;
 	
 	@Autowired
-	FirestationService firestationService;
+	private FirestationService firestationService;
 	
 	@GetMapping("/firestation")
 	public List<FirestationPersonDTO> firestationstationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
