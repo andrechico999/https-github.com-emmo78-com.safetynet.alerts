@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.safetynet.alerts.dto.FirestationPersonDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTOPerson;
 import com.safetynet.alerts.dto.FirestationPersonDTOStats;
@@ -47,10 +45,10 @@ public class FirestationController {
 		
 		if (stationNumber.isPresent()){
 			FirestationPersonDTOPerson.setNumAdult(0);
-			FirestationPersonDTOPerson.setNumChildren(0);
+			FirestationPersonDTOPerson.setNumChild(0);
 			modelMapper.typeMap(Person.class, FirestationPersonDTOPerson.class).<String>addMapping(src -> src.getAddress().getAddress(), (dest, v) -> dest.setAddress(v));
-			List<FirestationPersonDTO> firestationPersons = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(this::convertFirePersonToDTO).collect(Collectors.toList());  
-			firestationPersons.add(new FirestationPersonDTOStats(FirestationPersonDTOPerson.getNumAdult(),FirestationPersonDTOPerson.getNumChildren()));
+			List<FirestationPersonDTO> firestationPersons = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(this::convertFirestationPersonToDTO).collect(Collectors.toList());  
+			firestationPersons.add(new FirestationPersonDTOStats(FirestationPersonDTOPerson.getNumAdult(),FirestationPersonDTOPerson.getNumChild()));
 			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersons));
 			return firestationPersons;
 		}
@@ -79,7 +77,7 @@ public class FirestationController {
 		if (stationNumbers.isPresent()) {
 			modelMapper.typeMap(Person.class, FirestationsPersonDTO.class).addMappings(mapper -> {
 				mapper.<String>map(src -> src.getAddress().getAddress(), (dest, v) ->dest.setAddress(v));
-				mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge);
+				//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
 				mapper.<List<String>>map(src -> src.getMedicalrecord().getMedications(), (dest, v) -> dest.setMedications(v));
 				mapper.<List<String>>map(src -> src.getMedicalrecord().getAllergies(), (dest, v) -> dest.setAllergies(v));
 			});	
@@ -90,7 +88,7 @@ public class FirestationController {
 		return null;
 	}
 	
-	private FirestationPersonDTO convertFirePersonToDTO(Person person) {
+	private FirestationPersonDTO convertFirestationPersonToDTO(Person person) {
 		FirestationPersonDTOPerson firestationPersonDTO = modelMapper.map(person, FirestationPersonDTOPerson.class);
 		firestationPersonDTO.sumAdultAndChild(person);
 		return firestationPersonDTO;

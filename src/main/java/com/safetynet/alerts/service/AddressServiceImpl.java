@@ -1,13 +1,9 @@
 package com.safetynet.alerts.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,9 +14,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Fields;
+import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.WriteToFile;
 
@@ -39,75 +35,34 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired
 	private DataProcessingService dataProcService;
 	
-	@Autowired
-	private PersonFieldService personFieldService;
-	
 	private Map<String, Address> allAddressS;
 	private Map<String, Person> persons;
 
 	@Override
-	public JsonNode findChildrenByAddress(String address) {
-		JsonNode arrayNodeAddressChildren = JsonNodeFactory.instance.arrayNode();
-		Map<String, Person> addressPersons;
-		Map<String, Person> addressChildren;
-		List<Person> parentsOfChildren = new ArrayList<>();
-		String childName;		
-		Optional<String> childNameOpt;
+	public List<Person> findChildrenByAddress(String address) {
+		
 		allAddressS = new HashMap<>();
 		jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 		
-		addressPersons = allAddressS.get(address).getPersons();
-		addressChildren = personFieldService.selectRemovePersonsUnderEqualAge(18, addressPersons);
-		while (addressChildren.size() > 0) {
-			childName = null;
-			childNameOpt = Optional.ofNullable(childName);
-			Iterator<Map.Entry<String, Person>> adrdressChildrenIterator = addressChildren.entrySet().iterator();
-			while (adrdressChildrenIterator.hasNext()) {
-				Map.Entry<String, Person> entry = adrdressChildrenIterator.next();
-				childName = entry.getValue().getLastName();
-				if (childNameOpt.isEmpty()) {
-					childNameOpt = Optional.of(childName);
-					parentsOfChildren.addAll(personFieldService.selectRemovePersonsByName(childName, addressPersons).values());
-					((ArrayNode) arrayNodeAddressChildren).add(dataProcService.buildObjectNodePerson(entry.getValue(), new ArrayList<Fields>(Arrays.asList(Fields.firstName, Fields.lastName, Fields.age))));
-					adrdressChildrenIterator.remove();
-				} else if(childName.equals(childNameOpt.get())) {
-					((ArrayNode) arrayNodeAddressChildren).add(dataProcService.buildObjectNodePerson(entry.getValue(), new ArrayList<Fields>(Arrays.asList(Fields.firstName, Fields.lastName, Fields.age))));
-					adrdressChildrenIterator.remove();
-				}
-			}
-		}
-
-		parentsOfChildren.forEach(person -> ((ArrayNode) arrayNodeAddressChildren).add(dataProcService.buildObjectNodePerson(person, new ArrayList<Fields>(Arrays.asList(Fields.firstName, Fields.lastName, Fields.age)))));
-
-		jsonNodeTo.writeToFile(arrayNodeAddressChildren);
-		allAddressS = null;
-		persons = null;
-		return arrayNodeAddressChildren;
+		List<Person> addressPersonChildren = allAddressS.get(address).getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList());
+		addressPersonChildren.addAll(allAddressS.get(address).getPersons().values().stream().filter(person -> addressPersonChildren.contains(person)&&(person.getAge() > 18)).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
+		return addressPersonChildren ;
 	}
 
 	@Override
-	public JsonNode findPersonsByAddress(String address) {
-		JsonNode arrayNodeAddressPersons = JsonNodeFactory.instance.arrayNode();
-		JsonNode objectNodeStationNumber = JsonNodeFactory.instance.objectNode();
+	public List<Person> findPersonsByAddress(String address) {
 		allAddressS = new HashMap<>();
 		jsNodeService.convertFireStations(allAddressS);
 		persons = jsNodeService.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 		
-		allAddressS.get(address).getPersons().values().forEach(person -> ((ArrayNode) arrayNodeAddressPersons).add(dataProcService.buildObjectNodePerson(person, new ArrayList<Fields>(Arrays.asList(Fields.lastName, Fields.phone, Fields.age, Fields.medicalrecords)))));
-		
-		((ObjectNode) objectNodeStationNumber).set("Station number", new ArrayNode(JsonNodeFactory.instance, allAddressS.get(address).getFirestations().values().stream().map(firestation -> TextNode.valueOf(String.valueOf(firestation.getStationNumber()))).collect(Collectors.toList())));
-		((ArrayNode) arrayNodeAddressPersons).add(objectNodeStationNumber);
-		jsonNodeTo.writeToFile(arrayNodeAddressPersons);
-		allAddressS = null;
-		persons = null;
-		return arrayNodeAddressPersons;
+		return allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList());
 	}
 
 	@Override
-	public JsonNode findemailPersonsByCity(String city) {
+	public List<Person> findemailPersonsByCity(String city) {
 		JsonNode arrayNodeEmails = JsonNodeFactory.instance.arrayNode();
 		Set<String> emailsSet = new HashSet<>();
 		allAddressS = new HashMap<>();
@@ -128,6 +83,11 @@ public class AddressServiceImpl implements AddressService {
 		jsonNodeTo.writeToFile(arrayNodeEmails);
 		allAddressS = null;
 		persons = null;		
-		return arrayNodeEmails;
+		return null;
+	}
+
+	@Override
+	public List<Firestation> findFirestationssByAddress(String address) {
+		return allAddressS.get(address).getFirestations().values().stream().collect(Collectors.toList());
 	}
 }

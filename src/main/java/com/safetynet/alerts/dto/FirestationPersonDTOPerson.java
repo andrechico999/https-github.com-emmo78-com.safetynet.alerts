@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class FirestationPersonDTOPerson implements FirestationPersonDTO {
 	@Getter @Setter private static int numAdult;
-	@Getter @Setter private static int numChildren;
+	@Getter @Setter private static int numChild;
 	
 	private String firstName;
 	private String lastName;
@@ -20,7 +20,7 @@ public class FirestationPersonDTOPerson implements FirestationPersonDTO {
 		if (person.getAge() > 18) {
 			numAdult++;
 		} else {
-			numChildren++;
+			numChild++;
 		}
 	} 
 }
