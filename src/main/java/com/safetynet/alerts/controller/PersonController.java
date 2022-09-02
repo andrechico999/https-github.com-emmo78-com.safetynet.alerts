@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.safetynet.alerts.dto.FirestationsPersonDTO;
 import com.safetynet.alerts.dto.PersonAddressNameDTO;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.WriteToFile;
@@ -41,10 +38,10 @@ public class PersonController {
 		 */		
 		if (firstName.isPresent() && lastName.isPresent()) {
 			modelMapper.typeMap(Person.class, PersonAddressNameDTO.class).addMappings(mapper -> {
-				mapper.<String>map(src -> src.getAddress().getAddress(), (dest, v) ->dest.setAddress(v));
+				mapper.map(src -> src.getAddress().getAddress(), PersonAddressNameDTO::setAddress);
 				//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
-				mapper.<List<String>>map(src -> src.getMedicalrecord().getMedications(), (dest, v) -> dest.setMedications(v));
-				mapper.<List<String>>map(src -> src.getMedicalrecord().getAllergies(), (dest, v) -> dest.setAllergies(v));
+				mapper.map(src -> src.getMedicalrecord().getMedications(), PersonAddressNameDTO::setMedications);
+				mapper.map(src -> src.getMedicalrecord().getAllergies(), PersonAddressNameDTO::setAllergies);
 			});	
 			List<PersonAddressNameDTO> personsAddressName = personService.findPersonsByFirstNameAndLastName(firstName.get(), lastName.get()).stream().map(person -> modelMapper.map(person, PersonAddressNameDTO.class)).collect(Collectors.toList());
 			fileWriter.writeToFile(objectMapper.valueToTree(personsAddressName));

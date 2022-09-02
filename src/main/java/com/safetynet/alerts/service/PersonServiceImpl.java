@@ -15,13 +15,13 @@ import com.safetynet.alerts.model.Person;
 public class PersonServiceImpl implements PersonService {
 
 	@Autowired
-	private JsonNodeService jsNodeService;
+	private JsonNodeService convertJsonToClass;
 	
 	@Autowired
 	private MedicalrecordPersonService medrecPService;
 	
 	@Autowired
-	private DataProcessingService dataProcService;
+	private StringService dataProcService;
 	
 	private Map<String, Address> allAddressS;
 	private Map<String, Person> persons;
@@ -33,8 +33,8 @@ public class PersonServiceImpl implements PersonService {
 		lastName = dataProcService.upperCasingFirstLetter(lastName);
 		final String id =firstName +" "+lastName; //Local variable lastName defined in an enclosing scope must be final or effectively final
 		allAddressS = new HashMap<>();
-		jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
+		convertJsonToClass.convertFireStations(allAddressS);
+		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 		
 		return persons.get(id).getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList());

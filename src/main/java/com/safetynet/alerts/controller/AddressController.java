@@ -57,16 +57,16 @@ public class AddressController {
 		 */
 		if (address.isPresent()) {
 			modelMapper.typeMap(Person.class, AddressPersonDTOPerson.class).addMappings(mapper -> {
-				//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
-				mapper.<List<String>>map(src -> src.getMedicalrecord().getMedications(), (dest, v) -> dest.setMedications(v));
-				mapper.<List<String>>map(src -> src.getMedicalrecord().getAllergies(), (dest, v) -> dest.setAllergies(v));
+				//mapper.map(Person::getAge, AddressPersonDTOPerson::setAge); //ModelMapper Handling Mismatches
+				mapper.map(src -> src.getMedicalrecord().getMedications(), AddressPersonDTOPerson::setMedications);
+				mapper.map(src -> src.getMedicalrecord().getAllergies(), AddressPersonDTOPerson::setAllergies);
 			});
 			List<AddressPersonDTO> addressPersons = addressService.findPersonsByAddress(address.get()).stream().map(person -> modelMapper.map(person, AddressPersonDTOPerson.class)).collect(Collectors.toList());
 			addressPersons.add(new AddressPersonDTOStationNumbers(addressService.findFirestationssByAddress(address.get()).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList())));
 			fileWriter.writeToFile(objectMapper.valueToTree(addressPersons));			
 			return addressPersons;
 		}
-		return null; //addressService.findPersonsByAddress(address.get());
+		return null;
 	}
 	
 	@GetMapping("/communityEmail")

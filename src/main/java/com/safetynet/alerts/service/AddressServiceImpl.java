@@ -16,13 +16,13 @@ import com.safetynet.alerts.model.Person;
 public class AddressServiceImpl implements AddressService {
 
 	@Autowired
-	private JsonNodeService jsNodeService;
+	private JsonNodeService convertJsonToClass;
 	
 	@Autowired
 	private MedicalrecordPersonService medrecPService;
 	
 	@Autowired
-	private DataProcessingService dataProcService;
+	private StringService dataProcService;
 	
 	private Map<String, Address> allAddressS;
 	private Map<String, Person> persons;
@@ -31,8 +31,8 @@ public class AddressServiceImpl implements AddressService {
 	public List<Person> findChildrenByAddress(String address) {
 		
 		allAddressS = new HashMap<>();
-		jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
+		convertJsonToClass.convertFireStations(allAddressS);
+		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 		
 		List<Person> addressPersonChildren = allAddressS.get(address).getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList());
@@ -43,8 +43,8 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public List<Person> findPersonsByAddress(String address) {
 		allAddressS = new HashMap<>();
-		jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
+		convertJsonToClass.convertFireStations(allAddressS);
+		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 		
 		return allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList());
@@ -53,8 +53,8 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public List<Person> findemailPersonsByCity(String city) {
 		allAddressS = new HashMap<>();
-		jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
+		convertJsonToClass.convertFireStations(allAddressS);
+		persons = convertJsonToClass.convertPersons(allAddressS);
 
 		return allAddressS.values().stream().filter(address -> address.getCity().equals(dataProcService.upperCasingFirstLetter(city))).flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList());
 	}

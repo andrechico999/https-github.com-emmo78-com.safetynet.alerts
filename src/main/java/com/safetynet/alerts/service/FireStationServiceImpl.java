@@ -16,7 +16,7 @@ import com.safetynet.alerts.model.Person;
 public class FirestationServiceImpl implements FirestationService {
 
 	@Autowired
-	private JsonNodeService jsNodeService;
+	private JsonNodeService convertJsonToClass;
 	
 	@Autowired
 	private MedicalrecordPersonService medrecPService;
@@ -29,8 +29,8 @@ public class FirestationServiceImpl implements FirestationService {
 	public List<Person> findPersonsByFirestation(int stationNum) {
 		
 		allAddressS = new HashMap<>();
-		firestations = jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
+		firestations = convertJsonToClass.convertFireStations(allAddressS);
+		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 
 		return firestations.get(stationNum).getAddressS().values().stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList());
@@ -40,8 +40,8 @@ public class FirestationServiceImpl implements FirestationService {
 	public List<Person> findAddressPersonsByFiresations(List<Integer> stationNumbers) {
 
 		allAddressS = new HashMap<>();
-		firestations = jsNodeService.convertFireStations(allAddressS);
-		persons = jsNodeService.convertPersons(allAddressS);
+		firestations = convertJsonToClass.convertFireStations(allAddressS);
+		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 				
 		return stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).distinct().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList());

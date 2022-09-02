@@ -27,6 +27,9 @@ import com.safetynet.alerts.repository.GetFromFile;
 public class JsonNodeServiceImpl implements JsonNodeService {
 
 	@Autowired
+	ObjectMapper objectMapper;
+	
+	@Autowired
 	GetFromFile getFromFile;
 	
 	@Override
@@ -95,9 +98,8 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 			String id = firstName+" "+lastName;
 			String stBirthdate = ((ObjectNode) jsonObjectMedicalrecord).get("birthdate").asText();
 			Medicalrecord medicalrecord = new Medicalrecord(LocalDate.parse(stBirthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-			ObjectMapper mapper = new ObjectMapper();
-			medicalrecord.setMedications(mapper.convertValue(jsonObjectMedicalrecord.get("medications"), new TypeReference<List<String>>() {}));
-			medicalrecord.setAllergies(mapper.convertValue(jsonObjectMedicalrecord.get("allergies"), new TypeReference<List<String>>() {}));
+			medicalrecord.setMedications(objectMapper.convertValue(jsonObjectMedicalrecord.get("medications"), new TypeReference<List<String>>() {}));
+			medicalrecord.setAllergies(objectMapper.convertValue(jsonObjectMedicalrecord.get("allergies"), new TypeReference<List<String>>() {}));
 			medicalrecords.put(id, medicalrecord);
 		});
 		return medicalrecords;

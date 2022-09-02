@@ -46,7 +46,7 @@ public class FirestationController {
 		if (stationNumber.isPresent()){
 			FirestationPersonDTOPerson.setNumAdult(0);
 			FirestationPersonDTOPerson.setNumChild(0);
-			modelMapper.typeMap(Person.class, FirestationPersonDTOPerson.class).<String>addMapping(src -> src.getAddress().getAddress(), (dest, v) -> dest.setAddress(v));
+			modelMapper.typeMap(Person.class, FirestationPersonDTOPerson.class).addMapping(src -> src.getAddress().getAddress(), FirestationPersonDTOPerson::setAddress);
 			List<FirestationPersonDTO> firestationPersons = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(this::convertFirestationPersonToDTO).collect(Collectors.toList());  
 			firestationPersons.add(new FirestationPersonDTOStats(FirestationPersonDTOPerson.getNumAdult(),FirestationPersonDTOPerson.getNumChild()));
 			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersons));
@@ -76,10 +76,10 @@ public class FirestationController {
 		 */		
 		if (stationNumbers.isPresent()) {
 			modelMapper.typeMap(Person.class, FirestationsPersonDTO.class).addMappings(mapper -> {
-				mapper.<String>map(src -> src.getAddress().getAddress(), (dest, v) ->dest.setAddress(v));
+				mapper.map(src -> src.getAddress().getAddress(), FirestationsPersonDTO::setAddress);
 				//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
-				mapper.<List<String>>map(src -> src.getMedicalrecord().getMedications(), (dest, v) -> dest.setMedications(v));
-				mapper.<List<String>>map(src -> src.getMedicalrecord().getAllergies(), (dest, v) -> dest.setAllergies(v));
+				mapper.map(src -> src.getMedicalrecord().getMedications(), FirestationsPersonDTO::setMedications);
+				mapper.map(src -> src.getMedicalrecord().getAllergies(), FirestationsPersonDTO::setAllergies);
 			});	
 			List<FirestationsPersonDTO> firestationsAddressPersons = firestationService.findAddressPersonsByFiresations(stationNumbers.get().stream().map(stationNumber -> Integer.parseInt(stationNumber)).collect(Collectors.toList())).stream().map(person -> modelMapper.map(person, FirestationsPersonDTO.class)).collect(Collectors.toList());
 			fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersons));
