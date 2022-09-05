@@ -1,21 +1,23 @@
 package com.safetynet.alerts.model;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Person {
 
 	private String id;
 	private String firstName;
+	
+	@EqualsAndHashCode.Include //for convenience to find same named person
 	private String lastName;
+	
 	private String phone;
 	private String email;
-	@ToString.Exclude
 	private Medicalrecord medicalrecord;
 	private int age;
 	

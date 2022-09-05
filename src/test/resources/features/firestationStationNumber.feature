@@ -3,11 +3,11 @@
 
 @http://localhost:8080/firestation?stationNumber=<station_number>
 Fonctionnalité: 1-firestation?stationNumber
-Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers correspondante avec un
-décompte du nombre d'adultes et du nombre d'enfants (âge <= 18 ans)
+Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers correspondante
+avec un décompte du nombre d'adultes et du nombre d'enfants (âge <= 18 ans)
 
-	En tant qu’utilisateur, je souhaite obtenir la liste des personnes (prénom, nom, adresse, numéro de téléphone) couverts par
-	la station de numéro donné, avec un décompte du nombre d'adultes et du nombre d'enfants (âge <= 18 ans)
+	En tant qu’utilisateur, je souhaite obtenir la liste des personnes (prénom, nom, adresse, numéro de téléphone)
+	couvertes par la station de numéro donné, avec un décompte du nombre d'adultes et du nombre d'enfants (âge <= 18 ans)
 
 	Contexte:
 		Étant donné les personnes contexte 1:

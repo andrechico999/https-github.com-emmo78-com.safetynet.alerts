@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +28,15 @@ import com.safetynet.alerts.repository.GetFromFile;
 public class JsonNodeServiceImpl implements JsonNodeService {
 
 	@Autowired
+	ObjectMapper objectMapper;
+	
+	@Autowired
 	GetFromFile getFromFile;
+	
+	@PostConstruct
+	public void doSomething() {
+		
+	}
 	
 	@Override
 	public Map<Integer, Firestation> convertFireStations(Map<String, Address> allAddressS) {
@@ -95,9 +104,8 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 			String id = firstName+" "+lastName;
 			String stBirthdate = ((ObjectNode) jsonObjectMedicalrecord).get("birthdate").asText();
 			Medicalrecord medicalrecord = new Medicalrecord(LocalDate.parse(stBirthdate, DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-			ObjectMapper mapper = new ObjectMapper();
-			medicalrecord.setMedications(mapper.convertValue(jsonObjectMedicalrecord.get("medications"), new TypeReference<List<String>>() {}));
-			medicalrecord.setAllergies(mapper.convertValue(jsonObjectMedicalrecord.get("allergies"), new TypeReference<List<String>>() {}));
+			medicalrecord.setMedications(objectMapper.convertValue(jsonObjectMedicalrecord.get("medications"), new TypeReference<List<String>>() {}));
+			medicalrecord.setAllergies(objectMapper.convertValue(jsonObjectMedicalrecord.get("allergies"), new TypeReference<List<String>>() {}));
 			medicalrecords.put(id, medicalrecord);
 		});
 		return medicalrecords;

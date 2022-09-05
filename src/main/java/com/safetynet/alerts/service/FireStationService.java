@@ -2,10 +2,9 @@ package com.safetynet.alerts.service;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.safetynet.alerts.model.Person;
 
 public interface FirestationService {
-	JsonNode findPersonsByFireStation(int stationNum); 
-	JsonNode findPhoneNumbersByFireStation(int stationNum);
-	JsonNode findAddressPersonsByFiresations(List<Integer> stationNumbers);
+	List<Person> findPersonsByFirestation(int stationNum); 
+	List<Person> findAddressPersonsByFiresations(List<Integer> stationNumbers);
 }

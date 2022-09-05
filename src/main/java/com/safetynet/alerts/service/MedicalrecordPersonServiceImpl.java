@@ -29,6 +29,6 @@ public class MedicalrecordPersonServiceImpl implements MedicalrecordPersonServic
 	@Override
 	public boolean setAge(Person person) {
 		person.setAge(Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears());
-		return true; // I consider birthdate is alway befor now
+		return true; // I consider birth date is always before now
 	}
 }
