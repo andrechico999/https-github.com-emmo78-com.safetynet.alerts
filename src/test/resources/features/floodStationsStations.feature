@@ -5,7 +5,8 @@
 Fonctionnalité: 5-flood/stations?stations
 Cette url doit retourner une liste de tous les foyers desservis par les casernes. Cette liste doit regrouper les personnes par adresse.
 
-	En tant qu’utilisateur, je souhaite obtenir la liste des personnes desservis par les casernes de pompiers, regroupées par adresse, avec les noms, les numéros de téléphone, les âges, et les antécédents médicaux 
+	En tant qu’utilisateur, je souhaite obtenir la liste des personnes desservis par les casernes de pompiers, regroupées par adresse,
+	avec les noms, les numéros de téléphone, les âges, et les antécédents médicaux 
 
 	Contexte:
 		Étant donné les personnes avec leur antécédants médicaux contexte 5:
@@ -19,8 +20,8 @@ Cette url doit retourner une liste de tous les foyers desservis par les casernes
 		|num |address         |
 		|"1" |"1509 Culver St"|
 		|"1" |"834 Binoc Ave" |
+		|"2" |"834 Binoc Ave" |
 		|"2" |"844 Binoc Ave" |
-
 
 	Scénario: 5 : les casernes sont existantes ou non
 		Quand utilisateur requête les stations numéro "1,2,3"

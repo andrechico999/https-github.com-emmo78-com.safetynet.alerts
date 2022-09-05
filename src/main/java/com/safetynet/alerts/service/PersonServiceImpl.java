@@ -36,7 +36,7 @@ public class PersonServiceImpl implements PersonService {
 		convertJsonToClass.convertFireStations(allAddressS);
 		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
-		
+	
 		return persons.get(id).getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList());
 	}
 }

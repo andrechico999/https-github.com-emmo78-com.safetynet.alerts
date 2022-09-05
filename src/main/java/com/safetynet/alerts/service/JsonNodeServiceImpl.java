@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -31,6 +34,11 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 	
 	@Autowired
 	GetFromFile getFromFile;
+	
+	@PostConstruct
+	public void doSomething() {
+		
+	}
 	
 	@Override
 	public Map<Integer, Firestation> convertFireStations(Map<String, Address> allAddressS) {
