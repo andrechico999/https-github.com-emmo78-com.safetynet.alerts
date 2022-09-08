@@ -3,16 +3,17 @@
 
 @http://localhost:8080/childAlert?address=<address>
 Fonctionnalité: 2-childAlert?address
-Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse ainsi que les autres membres du foyer
+Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse.
 S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide
 
-	En tant qu’utilisateur, je souhaite obtenir la liste des enfants (prénom, nom, âge)
+	En tant qu’utilisateur, je souhaite obtenir la liste des enfants (prénom, nom, âge, liste des adultes)
 	habitant à une adresse donnée
 
 	Contexte:
 		Étant donné les personnes contexte 2:
 		|firstName|lastName|age |address         |city    |zip    |phone         |email            |
 		|"John"   |"Boyd"  |"30"|"1509 Culver St"|"Culver"|"97451"|"841-874-6512"|"jboyd@email.com"|
+		|"Elsa"   |"Boyd"  |"33"|"1509 Culver St"|"Culver"|"97451"|"841-874-6512"|"elsad@email.com"|
 		|"Tenley" |"Boyd"  |"18"|"1509 Culver St"|"Culver"|"97451"|"841-874-6513"|"tboyd@email.com"|
 		|"Tessa"  |"Carman"|"28"|"1509 Culver St"|"Culver"|"97451"|"841-874-6514"|"tenz@email.com" |
 		|"Tony"   |"Boyd"  |"12"|"1509 Culver St"|"Culver"|"97451"|"841-874-6512"|"jboyd@email.com"|
@@ -22,12 +23,10 @@ S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide
 	Scénario: 2A : des enfants habitent à l’adresse
 		Quand utilisateur 2A requête l’addresse "1509 Culver St"
 		Alors la liste A des enfants est:
-		|firstName|lastName|age |
-		|"Tenley" |"Boyd"  |"18"|
-		|"Tony"   |"Boyd"  |"12"|
-		|"Brad"   |"Voisin"|" 2"|
-		|"John"   |"Boyd"  |"30"|
-		|"Eric"   |"Voisin"|"24"|
+		|firstName|lastName|age |adults                                                                                                                              |
+		|"Tenley" |"Boyd"  |"18"|"[{\"firstName\":\"John\", \"lastName\":\"Boyd\", \"age\":\"30\"}, {\"firstName\":\"Elsa\", \"lastName\":\"Boyd\", \"age\":\"33\"}]"|
+		|"Tony"   |"Boyd"  |"12"|"[{\"firstName\":\"John\", \"lastName\":\"Boyd\", \"age\":\"30\"}, {\"firstName\":\"Elsa\", \"lastName\":\"Boyd\", \"age\":\"33\"}]"|
+		|"Brad"   |"Voisin"|" 2"|"[{\"firstName\":\"Eric\", \"lastName\":\"Voisin\", \"age\":\"24\"}]"                                                               |
 	
 	Scénario: 2B : il n’y a pas d’enfant habitant à l’adresse
 		Quand utilisateur 2B requête l’addresse "844 Binoc Ave"

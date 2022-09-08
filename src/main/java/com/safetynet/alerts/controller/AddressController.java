@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alerts.dto.AddressPersonChildrenDTO;
+import com.safetynet.alerts.dto.AddressChildDTO;
+import com.safetynet.alerts.dto.AddressAdultChildDTO;
 import com.safetynet.alerts.dto.AddressPersonDTO;
 import com.safetynet.alerts.dto.AddressPersonDTOPerson;
 import com.safetynet.alerts.dto.AddressPersonDTOStationNumbers;
 import com.safetynet.alerts.dto.AddressPersonEmailDTO;
+import com.safetynet.alerts.dto.FirestationPersonDTO;
+import com.safetynet.alerts.dto.FirestationPersonDTOPerson;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.WriteToFile;
 import com.safetynet.alerts.service.AddressService;
@@ -38,15 +41,15 @@ public class AddressController {
 	private AddressService addressService;
 	
 	@GetMapping("/childAlert")
-	public List<AddressPersonChildrenDTO> childAlertAddress(@RequestParam(name = "address") Optional<String> address) {
+	public List<AddressAdultChildDTO> childAlertAddress(@RequestParam(name = "address") Optional<String> address) {
 		/*Cette url doit retourner une liste d'enfants (âge <= 18 ans) habitant à cette adresse,
 		 * ainsi que les autres membres du foyer (firstName, lastName, age)
 		 * S'il n'y a pas d'enfant, cette url peut renvoyer une chaîne vide
 		 */
 		if (address.isPresent()) {
-			List<AddressPersonChildrenDTO> addressPersonChildren = addressService.findChildrenByAddress(address.get()).stream().map(person -> modelMapper.map(person, AddressPersonChildrenDTO.class)).collect(Collectors.toList());
-			fileWriter.writeToFile(objectMapper.valueToTree(addressPersonChildren));
-			return addressPersonChildren;
+			List<AddressAdultChildDTO> addressChildren = addressService.findChildrenByAddress(address.get()).stream().map(this::convertAddressChildrenToDTO).collect(Collectors.toList());
+			fileWriter.writeToFile(objectMapper.valueToTree(addressChildren));
+			return addressChildren;
 		}
 		return null;
 	}
@@ -81,6 +84,13 @@ public class AddressController {
 			return firestationPersonPhones;
 		}
 		return null;
+	}
+	
+	private AddressAdultChildDTO convertAddressChildrenToDTO(Person child) {
+		//modelMapper.typeMap(Person.class, AddressChildDTO.class).addMappings(mapper -> mapper.skip(AddressChildDTO::setParents)); //should be necessary to avoid ValidationException ?
+		AddressChildDTO addressChildDTO = modelMapper.map(child, AddressChildDTO.class);
+		addressChildDTO.setAdults(child.getAddress().getPersons().values().stream().filter(person -> person.equals(child)&&(person.getAge() > 18)).map(person -> modelMapper.map(person, AddressAdultChildDTO.class)).collect(Collectors.toList()));
+		return addressChildDTO;
 	}
 	
 	@GetMapping("/toto") 

@@ -35,9 +35,7 @@ public class AddressServiceImpl implements AddressService {
 		persons = convertJsonToClass.convertPersons(allAddressS);
 		medrecPService.setPersonsMedicalrecords(persons);
 		
-		List<Person> addressPersonChildren = allAddressS.get(address).getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList());
-		addressPersonChildren.addAll(allAddressS.get(address).getPersons().values().stream().filter(person -> addressPersonChildren.contains(person)&&(person.getAge() > 18)).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
-		return addressPersonChildren ;
+		return allAddressS.get(address).getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList());
 	}
 
 	@Override
