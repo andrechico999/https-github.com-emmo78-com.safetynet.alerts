@@ -11,4 +11,6 @@ public interface JsonNodeService {
 	Map<Integer, Firestation> convertFireStations(Map<String, Address> allAddressS);
 	Map<String, Person> convertPersons(Map<String, Address> allAddressS);
 	Map<String, Medicalrecord> convertMedicalrecords();
+	boolean setPersonsMedicalrecords(Map<String, Person> persons);
+	public boolean setAge(Person person);
 }

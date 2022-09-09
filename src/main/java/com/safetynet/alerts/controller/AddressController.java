@@ -19,8 +19,6 @@ import com.safetynet.alerts.dto.AddressPersonDTO;
 import com.safetynet.alerts.dto.AddressPersonDTOPerson;
 import com.safetynet.alerts.dto.AddressPersonDTOStationNumbers;
 import com.safetynet.alerts.dto.AddressPersonEmailDTO;
-import com.safetynet.alerts.dto.FirestationPersonDTO;
-import com.safetynet.alerts.dto.FirestationPersonDTOPerson;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.WriteToFile;
 import com.safetynet.alerts.service.AddressService;
