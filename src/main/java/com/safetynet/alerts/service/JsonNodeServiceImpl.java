@@ -49,6 +49,7 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 	private Map<String, Person> persons;
 	private Map<String, Medicalrecord> medicalrecords;
 	
+	@Override
 	@PostConstruct
 	public void jsonNodeServiceImpl() {
 		allAddressS = new HashMap<>();
