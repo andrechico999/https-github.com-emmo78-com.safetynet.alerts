@@ -1,1 +1,57 @@
-[ ]
+[
+	{
+		"lastName" : "Boyd",
+		"address" : "1509 Culver St",
+		"age" : "38",
+		"email" : "jaboyd@email.com",
+		"medications" : [
+			"aznol:350mg",
+			"hydrapermazol:100mg"
+		],
+		"allergies" : [
+			"nillacilan"
+		]
+	},
+	{
+		"lastName" : "Boyd",
+		"address" : "1509 Culver St",
+		"age" : "33",
+		"email" : "drk@email.com",
+		"medications" : [
+			"pharmacol:5000mg",
+			"terazine:10mg",
+			"noznazol:250mg"
+		],
+		"allergies" : [ ]
+	},
+	{
+		"lastName" : "Boyd",
+		"address" : "1509 Culver St",
+		"age" : "10",
+		"email" : "tenz@email.com",
+		"medications" : [ ],
+		"allergies" : [
+			"peanut"
+		]
+	},
+	{
+		"lastName" : "Boyd",
+		"address" : "1509 Culver St",
+		"age" : "5",
+		"email" : "jaboyd@email.com",
+		"medications" : [ ],
+		"allergies" : [ ]
+	},
+	{
+		"lastName" : "Boyd",
+		"address" : "1509 Culver St",
+		"age" : "36",
+		"email" : "jaboyd@email.com",
+		"medications" : [
+			"tetracyclaz:650mg"
+		],
+		"allergies" : [
+			"xilliathal"
+		]
+	}
+]

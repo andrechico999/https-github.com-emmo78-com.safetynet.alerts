@@ -1,6 +1,7 @@
 package com.safetynet.alerts.service;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
@@ -23,21 +24,41 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.EntityNames;
 import com.safetynet.alerts.repository.GetFromFile;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 
 @Service
+@Getter
+@Setter
 public class JsonNodeServiceImpl implements JsonNodeService {
 
 	@Autowired
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	ObjectMapper objectMapper;
 	
 	@Autowired
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	GetFromFile getFromFile;
 	
-	@PostConstruct
-	public void doSomething() {
-		
-	}
+	private Map<String, Address> allAddressS;
+	private Map<Integer, Firestation> firestations;
+	private Map<String, Person> persons;
+	private Map<String, Medicalrecord> medicalrecords;
 	
+	@Override
+	@PostConstruct
+	public void jsonNodeServiceImpl() {
+		allAddressS = new HashMap<>();
+		firestations = convertFireStations(allAddressS);
+		persons = convertPersons(allAddressS);
+		medicalrecords = convertMedicalrecords();
+		setPersonsMedicalrecords(persons);
+	}
+		
 	@Override
 	public Map<Integer, Firestation> convertFireStations(Map<String, Address> allAddressS) {
 		Map<Integer, Firestation> firestations = new HashMap<>();
@@ -109,6 +130,21 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 			medicalrecords.put(id, medicalrecord);
 		});
 		return medicalrecords;
+	}
+	
+	@Override
+	public boolean setPersonsMedicalrecords(Map<String, Person> persons) {
+		persons.forEach((id,person) ->{
+			person.setMedicalrecord(medicalrecords.get(id));
+			setAge(person);
+		});
+		return true; //I consider there is always a medical record for a person
+	}
+
+	@Override
+	public boolean setAge(Person person) {
+		person.setAge(Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears());
+		return true; // I consider birth date is always before now
 	}
 
 }
