@@ -51,11 +51,6 @@ public class JsonRepositoryImpl implements JsonRepository {
 	@Setter(AccessLevel.NONE)
 	GetFromFile getFromFile;
 	
-	@Autowired
-	@Getter(AccessLevel.NONE)
-	@Setter(AccessLevel.NONE)
-	StringService stringService;
-	
 	private Map<String, Address> allAddressS;
 	private Map<Integer, Firestation> firestations;
 	private Map<String, Person> persons;
@@ -69,7 +64,6 @@ public class JsonRepositoryImpl implements JsonRepository {
 		medicalrecords = new HashMap<>();
 		
 		persons = convertPersonsDTO(getPersonsFromFile());
-		
 		firestations = convertFireStations();
 		medicalrecords = convertMedicalrecords();
 		setPersonsMedicalrecords(persons);
@@ -92,12 +86,12 @@ public class JsonRepositoryImpl implements JsonRepository {
 			mapper.<String>map(PersonDTO::getAddress, (dest, v) -> dest.getAddress().setAddress(v));
 			mapper.<String>map(PersonDTO::getCity, (dest, v) -> dest.getAddress().setCity(v));
 			mapper.<String>map(PersonDTO::getZip, (dest, v) -> dest.getAddress().setZip(v));
-			mapper.skip(Person::setAddress);
+			/*mapper.skip(Person::setAddress);
 			mapper.skip(Person::setId);
 			mapper.skip(Person::setMedicalrecord);
 			mapper.skip(Person::setAge);
 			mapper.<Person>skip((dest,v) -> dest.getAddress().attachPerson(v));
-			mapper.<Firestation>skip((dest,v) -> dest.getAddress().putFirestation(v));
+			mapper.<Firestation>skip((dest,v) -> dest.getAddress().putFirestation(v));*/
 			});
 		Person person = modelMapper.map(personDTO, Person.class);
 		person.buildId();
@@ -109,14 +103,13 @@ public class JsonRepositoryImpl implements JsonRepository {
 		String stAddress = person.getAddress().getAddress();
 		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(stAddress)); //put pointer yet in Map or null in opt
 		Address address = addressOpt.orElseGet(() -> {//get the pointer yet in Map or put a new one in Map
-			Address newAddress = new Address(stAddress); //needed because modelMapper doen't care of skip
+			Address newAddress = new Address(stAddress); 
 			allAddressS.put(stAddress, newAddress);
 			return newAddress;
 			});
 			address.setCity(person.getAddress().getCity());
 			address.setZip(person.getAddress().getZip());
 			person.setAddress(address); ////this.address.attachPerson(this);
-		
 		return person;
 	}
 	

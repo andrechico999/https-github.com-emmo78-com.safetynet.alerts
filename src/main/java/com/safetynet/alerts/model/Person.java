@@ -21,10 +21,10 @@ public class Person {
 	private Medicalrecord medicalrecord;
 	private int age;
 	
-	@Setter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE) //This lets override the behaviour of @Setter on a class.
 	private Address address;
 	
-	public Person () {
+	public Person () { //needed by modelMapper for personDTO to Person
 		address = new Address(null);
 	}
 	
