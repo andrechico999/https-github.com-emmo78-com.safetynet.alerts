@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.safetynet.alerts.dto.FirestationDTO;
+import com.safetynet.alerts.dto.MedicalrecordDTO;
 import com.safetynet.alerts.dto.PersonDTO;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Medicalrecord;
@@ -19,7 +20,9 @@ public interface JsonRepository {
 	Map<Integer, Firestation> convertFirestations(List<FirestationDTO> firestationssDTO);
 	Firestation convertFirestationDTO(FirestationDTO firestationDTO);
 	Firestation updateFirestations(Firestation firestation);
-	Map<String, Medicalrecord> convertMedicalrecords();
+	List<MedicalrecordDTO> getMedicalrecordsFromFile();
+	Map<String, Medicalrecord> convertMedicalrecords(List<MedicalrecordDTO> medicalrecorsDTO);
+	Medicalrecord convertMedicalRecorDTO(MedicalrecordDTO medicalrecordDTO);
 	boolean setPersonsMedicalrecords(Map<String, Person> persons);
 	public boolean setAge(Person person);
 }

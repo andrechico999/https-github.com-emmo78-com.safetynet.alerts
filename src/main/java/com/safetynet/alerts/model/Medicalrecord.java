@@ -10,9 +10,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Medicalrecord {
-	private LocalDate birthdate;
+    private String id;
+ 	private LocalDate birthdate;
 	private List<String> medications;
 	private List<String> allergies;
+	
+	public Medicalrecord() {
+		medications = new ArrayList<>();
+		allergies = new ArrayList<>();
+	}
 	
 	public Medicalrecord(LocalDate birthdate) {
 		this.birthdate=birthdate;
