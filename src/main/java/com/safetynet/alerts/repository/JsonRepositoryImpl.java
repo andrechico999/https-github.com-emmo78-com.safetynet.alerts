@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.dto.PersonDTO;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
@@ -64,7 +65,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 		medicalrecords = new HashMap<>();
 		
 		persons = convertPersonsDTO(getPersonsFromFile());
-		firestations = convertFireStations();
+		firestations = convertFirestations(getFirestationsFromFile());
 		medicalrecords = convertMedicalrecords();
 		setPersonsMedicalrecords(persons);
 	}
@@ -76,7 +77,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 	
 	@Override
 	public Map<String, Person> convertPersonsDTO(List<PersonDTO> personsDTO) {
-		return personsDTO.stream().map(this::convertPersonDTO).map(this::setAddress).collect(Collectors.toMap(person -> person.getId(), person -> person));
+		return personsDTO.stream().map(this::convertPersonDTO).map(this::setPersonAddress).collect(Collectors.toMap(person -> person.getId(), person -> person));
 
 	}	
 
@@ -99,7 +100,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 	}
 	
 	@Override
-	public Person setAddress(Person person) {
+	public Person setPersonAddress(Person person) {
 		String stAddress = person.getAddress().getAddress();
 		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(stAddress)); //put pointer yet in Map or null in opt
 		Address address = addressOpt.orElseGet(() -> {//get the pointer yet in Map or put a new one in Map
@@ -113,30 +114,46 @@ public class JsonRepositoryImpl implements JsonRepository {
 		return person;
 	}
 	
-
 	@Override
-	public Map<Integer, Firestation> convertFireStations() {
-		JsonNode jsonArrayFirestations = getFromFile.returnJsonEntityFromFile(EntityNames.firestations);
-		((ArrayNode) jsonArrayFirestations).forEach(jsonObjectFirestation -> {
-			int stationNumber = ((ObjectNode) jsonObjectFirestation).get("station").asInt();
-			Optional<Firestation> firestationOpt = Optional.ofNullable(firestations.get(stationNumber));//put pointer yet in Map or null in opt
-			Firestation firestation = firestationOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
-				Firestation newFirestation = new Firestation(stationNumber);
-				firestations.put(stationNumber, newFirestation);
-				return newFirestation;
-				});
-			String stAddress = ((ObjectNode) jsonObjectFirestation).get("address").asText();
-			Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(stAddress));//put pointer yet in Map or null in opt
-			Address address = addressOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
-				Address newAddress = new Address(stAddress);
-				allAddressS.put(stAddress, newAddress);
-				return newAddress;
-				});
-			address.putFirestation(firestation); //firestation.attachAddress(this); //Update objects pointed yet in Map don't need to put theme again
-		});
-		return firestations;
+	public List<FirestationDTO> getFirestationsFromFile() {
+		return objectMapper.convertValue(getFromFile.returnJsonEntityFromFile(EntityNames.firestations), new TypeReference<List<FirestationDTO>>() {});
+	}
+	
+	@Override
+	public Map<Integer, Firestation> convertFirestations(List<FirestationDTO> firestationssDTO) {
+		return firestationssDTO.stream().map(this::convertFirestationDTO).map(this::updateFirestations).distinct().collect(Collectors.toMap(firestation ->firestation.getStationNumber(), firestation -> firestation));
 	}
 
+	@Override
+	public Firestation convertFirestationDTO(FirestationDTO firestationDTO) {
+		modelMapper.typeMap(FirestationDTO.class, Firestation.class).addMappings(mapper -> {
+			mapper.map(FirestationDTO::getStation, Firestation::setStationNumber); //ModelMapper Handling Mismatches
+			//mapper.skip(Firestation::attachAddress);
+			});
+		Firestation firestation = modelMapper.map(firestationDTO, Firestation.class);
+		firestation.attachAddress(new Address(firestationDTO.getAddress())); 
+		return firestation;
+	}
+
+	@Override
+	public Firestation updateFirestations(Firestation firestation) {
+		int stationNumber = firestation.getStationNumber();
+		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestations.get(stationNumber));//put pointer yet in Map or null in opt
+		Firestation existingFirestation = existingFirestationOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
+			firestations.put(stationNumber, firestation);
+			return firestation;
+			});
+		Address fsAddress = firestation.getAddressS().values().stream().collect(Collectors.toList()).get(0);
+		String stAddress = fsAddress.getAddress();
+		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(stAddress));//put pointer yet in Map or null in opt
+		Address address = addressOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
+			allAddressS.put(stAddress, fsAddress);
+			return fsAddress;
+			});
+		address.putFirestation(existingFirestation); //firestation.attachAddress(this); //Update objects pointed yet in Map don't need to put theme again
+		return existingFirestation;
+	}
+	
 	@Override
 	public Map<String, Medicalrecord> convertMedicalrecords() {
 
