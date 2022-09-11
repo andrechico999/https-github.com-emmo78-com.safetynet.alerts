@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.repository.JsonRepository;
+import com.safetynet.alerts.repository.JsonRepositoryImpl;
 
 @Service
 public class AddressServiceImpl implements AddressService {
 
 	@Autowired
-	private JsonNodeService jsonNodeService;
+	private JsonRepository jsonNodeService;
 	
 	@Autowired
 	private StringService dataProcService;
@@ -26,7 +28,7 @@ public class AddressServiceImpl implements AddressService {
 
 	@PostConstruct
 	public void addressServiceImpl () {
-		allAddressS = ((JsonNodeServiceImpl) jsonNodeService).getAllAddressS();
+		allAddressS = ((JsonRepositoryImpl) jsonNodeService).getAllAddressS();
 	}
 	
 	@Override

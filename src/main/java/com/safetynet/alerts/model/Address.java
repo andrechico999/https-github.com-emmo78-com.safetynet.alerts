@@ -24,7 +24,13 @@ public class Address {
 
 	@Setter(AccessLevel.NONE)
 	private Map<String, Person> persons;
-	
+
+	public Address() { //needed by modelMapper for personDTO to Person
+		persons = new HashMap<>();
+		firestations= new HashMap<>();
+	}
+
+
 	public Address(String address) {
 		this.address = address;
 		persons = new HashMap<>();

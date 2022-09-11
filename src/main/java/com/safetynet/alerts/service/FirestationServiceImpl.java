@@ -11,18 +11,20 @@ import org.springframework.stereotype.Service;
 
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.repository.JsonRepository;
+import com.safetynet.alerts.repository.JsonRepositoryImpl;
 
 @Service
 public class FirestationServiceImpl implements FirestationService {
 
 	@Autowired
-	private JsonNodeService jsonNodeService;
+	private JsonRepository jsonNodeService;
 
 	private Map<Integer, Firestation> firestations;
 	
 	@PostConstruct
 	public void firestationServiceImpl() {
-		firestations = ((JsonNodeServiceImpl) jsonNodeService).getFirestations();
+		firestations = ((JsonRepositoryImpl) jsonNodeService).getFirestations();
 	}
 		
 	@Override

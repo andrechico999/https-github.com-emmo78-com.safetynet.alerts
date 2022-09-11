@@ -24,14 +24,14 @@ public class Person {
 	@Setter(AccessLevel.NONE)
 	private Address address;
 	
-	public Person (String firstName, String lastName, String phone, String email) {
-		this.firstName=firstName;
-		this.lastName=lastName;
-		this.phone=phone;
-		this.email=email;
-		id = this.firstName+" "+this.lastName;		
+	public Person () {
+		address = new Address(null);
 	}
-
+	
+	public void buildId() {
+		id = firstName+" "+lastName;
+	}
+	
 	public void setAddress(Address address) {
 		this.address = address;
 		this.address.attachPerson(this);

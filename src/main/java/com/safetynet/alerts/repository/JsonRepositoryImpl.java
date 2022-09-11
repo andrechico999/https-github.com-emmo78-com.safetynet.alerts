@@ -1,4 +1,4 @@
-package com.safetynet.alerts.service;
+package com.safetynet.alerts.repository;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,12 +19,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.safetynet.alerts.dto.PersonDTO;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Medicalrecord;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.EntityNames;
-import com.safetynet.alerts.repository.GetFromFile;
+import com.safetynet.alerts.service.StringService;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -32,17 +34,27 @@ import lombok.Setter;
 @Service
 @Getter
 @Setter
-public class JsonNodeServiceImpl implements JsonNodeService {
+public class JsonRepositoryImpl implements JsonRepository {
 
 	@Autowired
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	ObjectMapper objectMapper;
 	
+    @Autowired
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+    private ModelMapper modelMapper;
+	
 	@Autowired
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	GetFromFile getFromFile;
+	
+	@Autowired
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
+	StringService stringService;
 	
 	private Map<String, Address> allAddressS;
 	private Map<Integer, Firestation> firestations;
@@ -53,17 +65,65 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 	@PostConstruct
 	public void jsonNodeServiceImpl() {
 		allAddressS = new HashMap<>();
-		firestations = convertFireStations(allAddressS);
-		persons = convertPersons(allAddressS);
+		firestations = new HashMap<>();
+		medicalrecords = new HashMap<>();
+		
+		persons = convertPersonsDTO(getPersonsFromFile());
+		
+		firestations = convertFireStations();
 		medicalrecords = convertMedicalrecords();
 		setPersonsMedicalrecords(persons);
 	}
 		
 	@Override
-	public Map<Integer, Firestation> convertFireStations(Map<String, Address> allAddressS) {
-		Map<Integer, Firestation> firestations = new HashMap<>();
-		JsonNode jsonArrayFirestations = getFromFile.returnJsonEntityFromFile(EntityNames.firestations);
+	public List<PersonDTO> getPersonsFromFile() {
+		return objectMapper.convertValue(getFromFile.returnJsonEntityFromFile(EntityNames.persons), new TypeReference<List<PersonDTO>>() {});
+	}
+	
+	@Override
+	public Map<String, Person> convertPersonsDTO(List<PersonDTO> personsDTO) {
+		return personsDTO.stream().map(this::convertPersonDTO).map(this::setAddress).collect(Collectors.toMap(person -> person.getId(), person -> person));
+
+	}	
+
+	@Override
+	public Person convertPersonDTO(PersonDTO personDTO) {
+		modelMapper.typeMap(PersonDTO.class, Person.class).addMappings(mapper -> {
+			mapper.<String>map(PersonDTO::getAddress, (dest, v) -> dest.getAddress().setAddress(v));
+			mapper.<String>map(PersonDTO::getCity, (dest, v) -> dest.getAddress().setCity(v));
+			mapper.<String>map(PersonDTO::getZip, (dest, v) -> dest.getAddress().setZip(v));
+			mapper.skip(Person::setAddress);
+			mapper.skip(Person::setId);
+			mapper.skip(Person::setMedicalrecord);
+			mapper.skip(Person::setAge);
+			mapper.<Person>skip((dest,v) -> dest.getAddress().attachPerson(v));
+			mapper.<Firestation>skip((dest,v) -> dest.getAddress().putFirestation(v));
+			});
+		Person person = modelMapper.map(personDTO, Person.class);
+		person.buildId();
+		return person;
+	}
+	
+	@Override
+	public Person setAddress(Person person) {
+		String stAddress = person.getAddress().getAddress();
+		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(stAddress)); //put pointer yet in Map or null in opt
+		Address address = addressOpt.orElseGet(() -> {//get the pointer yet in Map or put a new one in Map
+			Address newAddress = new Address(stAddress); //needed because modelMapper doen't care of skip
+			allAddressS.put(stAddress, newAddress);
+			return newAddress;
+			});
+			address.setCity(person.getAddress().getCity());
+			address.setZip(person.getAddress().getZip());
+			person.setAddress(address); ////this.address.attachPerson(this);
 		
+		return person;
+	}
+	
+
+	@Override
+	public Map<Integer, Firestation> convertFireStations() {
+		JsonNode jsonArrayFirestations = getFromFile.returnJsonEntityFromFile(EntityNames.firestations);
 		((ArrayNode) jsonArrayFirestations).forEach(jsonObjectFirestation -> {
 			int stationNumber = ((ObjectNode) jsonObjectFirestation).get("station").asInt();
 			Optional<Firestation> firestationOpt = Optional.ofNullable(firestations.get(stationNumber));//put pointer yet in Map or null in opt
@@ -85,38 +145,8 @@ public class JsonNodeServiceImpl implements JsonNodeService {
 	}
 
 	@Override
-	public Map<String, Person> convertPersons(Map<String, Address> allAddressS) {
-		Map<String, Person> persons = new HashMap<>();
-		JsonNode jsonArrayPersons = getFromFile.returnJsonEntityFromFile(EntityNames.persons);
-		
-		((ArrayNode) jsonArrayPersons).forEach(jsonObjectPerson -> {
-			String firstName = ((ObjectNode) jsonObjectPerson).get("firstName").asText();
-			String lastName = ((ObjectNode) jsonObjectPerson).get("lastName").asText();
-			String phone = ((ObjectNode) jsonObjectPerson).get("phone").asText();
-			String email = ((ObjectNode) jsonObjectPerson).get("email").asText();
-			Person person = new Person(firstName, lastName, phone, email); //initialize id
-			String stAddress = ((ObjectNode) jsonObjectPerson).get("address").asText();
-			Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(stAddress)); //put pointer yet in Map or null in opt
-			Address address = addressOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
-				Address newAddress = new Address(stAddress);
-				allAddressS.put(stAddress, newAddress);
-				return newAddress;
-				});
-			if (address.getCity() == null) { 
-				address.setCity(((ObjectNode) jsonObjectPerson).get("city").asText());
-			} //Update objects pointed yet in Map don't need to put theme again
-			if (address.getZip() == null) {
-				address.setZip(((ObjectNode) jsonObjectPerson).get("zip").asText());
-			}
-			person.setAddress(address);//this.address.attachPerson(this);
-			persons.put(person.getId(), person);
-		});
-		return persons;
-	}
-
-	@Override
 	public Map<String, Medicalrecord> convertMedicalrecords() {
-		Map<String, Medicalrecord> medicalrecords = new HashMap<>();
+
 		JsonNode jsonArrayMedicalrecords = getFromFile.returnJsonEntityFromFile(EntityNames.medicalrecords);
 		
 		((ArrayNode) jsonArrayMedicalrecords).forEach(jsonObjectMedicalrecord -> {
