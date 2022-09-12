@@ -40,6 +40,10 @@ public class Address {
 	public void attachPerson(Person person) {
 		persons.put(person.getId(), person);
 	}
+	
+	public void detachPerson(Person person) {
+		persons.remove(person.getId());
+	}
 
 	public void putFirestation(Firestation firestation) {
 		firestation.attachAddress(this);

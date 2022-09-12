@@ -14,7 +14,7 @@ public interface JsonRepository {
 	void jsonNodeServiceImpl(); //@PostConstruct
 	List<PersonDTO> getPersonsFromFile();
 	Map<String, Person> convertPersonsDTO(List<PersonDTO> personsDTO);
-	Person convertPersonDTO(PersonDTO personDTO);
+	Person convertPersonFromDTO(PersonDTO personDTO);
 	Person setPersonAddress(Person person);
 	List<FirestationDTO> getFirestationsFromFile();
 	Map<Integer, Firestation> convertFirestations(List<FirestationDTO> firestationssDTO);
@@ -25,4 +25,5 @@ public interface JsonRepository {
 	Medicalrecord convertMedicalRecorDTO(MedicalrecordDTO medicalrecordDTO);
 	boolean setPersonsMedicalrecords(Map<String, Person> persons);
 	public boolean setAge(Person person);
+	
 }

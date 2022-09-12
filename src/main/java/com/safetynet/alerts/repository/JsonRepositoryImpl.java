@@ -54,6 +54,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 	
 	private Map<String, Address> allAddressS;
 	private Map<Integer, Firestation> firestations;
+	private Map<Integer, Firestation> firestationsTemp;
 	private Map<String, Person> persons;
 	private Map<String, Medicalrecord> medicalrecords;
 	
@@ -61,8 +62,6 @@ public class JsonRepositoryImpl implements JsonRepository {
 	@PostConstruct
 	public void jsonNodeServiceImpl() {
 		allAddressS = new HashMap<>();
-		firestations = new HashMap<>();
-		
 		persons = convertPersonsDTO(getPersonsFromFile());
 		firestations = convertFirestations(getFirestationsFromFile());
 		medicalrecords = convertMedicalrecords(getMedicalrecordsFromFile());
@@ -76,12 +75,12 @@ public class JsonRepositoryImpl implements JsonRepository {
 	
 	@Override
 	public Map<String, Person> convertPersonsDTO(List<PersonDTO> personsDTO) {
-		return personsDTO.stream().map(this::convertPersonDTO).map(this::setPersonAddress).collect(Collectors.toMap(person -> person.getId(), person -> person));
+		return personsDTO.stream().map(this::convertPersonFromDTO).map(this::setPersonAddress).collect(Collectors.toMap(person -> person.getId(), person -> person));
 
 	}	
-
+	
 	@Override
-	public Person convertPersonDTO(PersonDTO personDTO) {
+	public Person convertPersonFromDTO(PersonDTO personDTO) {
 		modelMapper.typeMap(PersonDTO.class, Person.class).addMappings(mapper -> {
 			mapper.<String>map(PersonDTO::getAddress, (dest, v) -> dest.getAddress().setAddress(v));
 			mapper.<String>map(PersonDTO::getCity, (dest, v) -> dest.getAddress().setCity(v));
@@ -114,6 +113,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 	
 	@Override
 	public Map<Integer, Firestation> convertFirestations(List<FirestationDTO> firestationsDTO) {
+		firestationsTemp = new HashMap<>();
 		return firestationsDTO.stream().map(this::convertFirestationDTO).map(this::updateFirestations).distinct().collect(Collectors.toMap(firestation ->firestation.getStationNumber(), firestation -> firestation));
 	}
 
@@ -128,9 +128,9 @@ public class JsonRepositoryImpl implements JsonRepository {
 	@Override
 	public Firestation updateFirestations(Firestation firestation) {
 		int stationNumber = firestation.getStationNumber();
-		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestations.get(stationNumber));//put pointer yet in Map or null in opt
+		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestationsTemp.get(stationNumber));//put pointer yet in Map or null in opt
 		Firestation existingFirestation = existingFirestationOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
-			firestations.put(stationNumber, firestation);
+			firestationsTemp.put(stationNumber, firestation);
 			return firestation;
 			});
 		Address fsAddress = firestation.getAddressS().values().stream().collect(Collectors.toList()).get(0);
