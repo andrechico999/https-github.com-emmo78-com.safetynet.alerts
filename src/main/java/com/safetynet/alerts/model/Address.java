@@ -30,7 +30,6 @@ public class Address {
 		firestations= new HashMap<>();
 	}
 
-
 	public Address(String address) {
 		this.address = address;
 		persons = new HashMap<>();
@@ -49,4 +48,11 @@ public class Address {
 		firestation.attachAddress(this);
 		firestations.put(firestation.getStationNumber(), firestation);
 	}
+
+	public void removeFirestation(Firestation firestation) {
+		firestations.remove(firestation.getStationNumber());
+	}
+	
+	
+	
 }

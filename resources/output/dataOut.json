@@ -1,42 +1,6 @@
 [
 	{
-		"firstName" : "Jamie",
-		"lastName" : "Peters",
-		"address" : "908 73rd St",
-		"phone" : "841-874-7462"
-	},
-	{
-		"firstName" : "Reginold",
-		"lastName" : "Walker",
-		"address" : "908 73rd St",
-		"phone" : "841-874-8547"
-	},
-	{
-		"firstName" : "Shawna",
-		"lastName" : "Stelzer",
-		"address" : "947 E. Rose Dr",
-		"phone" : "841-874-7784"
-	},
-	{
-		"firstName" : "Kendrik",
-		"lastName" : "Stelzer",
-		"address" : "947 E. Rose Dr",
-		"phone" : "841-874-7784"
-	},
-	{
-		"firstName" : "Brian",
-		"lastName" : "Stelzer",
-		"address" : "947 E. Rose Dr",
-		"phone" : "841-874-7784"
-	},
-	{
-		"firstName" : "Peter",
-		"lastName" : "Duncan",
-		"address" : "644 Gershwin Cir",
-		"phone" : "841-874-6512"
-	},
-	{
-		"adults" : 5,
-		"children" : 1
+		"adults" : 0,
+		"children" : 0
 	}
 ]

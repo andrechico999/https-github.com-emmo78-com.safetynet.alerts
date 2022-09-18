@@ -1,6 +1,5 @@
 package com.safetynet.alerts.service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,17 +7,15 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.dto.PersonAddressNameDTO;
 import com.safetynet.alerts.dto.PersonDTO;
+import com.safetynet.alerts.dto.service.PersonDTOService;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
-import com.safetynet.alerts.repository.WriteToFile;
 
 @Service
 public class PersonServiceImpl implements PersonService {
@@ -30,13 +27,7 @@ public class PersonServiceImpl implements PersonService {
 	private StringService stringService;
 	
     @Autowired
-	private ModelMapper modelMapper;
-    
-    @Autowired
-    private ObjectMapper objectMapper;
-    
-	@Autowired
-	private WriteToFile fileWriter;
+	private PersonDTOService personDTOService;
 	
 	private Map<String, Person> persons;
 
@@ -52,39 +43,27 @@ public class PersonServiceImpl implements PersonService {
 		firstName = stringService.upperCasingFirstLetter(firstName);
 		lastName = stringService.upperCasingFirstLetter(lastName);
 		final String id =firstName +" "+lastName; //Local variable lastName defined in an enclosing scope must be final or effectively final
-		return personsAddressNameToDTO(persons.get(id).getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList()));
+		return personDTOService.personsAddressNameToDTO(persons.get(id).getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList()));
 	}
 	
 	@Override
-	public List<PersonAddressNameDTO> personsAddressNameToDTO(List<Person> personsAddressName) {
-		modelMapper.typeMap(Person.class, PersonAddressNameDTO.class).addMappings(mapper -> {
-			mapper.map(src -> src.getAddress().getAddress(), PersonAddressNameDTO::setAddress);
-			//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
-			mapper.map(src -> src.getMedicalrecord().getMedications(), PersonAddressNameDTO::setMedications);
-			mapper.map(src -> src.getMedicalrecord().getAllergies(), PersonAddressNameDTO::setAllergies);
-		});	
-		List<PersonAddressNameDTO> personsAddressNameDTO = personsAddressName.stream().map(person -> modelMapper.map(person, PersonAddressNameDTO.class)).collect(Collectors.toList());
-		fileWriter.writeToFile(objectMapper.valueToTree(personsAddressNameDTO));
-		return personsAddressNameDTO;
-	}
-
-
-	@Override
 	public PersonDTO createPerson(PersonDTO personDTO) {
-		Person person = jsonRepository.convertPersonFromDTO(personDTO);
+		Person person = personDTOService.convertPersonFromDTO(personDTO);
 		if (!persons.containsKey(person.getId())) {
 			person = jsonRepository.setPersonAddress(person);
 			persons.put(person.getId(), person);
+		} else {
+			//TODO person already exist}
 		}
-		return convertPersonToDTO (person);
+		return personDTOService.convertPersonToDTO (person);
 	}
 	
 	@Override
 	public PersonDTO updatePerson(PersonDTO personDTO) {
-		Person person = jsonRepository.convertPersonFromDTO(personDTO);
+		Person person = personDTOService.convertPersonFromDTO(personDTO);
 		Optional<Person> personToUpdateOpt = Optional.ofNullable(persons.get(person.getId()));
-		personToUpdateOpt.ifPresentOrElse(
-				personToUpdate -> {
+		try {
+			Person personToUpdate = personToUpdateOpt.orElseThrow(() -> new Exception("No One To Update"));
 			Optional.ofNullable(person.getAddress().getAddress()).ifPresent(address -> {
 				personToUpdate.getAddress().detachPerson(personToUpdate);
 				personToUpdate.getAddress().setAddress(address);				
@@ -101,35 +80,24 @@ public class PersonServiceImpl implements PersonService {
 				personToUpdate.setPhone(phone));   
 			Optional.ofNullable(person.getEmail()).ifPresent(email -> 
 				personToUpdate.setEmail(email));   
-				},
-				() -> {
-					//ToDo if no one to Update
-				});
-		return convertPersonToDTO(jsonRepository.setPersonAddress(personToUpdateOpt.get()));
+		} catch (Exception e) {
+			// TODO No one to Update
+			e.printStackTrace();
+		}
+		return personDTOService.convertPersonToDTO(jsonRepository.setPersonAddress(personToUpdateOpt.get()));
 	}
 	
 	@Override
 	public PersonDTO deletePerson(PersonDTO personDTO) {
-		Person person = jsonRepository.convertPersonFromDTO(personDTO);
+		Person person = personDTOService.convertPersonFromDTO(personDTO);
 		Optional<Person> personToRemoveOpt = Optional.ofNullable(persons.remove(person.getId()));
-		personToRemoveOpt.ifPresentOrElse(
-				personToRemove -> {
-					personToRemove.getAddress().detachPerson(personToRemove);
-				},
-				() -> {
-					// ToDo if non one to remove
-				});
-		return convertPersonToDTO(jsonRepository.setPersonAddress(personToRemoveOpt.get()));
+		try {
+			Person personToRemove = personToRemoveOpt.orElseThrow(() -> new Exception("No One To remove"));
+			personToRemove.getAddress().detachPerson(personToRemove);
+		} catch (Exception e) {
+			// TODO No One to remove
+			e.printStackTrace();
+		}
+		return personDTOService.convertPersonToDTO(personToRemoveOpt.get());
 	}	
-	
-	@Override
-	public PersonDTO convertPersonToDTO (Person person) {
-		modelMapper.typeMap(Person.class, PersonDTO.class).addMappings(mapper -> {
-			mapper.<String>map(src -> src.getAddress().getAddress(), PersonDTO::setAddress);
-			mapper.<String>map(src -> src.getAddress().getCity(), PersonDTO::setCity);
-			mapper.<String>map(src -> src.getAddress().getZip(), PersonDTO::setZip);
-		});
-		return modelMapper.map(person, PersonDTO.class);
-	}
-
 }

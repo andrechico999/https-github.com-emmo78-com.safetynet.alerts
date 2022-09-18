@@ -25,7 +25,8 @@ public class Person {
 	private Address address;
 	
 	public Person () { //needed by modelMapper for personDTO to Person
-		address = new Address(null);
+		address = new Address();
+		medicalrecord = new Medicalrecord();
 	}
 	
 	public void buildId() {

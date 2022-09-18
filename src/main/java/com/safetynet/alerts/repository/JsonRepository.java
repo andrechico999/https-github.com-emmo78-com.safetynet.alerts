@@ -14,12 +14,10 @@ public interface JsonRepository {
 	void jsonNodeServiceImpl(); //@PostConstruct
 	List<PersonDTO> getPersonsFromFile();
 	Map<String, Person> convertPersonsDTO(List<PersonDTO> personsDTO);
-	Person convertPersonFromDTO(PersonDTO personDTO);
 	Person setPersonAddress(Person person);
 	List<FirestationDTO> getFirestationsFromFile();
 	Map<Integer, Firestation> convertFirestations(List<FirestationDTO> firestationssDTO);
-	Firestation convertFirestationDTO(FirestationDTO firestationDTO);
-	Firestation updateFirestations(Firestation firestation);
+	Firestation updateFirestations(Firestation firestation, Map<Integer, Firestation> localFirestations);
 	List<MedicalrecordDTO> getMedicalrecordsFromFile();
 	Map<String, Medicalrecord> convertMedicalrecords(List<MedicalrecordDTO> medicalrecorsDTO);
 	Medicalrecord convertMedicalRecorDTO(MedicalrecordDTO medicalrecordDTO);
