@@ -23,6 +23,7 @@ import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.dto.MedicalrecordDTO;
 import com.safetynet.alerts.dto.PersonDTO;
 import com.safetynet.alerts.dto.service.FirestationDTOService;
+import com.safetynet.alerts.dto.service.MedicalrecordDTOService;
 import com.safetynet.alerts.dto.service.PersonDTOService;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
@@ -52,6 +53,10 @@ public class JsonRepositoryImpl implements JsonRepository {
 	@Autowired
 	@Getter(AccessLevel.NONE)
 	FirestationDTOService firestationDTOService;
+	
+	@Autowired
+	@Getter(AccessLevel.NONE)
+	MedicalrecordDTOService medicalrecordDTOService;
 	
 	@Autowired
 	@Getter(AccessLevel.NONE)
@@ -135,24 +140,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 	
 	@Override
 	public Map<String, Medicalrecord> convertMedicalrecords(List<MedicalrecordDTO> medicalrecorsDTO) {
-		return medicalrecorsDTO.stream().map(this::convertMedicalRecorDTO).collect(Collectors.toMap(medicalrecord -> medicalrecord.getId(), medicalrecord -> medicalrecord));
-	}
-	
-	@Override
-	public Medicalrecord convertMedicalRecorDTO(MedicalrecordDTO medicalrecordDTO) {
-		
-		Converter<String, LocalDate> stringToLocalDate = new AbstractConverter<String, LocalDate>() {
-			@Override
-			protected LocalDate convert(String stringDate) {
-				return LocalDate.parse(stringDate, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-			}	
-		};
-		
-		modelMapper.typeMap(MedicalrecordDTO.class, Medicalrecord.class).addMappings(mapper -> 
-			mapper.using(stringToLocalDate).map(MedicalrecordDTO::getBirthdate, Medicalrecord::setBirthdate));
-		Medicalrecord medicalrecord = modelMapper.map(medicalrecordDTO, Medicalrecord.class);
-		medicalrecord.setId(medicalrecordDTO.getFirstName()+" "+medicalrecordDTO.getLastName()); 
-		return medicalrecord;
+		return medicalrecorsDTO.stream().map(medicalrecordDTOService::convertMedicalrecordFromDTO).collect(Collectors.toMap(medicalrecord -> medicalrecord.getId(), medicalrecord -> medicalrecord));
 	}
 	
 	@Override

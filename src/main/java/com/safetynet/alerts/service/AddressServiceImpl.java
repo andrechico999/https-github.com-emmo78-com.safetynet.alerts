@@ -9,9 +9,13 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.safetynet.alerts.dto.AddressAdultChildDTO;
+import com.safetynet.alerts.dto.AddressPersonDTO;
+import com.safetynet.alerts.dto.AddressPersonEmailDTO;
+import com.safetynet.alerts.dto.service.AddressDTOService;
+import com.safetynet.alerts.dto.service.AddressDTOServiceImpl;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
-import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 
@@ -20,6 +24,9 @@ public class AddressServiceImpl implements AddressService {
 
 	@Autowired
 	private JsonRepository jsonNodeService;
+	
+    @Autowired
+	private AddressDTOService addressDTOService;
 	
 	@Autowired
 	private StringService dataProcService;
@@ -32,18 +39,19 @@ public class AddressServiceImpl implements AddressService {
 	}
 	
 	@Override
-	public List<Person> findChildrenByAddress(String address) {
-		return allAddressS.get(address).getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList());
+	public List<AddressAdultChildDTO> findChildrenByAddress(String address) {
+		return addressDTOService.addressChildrenToDTO(allAddressS.get(address).getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
 	}
 
 	@Override
-	public List<Person> findPersonsByAddress(String address) {
-		return allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList());
+	public List<AddressPersonDTO> findPersonsByAddress(String address) {
+		((AddressDTOServiceImpl) addressDTOService).setStationNumbers(findFirestationssByAddress(address).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList()));
+		return addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
 	}
 
 	@Override
-	public List<Person> findemailPersonsByCity(String city) {
-		return allAddressS.values().stream().filter(address -> address.getCity().equals(dataProcService.upperCasingFirstLetter(city))).flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList());
+	public List<AddressPersonEmailDTO> findemailPersonsByCity(String city) {
+		return addressDTOService.addressPersonEmailToDTO(allAddressS.values().stream().filter(address -> address.getCity().equals(dataProcService.upperCasingFirstLetter(city))).flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList()));
 	}
 
 	@Override

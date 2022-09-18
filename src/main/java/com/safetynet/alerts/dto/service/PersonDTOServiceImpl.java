@@ -23,7 +23,7 @@ public class PersonDTOServiceImpl implements PersonDTOService {
     
 	@Autowired
 	private WriteToFile fileWriter;
-
+	
 	@Override
 	public Person convertPersonFromDTO(PersonDTO personDTO) {
 		modelMapper.typeMap(PersonDTO.class, Person.class).addMappings(mapper -> {
@@ -58,5 +58,4 @@ public class PersonDTOServiceImpl implements PersonDTOService {
 		fileWriter.writeToFile(objectMapper.valueToTree(personsAddressNameDTO));
 		return personsAddressNameDTO;
 	}
-
 }
