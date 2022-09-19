@@ -49,9 +49,11 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public PersonDTO createPerson(PersonDTO personDTO) {
 		Person person = personDTOService.convertPersonFromDTO(personDTO);
-		if (!persons.containsKey(person.getId())) {
+		String id = person.getId();
+		if (!persons.containsKey(id)) {
 			person = jsonRepository.setPersonAddress(person);
-			persons.put(person.getId(), person);
+			jsonRepository.setPersonMedicalrecord(person, id);
+			persons.put(id, person);
 		} else {
 			//TODO person already exist}
 		}
@@ -82,7 +84,6 @@ public class PersonServiceImpl implements PersonService {
 				personToUpdate.setEmail(email));   
 		} catch (Exception e) {
 			// TODO No one to Update
-			e.printStackTrace();
 		}
 		return personDTOService.convertPersonToDTO(jsonRepository.setPersonAddress(personToUpdateOpt.get()));
 	}

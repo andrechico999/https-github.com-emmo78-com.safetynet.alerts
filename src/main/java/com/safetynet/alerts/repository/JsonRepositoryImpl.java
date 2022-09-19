@@ -2,7 +2,6 @@ package com.safetynet.alerts.repository;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.modelmapper.AbstractConverter;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,18 +141,37 @@ public class JsonRepositoryImpl implements JsonRepository {
 	}
 	
 	@Override
-	public boolean setPersonsMedicalrecords(Map<String, Person> persons) {
-		persons.forEach((id,person) ->{
-			person.setMedicalrecord(medicalrecords.get(id));
-			setAge(person);
-		});
-		return true; //I consider there is always a medical record for a person
+	public void setPersonsMedicalrecords(Map<String, Person> persons) {
+		persons.forEach((id,person) -> setPersonMedicalrecord(person, id));
+	}
+	
+	@Override
+	public void setPersonMedicalrecord(Person person, String id) {
+		Medicalrecord medicalrecord = medicalrecords.get(id);
+		if (medicalrecord != null) {
+			person.setMedicalrecord(medicalrecord);
+			setAge(person);				
+		} else {
+			person.setMedicalrecord(new Medicalrecord());
+			person.setAge(0);
+			// TODO no medical record for the person id
+		}
 	}
 
 	@Override
 	public boolean setAge(Person person) {
 		person.setAge(Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears());
 		return true; // I consider birth date is always before now
+	}
+	
+	@Override
+	public void setMedicalrecordToPerson(String id) {
+		Person person = persons.get(id);
+		if (person != null) {
+			setPersonMedicalrecord(person, id);
+		} else {
+			// TODO No one for the new medical records
+		}
 	}
 
 }

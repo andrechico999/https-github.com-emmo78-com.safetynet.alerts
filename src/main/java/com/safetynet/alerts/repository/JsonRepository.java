@@ -20,7 +20,9 @@ public interface JsonRepository {
 	Firestation updateFirestations(Firestation firestation, Map<Integer, Firestation> localFirestations);
 	List<MedicalrecordDTO> getMedicalrecordsFromFile();
 	Map<String, Medicalrecord> convertMedicalrecords(List<MedicalrecordDTO> medicalrecorsDTO);
-	boolean setPersonsMedicalrecords(Map<String, Person> persons);
+	void setPersonsMedicalrecords(Map<String, Person> persons);
+	void setPersonMedicalrecord(Person person, String id);
 	public boolean setAge(Person person);
+	void setMedicalrecordToPerson(String id);
 	
 }

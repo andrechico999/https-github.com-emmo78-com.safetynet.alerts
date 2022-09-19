@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.dto.MedicalrecordDTO;
 import com.safetynet.alerts.model.Medicalrecord;
 
@@ -39,8 +38,18 @@ public class MedicalrecordDTOServiceImpl implements MedicalrecordDTOService {
 
 	@Override
 	public MedicalrecordDTO convertMedicalrecordToDTO(Medicalrecord medicalrecord) {
-		// TODO Auto-generated method stub
-		return null;
+		Converter<LocalDate, String> localDateToString = new AbstractConverter<LocalDate, String>() {
+			@Override
+			protected String convert(LocalDate date) {
+				return date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+			}	
+		};
+		modelMapper.typeMap(Medicalrecord.class, MedicalrecordDTO.class).addMappings(mapper -> 
+			mapper.using(localDateToString).map(Medicalrecord::getBirthdate, MedicalrecordDTO::setBirthdate));
+		MedicalrecordDTO medicalrecordDTO = modelMapper.map(medicalrecord, MedicalrecordDTO.class);
+		String[] names = medicalrecord.getId().split(" ");
+		medicalrecordDTO.setFirstName(names[0]);
+		medicalrecordDTO.setLastName(names[1]);
+		return medicalrecordDTO;
 	}
-
 }
