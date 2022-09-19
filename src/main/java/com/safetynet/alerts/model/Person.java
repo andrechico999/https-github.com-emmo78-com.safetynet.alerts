@@ -21,17 +21,18 @@ public class Person {
 	private Medicalrecord medicalrecord;
 	private int age;
 	
-	@Setter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE) //This lets override the behaviour of @Setter on a class.
 	private Address address;
 	
-	public Person (String firstName, String lastName, String phone, String email) {
-		this.firstName=firstName;
-		this.lastName=lastName;
-		this.phone=phone;
-		this.email=email;
-		id = this.firstName+" "+this.lastName;		
+	public Person () { //needed by modelMapper for personDTO to Person
+		address = new Address();
+		medicalrecord = new Medicalrecord();
 	}
-
+	
+	public void buildId() {
+		id = firstName+" "+lastName;
+	}
+	
 	public void setAddress(Address address) {
 		this.address = address;
 		this.address.attachPerson(this);

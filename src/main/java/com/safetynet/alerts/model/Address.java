@@ -24,7 +24,12 @@ public class Address {
 
 	@Setter(AccessLevel.NONE)
 	private Map<String, Person> persons;
-	
+
+	public Address() { //needed by modelMapper for personDTO to Person
+		persons = new HashMap<>();
+		firestations= new HashMap<>();
+	}
+
 	public Address(String address) {
 		this.address = address;
 		persons = new HashMap<>();
@@ -34,9 +39,20 @@ public class Address {
 	public void attachPerson(Person person) {
 		persons.put(person.getId(), person);
 	}
+	
+	public void detachPerson(Person person) {
+		persons.remove(person.getId());
+	}
 
 	public void putFirestation(Firestation firestation) {
 		firestation.attachAddress(this);
 		firestations.put(firestation.getStationNumber(), firestation);
 	}
+
+	public void removeFirestation(Firestation firestation) {
+		firestations.remove(firestation.getStationNumber());
+	}
+	
+	
+	
 }

@@ -2,41 +2,30 @@ package com.safetynet.alerts.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTO;
-import com.safetynet.alerts.dto.FirestationPersonDTOPerson;
-import com.safetynet.alerts.dto.FirestationPersonDTOStats;
 import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
 import com.safetynet.alerts.dto.FirestationsPersonDTO;
-import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.WriteToFile;
 import com.safetynet.alerts.service.FirestationService;
 
 @RestController
 public class FirestationController {
 	
-    @Autowired
-    private ModelMapper modelMapper;
-    
-    @Autowired
-    private ObjectMapper objectMapper;
-    
-	@Autowired
-	private WriteToFile fileWriter;
-	
 	@Autowired
 	private FirestationService firestationService;
 	
 	@GetMapping("/firestation")
-	public List<FirestationPersonDTO> firestationstationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
+	public List<FirestationPersonDTO> firestationStationNumber(@RequestParam(name = "stationNumber") Optional<String> stationNumber) {
 		/*
 		 * Cette url doit retourner une liste des personnes (firstName, lastName, address, phone)
 		 * couvertes par la caserne de pompiers correspondante
@@ -44,13 +33,7 @@ public class FirestationController {
 		 */ 
 		
 		if (stationNumber.isPresent()){
-			FirestationPersonDTOPerson.setNumAdult(0);
-			FirestationPersonDTOPerson.setNumChild(0);
-			modelMapper.typeMap(Person.class, FirestationPersonDTOPerson.class).addMapping(src -> src.getAddress().getAddress(), FirestationPersonDTOPerson::setAddress);
-			List<FirestationPersonDTO> firestationPersons = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(this::convertFirestationPersonToDTO).collect(Collectors.toList());  
-			firestationPersons.add(new FirestationPersonDTOStats(FirestationPersonDTOPerson.getNumAdult(),FirestationPersonDTOPerson.getNumChild()));
-			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersons));
-			return firestationPersons;
+			return firestationService.findPersonsByFirestation(stationNumber.get());
 		}
 		return null;
 	}
@@ -60,9 +43,7 @@ public class FirestationController {
 		/*Cette url doit retourner une liste des numéros de téléphone des résidents desservis par la caserne de pompiers
 		 */
 		if (stationNumber.isPresent()) {
-			List<FirestationPersonPhoneDTO> firestationPersonPhones = firestationService.findPersonsByFirestation(Integer.parseInt(stationNumber.get())).stream().map(person -> modelMapper.map(person, FirestationPersonPhoneDTO.class)).distinct().collect(Collectors.toList());
-			fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonPhones));
-			return firestationPersonPhones;
+			return firestationService.findPersonPhonesByFirestation(stationNumber.get());
 		}
 		return null;
 	}
@@ -75,22 +56,33 @@ public class FirestationController {
 		 * par les casernes. Cette liste doit regrouper les personnes par adresse.
 		 */		
 		if (stationNumbers.isPresent()) {
-			modelMapper.typeMap(Person.class, FirestationsPersonDTO.class).addMappings(mapper -> {
-				mapper.map(src -> src.getAddress().getAddress(), FirestationsPersonDTO::setAddress);
-				//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
-				mapper.map(src -> src.getMedicalrecord().getMedications(), FirestationsPersonDTO::setMedications);
-				mapper.map(src -> src.getMedicalrecord().getAllergies(), FirestationsPersonDTO::setAllergies);
-			});	
-			List<FirestationsPersonDTO> firestationsAddressPersons = firestationService.findAddressPersonsByFiresations(stationNumbers.get().stream().map(stationNumber -> Integer.parseInt(stationNumber)).collect(Collectors.toList())).stream().map(person -> modelMapper.map(person, FirestationsPersonDTO.class)).collect(Collectors.toList());
-			fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersons));
-			return firestationsAddressPersons;
+			return firestationService.findAddressPersonsByFiresations(stationNumbers.get());
 		}
 		return null;
 	}
 	
-	private FirestationPersonDTO convertFirestationPersonToDTO(Person person) {
-		FirestationPersonDTOPerson firestationPersonDTO = modelMapper.map(person, FirestationPersonDTOPerson.class);
-		firestationPersonDTO.sumAdultAndChild(person);
-		return firestationPersonDTO;
-	}
+    @PostMapping("/firestation")
+    public FirestationDTO createFirestation(@RequestBody Optional<FirestationDTO> firestation) {
+    	if (firestation.isPresent()) {
+    		return firestationService.addMappingAddressToFirestation(firestation.get());
+    	}
+	return null;
+    }
+    
+    @PutMapping("/firestation")
+    public FirestationDTO updateFirestation(@RequestBody Optional<FirestationDTO> firestation) {
+    	if (firestation.isPresent()) {
+    		return firestationService.updateMappingAddressToFirestation(firestation.get());
+    	}
+	return null;
+    }
+    
+    @DeleteMapping("/firestation")
+    public FirestationDTO deleteFirestation(@RequestBody Optional<FirestationDTO> firestation) {
+    	if (firestation.isPresent()) {
+    		return firestationService.deleteMappingAddressToFirestation(firestation.get());
+    	}
+	return null;
+    }
+
 }

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @Repository
 public class GetFromFileImpl implements GetFromFile {
@@ -19,13 +17,8 @@ public class GetFromFileImpl implements GetFromFile {
 	
 	@Override
 	public JsonNode returnJsonEntityFromFile(EntityNames entityName) {
-		
 		JsonNode jsonObjRoot = readJsonRootFromFile();
-
-		JsonNode jsonArrayEntity= JsonNodeFactory.instance.arrayNode();
-		((ArrayNode) jsonArrayEntity).addAll((ArrayNode) jsonObjRoot.get(entityName.toString()));  
-			
-		return jsonArrayEntity;
+		return jsonObjRoot.get(entityName.toString()); //return an ArrayNode
 	}
 
 	@Override
