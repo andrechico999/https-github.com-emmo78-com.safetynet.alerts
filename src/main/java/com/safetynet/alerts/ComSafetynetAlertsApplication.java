@@ -26,6 +26,6 @@ public class ComSafetynetAlertsApplication {
 	} 
 
 	public static void main(String[] args) {
-		SpringApplication.run(ComSafetynetAlertsApplication.class, args);
+		SpringApplication.run(ComSafetynetAlertsApplication.class, args);		
 	}
 }

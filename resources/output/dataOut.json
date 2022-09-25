@@ -1,45 +1,47 @@
 [
 	{
-		"lastName" : "Cooper",
-		"phone" : "841-874-6874",
-		"age" : "28",
-		"medications" : [
-			"hydrapermazol:300mg",
-			"dodoxadin:30mg"
-		],
-		"allergies" : [
-			"shellfish"
-		]
+		"email" : "clivfd@ymail.com"
 	},
 	{
-		"lastName" : "Peters",
-		"phone" : "841-874-8888",
-		"age" : "57",
-		"medications" : [ ],
-		"allergies" : [ ]
+		"email" : "jaboyd@email.com"
 	},
 	{
-		"lastName" : "Boyd",
-		"phone" : "841-874-9888",
-		"age" : "57",
-		"medications" : [
-			"aznol:200mg"
-		],
-		"allergies" : [
-			"nillacilan"
-		]
+		"email" : "gramps@email.com"
 	},
 	{
-		"lastName" : "B",
-		"phone" : "841-874-6512",
-		"age" : "0",
-		"medications" : [ ],
-		"allergies" : [ ]
+		"email" : "lily@email.com"
 	},
 	{
-		"stationNumbers" : [
-			"3",
-			"4"
-		]
+		"email" : "jpeter@email.com"
+	},
+	{
+		"email" : "reg@email.com"
+	},
+	{
+		"email" : "ssanw@email.com"
+	},
+	{
+		"email" : "bstel@email.com"
+	},
+	{
+		"email" : "drk@email.com"
+	},
+	{
+		"email" : "tenz@email.com"
+	},
+	{
+		"email" : "zarc@email.com"
+	},
+	{
+		"email" : "soph@email.com"
+	},
+	{
+		"email" : "ward@email.com"
+	},
+	{
+		"email" : "tcoop@ymail.com"
+	},
+	{
+		"email" : "aly@imail.com"
 	}
 ]

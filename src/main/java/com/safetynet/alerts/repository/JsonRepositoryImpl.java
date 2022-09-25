@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +37,9 @@ import lombok.Getter;
 @Getter
 public class JsonRepositoryImpl implements JsonRepository {
 
+	@Getter(AccessLevel.NONE)
+	private Logger logger = LoggerFactory.getLogger(JsonRepositoryImpl.class);
+		
 	@Autowired
 	@Getter(AccessLevel.NONE)
 	ObjectMapper objectMapper;
@@ -88,8 +93,8 @@ public class JsonRepositoryImpl implements JsonRepository {
 	@Override
 	public Person setPersonAddress(Person person) {
 		String addressAddress = person.getAddress().getAddress();
-		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(addressAddress)); //put pointer yet in Map or null in opt
-		Address address = addressOpt.orElseGet(() -> {//get the pointer yet in Map or put a new one in Map
+		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(addressAddress)); //put in optional pointer yet in Map or null
+		Address address = addressOpt.orElseGet(() -> {//get the pointer yet in Map or put a new one in Map and return it
 			Address newAddress = new Address(addressAddress); 
 			allAddressS.put(addressAddress, newAddress);
 			return newAddress;
@@ -107,7 +112,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 	
 	@Override
 	public Map<Integer, Firestation> convertFirestations(List<FirestationDTO> firestationsDTO) {
-		Map<Integer, Firestation> firestationsTemp = new HashMap<>();
+		Map<Integer, Firestation> firestationsTemp = new HashMap<>(); //working temporary map
 		return firestationsDTO.stream().map(firestationDTOService::convertFirestationFromDTO).map(firestation -> updateFirestations(firestation, firestationsTemp)).distinct().collect(Collectors.toMap(firestation ->firestation.getStationNumber(), firestation -> firestation));
 	}
 

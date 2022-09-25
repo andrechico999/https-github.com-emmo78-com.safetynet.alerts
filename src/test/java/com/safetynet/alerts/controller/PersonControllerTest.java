@@ -5,8 +5,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
 
 import com.safetynet.alerts.service.PersonService;
 
@@ -17,13 +15,14 @@ public class PersonControllerTest {
 	private PersonController personController;
 	
 	@Mock
-	private PersonService personPersonService;
+	private PersonService personService;
 	
 	
 	@Test
-	public void doSomething() {
+	public void personInfoFirstNameLastName() {
 		//GIVEN
-		
+		//PersonAdressNameDTO personA = new 
+		//when(personService.findPersonsByFirstNameAndLastName("A", "B")).thenReturn(new ArrayList(Arrays.asList()));
 		//WHEN
 		
 		//THEN
