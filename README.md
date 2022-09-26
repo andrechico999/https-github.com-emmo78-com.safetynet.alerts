@@ -92,7 +92,7 @@ return list of all households served by the barracks. This list must group peopl
 ]  
 
 http://localhost:8080/childAlert?address=1509 Culver St  
-return list of children (age <= 18) living at this address.  
+return list of children (age <= 18) living at this address with adult living with   
 [  
     {  
         "firstName": "ChildFirstName",  

@@ -41,6 +41,7 @@ public class FirestationServiceImpl implements FirestationService {
 		
 	@Override
 	public List<FirestationPersonDTO> findPersonsByFirestation(String stationNum) {
+		
 		return firestationDTOService.firestationPersonsToDTO(findPersonsByStationNumber(Integer.parseInt(stationNum)));
 	}
 	

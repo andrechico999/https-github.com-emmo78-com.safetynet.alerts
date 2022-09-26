@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,8 @@ import com.safetynet.alerts.repository.WriteToFile;
 
 @Service
 public class AddressServiceImpl implements AddressService {
+	
+	private Logger logger = LoggerFactory.getLogger(AddressServiceImpl.class);
 
 	@Autowired
 	private JsonRepository jsonNodeService;
@@ -47,10 +51,12 @@ public class AddressServiceImpl implements AddressService {
 	
 	@Override
 	public List<AddressAdultChildDTO> findChildrenByAddress(String address) throws AddressNotFoundException {
-		return addressDTOService.addressChildrenToDTO(Optional.ofNullable(allAddressS.get(address)).orElseThrow(() -> {
+		List<AddressAdultChildDTO> addressChildrenDTO = addressDTOService.addressChildrenToDTO(Optional.ofNullable(allAddressS.get(address)).orElseThrow(() -> {
 			fileWriter.writeToFile(NullNode.instance);
 			return new AddressNotFoundException("Address not found");})
 				.getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
+		logger.info("Valid address to find children at {}",address);
+		return addressChildrenDTO;
 	}
 
 	@Override
