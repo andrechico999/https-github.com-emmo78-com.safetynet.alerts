@@ -152,10 +152,12 @@ What things you need to install the software and how to install them
 - apache Maven
 - Spring Boot
 
-Properties : src/main/resources/application.properties :
+Properties : ./src/main/resources/application.properties :
 - need the property fileJson.path set to the path of source file.
 - currently set to "./resources/input/data.json"
-- log file  = "./logs/alerts.log"
+
+Log4J2 : ./src/main/resources/log4j2-spring.xml
+- log file  = ./logs/alerts-log4j2.log
 
 File data.json is an ObjectNode with three keys "persons, firestations, medicalrecords".  
 Each key maps an ArrayNode, a list of person, firestation and medicalrecord.

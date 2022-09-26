@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -18,7 +19,6 @@ import com.safetynet.alerts.dto.AddressPersonDTO;
 import com.safetynet.alerts.dto.AddressPersonEmailDTO;
 import com.safetynet.alerts.dto.service.AddressDTOService;
 import com.safetynet.alerts.dto.service.AddressDTOServiceImpl;
-import com.safetynet.alerts.exception.AddressNotFoundException;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.repository.JsonRepository;
@@ -50,36 +50,40 @@ public class AddressServiceImpl implements AddressService {
 	}
 	
 	@Override
-	public List<AddressAdultChildDTO> findChildrenByAddress(String address) throws AddressNotFoundException {
+	public List<AddressAdultChildDTO> findChildrenByAddress(String address) throws ResourceNotFoundException {
 		List<AddressAdultChildDTO> addressChildrenDTO = addressDTOService.addressChildrenToDTO(Optional.ofNullable(allAddressS.get(address)).orElseThrow(() -> {
 			fileWriter.writeToFile(NullNode.instance);
-			return new AddressNotFoundException("Address not found");})
+			return new ResourceNotFoundException("Address not found");})
 				.getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
-		logger.info("Valid address to find children at {}",address);
+		logger.info("Valid address to find children : {}",address);
 		return addressChildrenDTO;
 	}
 
 	@Override
-	public List<AddressPersonDTO> findPersonsByAddress(String address) throws AddressNotFoundException {
+	public List<AddressPersonDTO> findPersonsByAddress(String address) throws ResourceNotFoundException {
 		((AddressDTOServiceImpl) addressDTOService).setStationNumbers(findFirestationssByAddress(address).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList()));
-		return addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
+		List<AddressPersonDTO> addressPersonsDTO = addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
+		logger.info("Valid address to find persons and station number(s) : {}",address);
+		return addressPersonsDTO; 
 	}
 
 	@Override
-	public List<AddressPersonEmailDTO> findemailPersonsByCity(String city) throws AddressNotFoundException {
+	public List<AddressPersonEmailDTO> findemailPersonsByCity(String city) throws ResourceNotFoundException {
 		List<Address> addressCity = allAddressS.values().stream().filter(address -> address.getCity().equals(dataProcService.upperCasingFirstLetter(city))).collect(Collectors.toList());
  		if ( addressCity.size() == 0) {
  			fileWriter.writeToFile(NullNode.instance);
-			throw new AddressNotFoundException("City not found");
+			throw new ResourceNotFoundException("City not found");
 		}
-		return addressDTOService.addressPersonEmailToDTO(addressCity.stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList()));
+ 		List<AddressPersonEmailDTO> addressPersonEmailDTO = addressDTOService.addressPersonEmailToDTO(addressCity.stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList())); 
+ 		logger.info("Valid city to find email : {}", city);
+ 		return addressPersonEmailDTO;
 	}
 
 	@Override
-	public List<Firestation> findFirestationssByAddress(String address) throws AddressNotFoundException {
+	public List<Firestation> findFirestationssByAddress(String address) throws ResourceNotFoundException {
 		return Optional.ofNullable(allAddressS.get(address)).orElseThrow(() -> {
 			fileWriter.writeToFile(NullNode.instance);
-			return new AddressNotFoundException("Address not found");})
+			return new ResourceNotFoundException("Address not found");})
 				.getFirestations().values().stream().collect(Collectors.toList());
 	}
 }
