@@ -74,9 +74,13 @@ public class JsonRepositoryImpl implements JsonRepository {
 	public void jsonNodeServiceImpl() {
 		allAddressS = new HashMap<>();
 		persons = convertPersonsDTO(getPersonsFromFile());
+		logger.debug("persons Map filled and in IoC");
 		firestations = convertFirestations(getFirestationsFromFile());
+		logger.debug("firestations Map filled and in IoC");
 		medicalrecords = convertMedicalrecords(getMedicalrecordsFromFile());
+		logger.debug("medicalrecords Map filled and in IoC");
 		setPersonsMedicalrecords(persons);
+		logger.debug("medicalrecords attached to persons");
 	}
 		
 	@Override
@@ -119,14 +123,14 @@ public class JsonRepositoryImpl implements JsonRepository {
 	@Override
 	public Firestation updateFirestations(Firestation firestation, Map<Integer, Firestation> localFirestations) {
 		int stationNumber = firestation.getStationNumber();
-		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(localFirestations.get(stationNumber));//put pointer yet in Map or null in opt
+		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(localFirestations.get(stationNumber));//put  in optional pointer yet in Map or null
 		Firestation existingFirestation = existingFirestationOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
 			localFirestations.put(stationNumber, firestation);
 			return firestation;
 			});
 		Address fsAddress = firestation.getAddressS().values().stream().collect(Collectors.toList()).get(0);
 		String fsAddressAddress = fsAddress.getAddress();
-		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(fsAddressAddress));//put pointer yet in Map or null in opt
+		Optional<Address> addressOpt = Optional.ofNullable(allAddressS.get(fsAddressAddress));//put in optional pointer yet in Map or null
 		Address address = addressOpt.orElseGet(() -> { //get the pointer yet in Map or put a new one in Map
 			allAddressS.put(fsAddressAddress, fsAddress);
 			return fsAddress;
@@ -159,14 +163,18 @@ public class JsonRepositoryImpl implements JsonRepository {
 		} else {
 			person.setMedicalrecord(new Medicalrecord());
 			person.setAge(0);
-			// TODO no medical record for the person id
+			logger.warn("No medical record for {}", id);
 		}
 	}
 
 	@Override
-	public boolean setAge(Person person) {
-		person.setAge(Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears());
-		return true; // I consider birth date is always before now
+	public void setAge(Person person) {
+		int age = Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears();
+		if (age < 0) {
+			age = 0;
+			logger.warn("negative age for {} so set age to 0", person.getId());
+		}
+		person.setAge(age);
 	}
 	
 	@Override
@@ -175,7 +183,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 		if (person != null) {
 			setPersonMedicalrecord(person, id);
 		} else {
-			// TODO No one for the new medical records
+			logger.warn("No person for medical record {}", id);
 		}
 	}
 

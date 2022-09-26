@@ -13,7 +13,7 @@ public interface GetFromFile {
 	/**
 	 * Return the ArrayNode (value) mapped with the Entity key in the root ObjectNode
 	 * log level DEBUG "read entity {} from file"
-	 * @param entityName
+	 * @param entityName : name of the key in root ObjectNode 
 	 * @return the Entity ArrayNode 
 	 */
 	JsonNode returnJsonEntityFromFile(EntityNames entityName);

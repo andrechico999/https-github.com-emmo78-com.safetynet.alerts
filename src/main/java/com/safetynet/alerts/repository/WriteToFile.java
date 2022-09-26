@@ -12,7 +12,7 @@ public interface WriteToFile {
 	 * Write a JsonNode to file
 	 * log level DEBUG "wrote json to file"
 	 * if exception occurs log level ERROR "Unable to write Json to file\n\t"+e.toString()
-	 * @param jsonNode 
+	 * @param jsonNode : jsonNode to write to file. 
 	 */
 	void writeToFile(JsonNode jsonNode);
 }
