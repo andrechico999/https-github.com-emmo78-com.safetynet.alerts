@@ -1,9 +1,5 @@
 package com.safetynet.alerts.controller;
 
-
-
-
-
 import org.modelmapper.spi.ErrorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +19,19 @@ public class ControllerExceptionHandler {
 	
 	@ExceptionHandler(value = BadRequestException.class)
 	public ResponseEntity<ErrorMessage> badRequestException(BadRequestException ex, WebRequest request) {
-		logger.error("Bad Request {}", request.getDescription(false)); 
+		logger.error("Bad request {} : {}", requestToString(request), ex.getMessage()); 
 		ErrorMessage message = new ErrorMessage(ex.getMessage());
 		return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(value = {ResourceNotFoundException.class, Exception.class})
 	public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+		logger.error("{} : {}", ex.getMessage(), requestToString(request));
 		ErrorMessage message = new ErrorMessage(ex.getMessage());
+		return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
+	}
+	
+	private String requestToString(WebRequest request) {
 		StringBuffer parameters = new StringBuffer(request.getDescription(false)+"?"); 
 		request.getParameterMap().forEach((p,v) -> {
 			parameters.append(p+"=");
@@ -42,7 +43,6 @@ public class ControllerExceptionHandler {
 		});
 		int length = parameters.length();
 		parameters.delete(length-1, length);
-		logger.error("Address not found {}",parameters.toString());
-	    return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
+		return parameters.toString();
 	}
 }

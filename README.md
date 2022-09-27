@@ -44,7 +44,7 @@ return list of people with the same name living at the address of the specified 
 		"address": "123 Street St",  
 		"age": "21",  
 		"email": "name@email.com",  
-		"medications": ["dcinameone:123mg", "dcinzmetwo:4546mg"],  
+		"medications": ["dcinameone:123mg", "dcinametwo:4546mg"],  
 		"allergies": ["nameone", "nametwo"]  
 	},  
 	...  

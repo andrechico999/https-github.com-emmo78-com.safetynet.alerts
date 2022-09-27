@@ -53,9 +53,9 @@ public class AddressServiceImpl implements AddressService {
 	public List<AddressAdultChildDTO> findChildrenByAddress(String address) throws ResourceNotFoundException {
 		List<AddressAdultChildDTO> addressChildrenDTO = addressDTOService.addressChildrenToDTO(Optional.ofNullable(allAddressS.get(address)).orElseThrow(() -> {
 			fileWriter.writeToFile(NullNode.instance);
-			return new ResourceNotFoundException("Address not found");})
+			return new ResourceNotFoundException("No address found");})
 				.getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
-		logger.info("Valid address to find children : {}",address);
+		logger.info("Found {} child(ren) at the address : {}", addressChildrenDTO.size(), address);
 		return addressChildrenDTO;
 	}
 
@@ -63,7 +63,7 @@ public class AddressServiceImpl implements AddressService {
 	public List<AddressPersonDTO> findPersonsByAddress(String address) throws ResourceNotFoundException {
 		((AddressDTOServiceImpl) addressDTOService).setStationNumbers(findFirestationssByAddress(address).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList()));
 		List<AddressPersonDTO> addressPersonsDTO = addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
-		logger.info("Valid address to find persons and station number(s) : {}",address);
+		logger.info("Found {} person(s) at the address : {}", addressPersonsDTO.size()-1, address);
 		return addressPersonsDTO; 
 	}
 
@@ -72,10 +72,10 @@ public class AddressServiceImpl implements AddressService {
 		List<Address> addressCity = allAddressS.values().stream().filter(address -> address.getCity().equals(dataProcService.upperCasingFirstLetter(city))).collect(Collectors.toList());
  		if ( addressCity.size() == 0) {
  			fileWriter.writeToFile(NullNode.instance);
-			throw new ResourceNotFoundException("City not found");
+			throw new ResourceNotFoundException("No city found");
 		}
  		List<AddressPersonEmailDTO> addressPersonEmailDTO = addressDTOService.addressPersonEmailToDTO(addressCity.stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList())); 
- 		logger.info("Valid city to find email : {}", city);
+ 		logger.info("Found {} email(s) in the city : {}", addressPersonEmailDTO.size(), city);
  		return addressPersonEmailDTO;
 	}
 
@@ -83,7 +83,7 @@ public class AddressServiceImpl implements AddressService {
 	public List<Firestation> findFirestationssByAddress(String address) throws ResourceNotFoundException {
 		return Optional.ofNullable(allAddressS.get(address)).orElseThrow(() -> {
 			fileWriter.writeToFile(NullNode.instance);
-			return new ResourceNotFoundException("Address not found");})
+			return new ResourceNotFoundException("No address found");})
 				.getFirestations().values().stream().collect(Collectors.toList());
 	}
 }

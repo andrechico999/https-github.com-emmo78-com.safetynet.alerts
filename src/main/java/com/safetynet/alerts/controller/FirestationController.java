@@ -37,7 +37,7 @@ public class FirestationController {
 		 */ 
 		
 		if (!stationNumber.isPresent()){
-			throw new BadRequestException("Correct request is http://localhost:8080/firestation?stationNumber=1");
+			throw new BadRequestException("Correct request should be http://localhost:8080/firestation?stationNumber=1");
 		}
 		return new ResponseEntity<>(firestationService.findPersonsByFirestation(stationNumber.get()), HttpStatus.OK);
 	}
@@ -47,7 +47,7 @@ public class FirestationController {
 		/*Cette url doit retourner une liste des numéros de téléphone des résidents desservis par la caserne de pompiers
 		 */
 		if (!stationNumber.isPresent()) {
-			throw new BadRequestException("Correct request is http://localhost:8080/phoneAlert?firestation=1");
+			throw new BadRequestException("Correct request should be http://localhost:8080/phoneAlert?firestation=1");
 		}
 		return new ResponseEntity<>(firestationService.findPersonPhonesByFirestation(stationNumber.get()), HttpStatus.OK);
 	}
@@ -60,7 +60,7 @@ public class FirestationController {
 		 * par les casernes. Cette liste doit regrouper les personnes par adresse.
 		 */		
 		if (!stationNumbers.isPresent()) {
-			throw new BadRequestException("Correct request is http://localhost:8080/flood/stations?stations=1,2,3,4");
+			throw new BadRequestException("Correct request should be http://localhost:8080/flood/stations?stations=1,2,3,4");
 		}
 		return new ResponseEntity<>(firestationService.findAddressPersonsByFiresations(stationNumbers.get()), HttpStatus.OK);
 	}
@@ -68,11 +68,7 @@ public class FirestationController {
     @PostMapping("/firestation")
     public ResponseEntity<FirestationDTO> createFirestation(@RequestBody Optional<FirestationDTO> firestation) throws ResourceNotFoundException, BadRequestException {
     	if (!firestation.isPresent()) {
-    		throw new BadRequestException("Correct request is a json body :"
-    				+ "{"
-    				+ "\"address\": \"Address\", "
-    				+ "\"station\": \"1\""
-    				+ "}");
+    		throw new BadRequestException("Correct request should be a json firestation body");
     	}
     	return new ResponseEntity<>(firestationService.addMappingAddressToFirestation(firestation.get()), HttpStatus.OK);
     }
@@ -80,11 +76,7 @@ public class FirestationController {
     @PutMapping("/firestation")
     public ResponseEntity<FirestationDTO> updateFirestation(@RequestBody Optional<FirestationDTO> firestation) throws ResourceNotFoundException, BadRequestException {
     	if (!firestation.isPresent()) {
-    		throw new BadRequestException("Correct request is a json body :"
-    				+ "{"
-    				+ "\"address\": \"Address\", "
-    				+ "\"station\": \"1\""
-    				+ "}");
+    		throw new BadRequestException("Correct request should be a json firestation body");
     	}
     	return new ResponseEntity<>(firestationService.updateMappingAddressToFirestation(firestation.get()), HttpStatus.OK);
     }
@@ -92,13 +84,8 @@ public class FirestationController {
     @DeleteMapping("/firestation")
     public ResponseEntity<FirestationDTO> deleteFirestation(@RequestBody Optional<FirestationDTO> firestation) throws ResourceNotFoundException, BadRequestException {
     	if (!firestation.isPresent()) {
-    		throw new BadRequestException("Correct request is a json body :"
-    				+ "{"
-    				+ "\"address\": \"Address\", "
-    				+ "\"station\": \"1\""
-    				+ "}");
+    		throw new BadRequestException("Correct request should be a json firestation body");
     	}
     	return new ResponseEntity<>(firestationService.deleteMappingAddressToFirestation(firestation.get()), HttpStatus.OK);
     }
-
 }

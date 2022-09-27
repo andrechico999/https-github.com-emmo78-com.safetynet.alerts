@@ -31,7 +31,7 @@ public class AddressController {
 		 */
 		
 		if (!address.isPresent()) {
-			throw new BadRequestException("Correct request is http://localhost:8080/childAlert?address=1509 Culver St");
+			throw new BadRequestException("Correct request should be http://localhost:8080/childAlert?address=1509 Culver St");
 		}
 		return new ResponseEntity<>(addressService.findChildrenByAddress(address.get()), HttpStatus.OK);
 	}
@@ -43,7 +43,7 @@ public class AddressController {
 		 * ainsi que le numéro de la caserne de pompiers la desservant
 		 */
 		if (!address.isPresent()) {
-			throw new BadRequestException("Correct request is  http://localhost:8080/fire?address=112 Steppes Pl");
+			throw new BadRequestException("Correct request should be  http://localhost:8080/fire?address=112 Steppes Pl");
 		}
 		return new ResponseEntity<>(addressService.findPersonsByAddress(address.get()), HttpStatus.OK);
 	}
@@ -53,7 +53,7 @@ public class AddressController {
 		/*Cette url doit retourner les adresses mail de tous les habitants de la ville
 		 */
 		if (!city.isPresent()) {
-			throw new BadRequestException("Correct request is http://localhost:8080/communityEmail?city=culver"); 
+			throw new BadRequestException("Correct request should be http://localhost:8080/communityEmail?city=culver"); 
 		}
 		return new ResponseEntity<>(addressService.findemailPersonsByCity(city.get()), HttpStatus.OK);
 	}
