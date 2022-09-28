@@ -17,7 +17,7 @@ public class GetFromFileImpl implements GetFromFile {
 
 	private final Logger logger = LoggerFactory.getLogger(GetFromFileImpl.class);
 	
-	@Value("${fileJson.path}")
+	@Value("${fileDataJson.path}")
 	private String dataFileJson;
 	
 	@Autowired

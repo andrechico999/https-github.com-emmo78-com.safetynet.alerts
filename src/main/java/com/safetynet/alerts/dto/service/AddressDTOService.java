@@ -10,5 +10,6 @@ import com.safetynet.alerts.model.Person;
 public interface AddressDTOService {
 	List<AddressAdultChildDTO> addressChildrenToDTO(List<Person> addressChildren);
 	List<AddressPersonDTO> addressPersonsToDTO(List<Person> addressPersons);
+	AddressPersonDTO addressPersonToDTO(Person addressPerson);
 	List<AddressPersonEmailDTO> addressPersonEmailToDTO(List<Person> addressPersonEmail);
 }

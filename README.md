@@ -80,16 +80,20 @@ no duplicate
 http://localhost:8080/flood/stations?stations=1,2,3,4  
 return list of all households served by the barracks. This list must group people by address.  
 [  
-    {  
-        "address": "908 73rd St",  
-        "lastName": "Peters",  
-        "phone": "841-874-7462",  
-        "age": "40",  
-        "medications": [],  
-        "allergies": []  
-    },  
-	...  
-]  
+	{  
+		"address" : "908 73rd St",  
+		"city" : "Culver",  
+		"zip" : "97451",  
+		"houseHolds" : [  
+			{  
+				"lastName" : "Peters",  
+				"phone" : "841-874-7462",  
+				"age" : "40",  
+				"medications" : [ ],  
+				"allergies" : [ ]  
+			},  
+	...    
+]    
 
 http://localhost:8080/childAlert?address=1509 Culver St  
 return list of children (age <= 18) living at this address with adult living with   
@@ -146,21 +150,22 @@ no duplicate
 
 ## Prerequisites
 
-What things you need to install the software and how to install them
+### What things you need to install the software and how to install them
 
 - Java 11 (for SonarCloud) with 1.8 compliance
 - apache Maven
 - Spring Boot
 
-Properties : ./src/main/resources/application.properties :
-- need the property fileJson.path set to the path of source file.
-- currently set to "./resources/input/data.json"
-
-Log4J2 : ./src/main/resources/log4j2-spring.xml
-- log file  = ./logs/alerts-log4j2.log
+### Properties : ./src/main/resources/application.properties :
+#data.json  
+fileDataJson.path = ./resources/input/data.json  
+fileDataOutJson.path = ./resources/output/dataOut.json
 
 File data.json is an ObjectNode with three keys "persons, firestations, medicalrecords".  
 Each key maps an ArrayNode, a list of person, firestation and medicalrecord.
+
+### Log4J2 : ./src/main/resources/log4j2-spring.xml
+log file  = ./logs/alerts-log4j2.log
 
 ## Installing
 

@@ -49,17 +49,22 @@ public class AddressDTOServiceImpl implements AddressDTOService {
 
 	@Override
 	public List<AddressPersonDTO> addressPersonsToDTO(List<Person> addressPersons) {
-		modelMapper.typeMap(Person.class, AddressPersonDTOPerson.class).addMappings(mapper -> {
-			//mapper.map(Person::getAge, AddressPersonDTOPerson::setAge); //ModelMapper Handling Mismatches
-			mapper.map(src -> src.getMedicalrecord().getMedications(), AddressPersonDTOPerson::setMedications);
-			mapper.map(src -> src.getMedicalrecord().getAllergies(), AddressPersonDTOPerson::setAllergies);
-		});
-		List<AddressPersonDTO> addressPersonsDTO = addressPersons.stream().map(person -> modelMapper.map(person, AddressPersonDTOPerson.class)).collect(Collectors.toList());
+		List<AddressPersonDTO> addressPersonsDTO = addressPersons.stream().map(this::addressPersonToDTO).collect(Collectors.toList());
 		addressPersonsDTO.add(new AddressPersonDTOStationNumbers(stationNumbers));
 		fileWriter.writeToFile(objectMapper.valueToTree(addressPersonsDTO));
 		return addressPersonsDTO;
 	}
 
+	@Override
+	public AddressPersonDTO addressPersonToDTO(Person addressPerson) {
+		modelMapper.typeMap(Person.class, AddressPersonDTOPerson.class).addMappings(mapper -> {
+			//mapper.map(Person::getAge, AddressPersonDTOPerson::setAge); //ModelMapper Handling Mismatches
+			mapper.map(src -> src.getMedicalrecord().getMedications(), AddressPersonDTOPerson::setMedications);
+			mapper.map(src -> src.getMedicalrecord().getAllergies(), AddressPersonDTOPerson::setAllergies);
+		});
+		return modelMapper.map(addressPerson, AddressPersonDTOPerson.class);
+	}
+	
 	@Override
 	public List<AddressPersonEmailDTO> addressPersonEmailToDTO(List<Person> addressPersonEmail) {
 		List<AddressPersonEmailDTO> addressPersonEmailDTO = addressPersonEmail.stream().map(person -> modelMapper.map(person, AddressPersonEmailDTO.class)).distinct().collect(Collectors.toList());

@@ -24,7 +24,7 @@ public class PersonServiceImpl implements PersonService {
 	private JsonRepository jsonRepository;
 	
 	@Autowired
-	private StringService stringService;
+	private RequestService requestService;
 	
     @Autowired
 	private PersonDTOService personDTOService;
@@ -40,8 +40,8 @@ public class PersonServiceImpl implements PersonService {
 	@Override
 	public List<PersonAddressNameDTO> findPersonsByFirstNameAndLastName(String firstName, String lastName) {
 
-		firstName = stringService.upperCasingFirstLetter(firstName);
-		lastName = stringService.upperCasingFirstLetter(lastName);
+		firstName = requestService.upperCasingFirstLetter(firstName);
+		lastName = requestService.upperCasingFirstLetter(lastName);
 		final String id =firstName +" "+lastName; //Local variable lastName defined in an enclosing scope must be final or effectively final
 		return personDTOService.personsAddressNameToDTO(persons.get(id).getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList()));
 	}

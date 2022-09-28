@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import com.safetynet.alerts.dto.PersonAddressNameDTO;
 import com.safetynet.alerts.dto.PersonDTO;
@@ -23,7 +24,7 @@ public class PersonController {
 	PersonService personService;
 		
 	@GetMapping("/personInfo")
-	public List<PersonAddressNameDTO> personInfoFirstNameLastName(@RequestParam(name = "firstName") Optional<String> firstName, @RequestParam(name = "lastName") Optional<String> lastName) {
+	public List<PersonAddressNameDTO> personInfoFirstNameLastName(@RequestParam(name = "firstName") Optional<String> firstName, @RequestParam(name = "lastName") Optional<String> lastName, WebRequest request) {
 		/*Cette url doit retourner la personne et la liste des personnes habitant à la même adresse
 		 * ainsi que la liste des personnes portant le même nom (lastName, address, age, email, medicalrecord)
 		 */		
@@ -34,7 +35,7 @@ public class PersonController {
 	}
 	
     @PostMapping("/person")
-    public PersonDTO createPerson(@RequestBody Optional<PersonDTO> person) {
+    public PersonDTO createPerson(@RequestBody Optional<PersonDTO> person, WebRequest request) {
     	if (person.isPresent()) {
     		return personService.createPerson(person.get());
     	}
@@ -42,7 +43,7 @@ public class PersonController {
     }
     
     @PutMapping("/person")
-    public PersonDTO updatePerson(@RequestBody Optional<PersonDTO> person) {
+    public PersonDTO updatePerson(@RequestBody Optional<PersonDTO> person, WebRequest request) {
     	if (person.isPresent()) {
     		return personService.updatePerson(person.get());
     	}
@@ -50,7 +51,7 @@ public class PersonController {
     }
     
     @DeleteMapping("/person")
-    public PersonDTO deletePerson(@RequestBody Optional<PersonDTO> person) {
+    public PersonDTO deletePerson(@RequestBody Optional<PersonDTO> person, WebRequest request) {
     	if (person.isPresent()) {
     		return personService.deletePerson(person.get());
     	}
