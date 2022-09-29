@@ -10,6 +10,7 @@ import com.safetynet.alerts.dto.FirestationPersonDTO;
 import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
 import com.safetynet.alerts.dto.FirestationAddressPersonsDTO;
 import com.safetynet.alerts.exception.BadRequestException;
+import com.safetynet.alerts.exception.ResourceConflictException;
 import com.safetynet.alerts.model.Person;
 
 /**
@@ -67,7 +68,7 @@ public interface FirestationService {
 	 * @return firestationDTO : the mapping
 	 * @throws ResourceNotFoundException : "Non-existent address", "No fire station with this number" and "Address has already a firestation"
 	 */
-	FirestationDTO addMappingAddressToFirestation(FirestationDTO firestationDTO, WebRequest request) throws ResourceNotFoundException;
+	FirestationDTO addMappingAddressToFirestation(FirestationDTO firestationDTO, WebRequest request) throws ResourceNotFoundException, ResourceConflictException;
 
 	/**
 	 * update mapping address to fire station

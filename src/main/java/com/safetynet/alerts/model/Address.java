@@ -49,8 +49,8 @@ public class Address {
 		firestations.put(firestation.getStationNumber(), firestation);
 	}
 
-	public void removeFirestation(Firestation firestation) {
-		firestations.remove(firestation.getStationNumber());
+	public Firestation removeFirestation(Firestation firestation) {
+		return firestations.remove(firestation.getStationNumber());
 	}
 	
 	

@@ -21,6 +21,7 @@ import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
 import com.safetynet.alerts.dto.FirestationAddressPersonsDTO;
 import com.safetynet.alerts.dto.service.FirestationDTOService;
 import com.safetynet.alerts.exception.BadRequestException;
+import com.safetynet.alerts.exception.ResourceConflictException;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
@@ -106,17 +107,18 @@ public class FirestationServiceImpl implements FirestationService {
 	}
 
 	@Override
-	public FirestationDTO addMappingAddressToFirestation(FirestationDTO firestationDTO, WebRequest request) throws ResourceNotFoundException {
+	public FirestationDTO addMappingAddressToFirestation(FirestationDTO firestationDTO, WebRequest request) throws ResourceNotFoundException, ResourceConflictException {
 		Firestation firestation = firestationDTOService.convertFirestationFromDTO(firestationDTO);
+		int stationNumber = firestation.getStationNumber();
 		String addressAddress = firestation.getAddressS().values().stream().collect(Collectors.toList()).get(0).getAddress();
 		
 		Optional<Address> existingAddressOpt = Optional.ofNullable(allAddressS.get(addressAddress));
-		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestations.get(firestation.getStationNumber()));
+		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestations.get(stationNumber));
 		
-		Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address"));
-		Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No fire station with this number"));
+		Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address : "+addressAddress));
+		Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No fire station with this number : "+stationNumber));
 		if (!existingAddress.getFirestations().isEmpty()) {
-			throw new ResourceNotFoundException("Address has already a firestation");
+			throw new ResourceConflictException("Address : "+addressAddress+" has already a firestation");
 		}
 		existingAddress.putFirestation(existingFirestation); //firestation.attachAddress(this);
 		logger.info("{} : add mapping address {} to fire station {} with succes", requestService.requestToString(request), existingAddress.getAddress(), existingFirestation.getStationNumber());
@@ -126,13 +128,14 @@ public class FirestationServiceImpl implements FirestationService {
 	@Override
 	public FirestationDTO updateMappingAddressToFirestation(FirestationDTO firestationDTO, WebRequest request) throws ResourceNotFoundException {
 		Firestation firestation = firestationDTOService.convertFirestationFromDTO(firestationDTO);
+		int stationNumber = firestation.getStationNumber();
 		String addressAddress = firestation.getAddressS().values().stream().collect(Collectors.toList()).get(0).getAddress();
 		
 		Optional<Address> existingAddressOpt = Optional.ofNullable(allAddressS.get(addressAddress));
-		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestations.get(firestation.getStationNumber()));
+		Optional<Firestation> existingFirestationOpt = Optional.ofNullable(firestations.get(stationNumber));
 		
-		Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address"));
-		Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No Station with this number"));
+		Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address : "+addressAddress));
+		Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No fire station with this number : "+stationNumber));
 		existingAddress.getFirestations().values().stream().forEach(firestationLocal -> firestationLocal.detachAddress(existingAddress));
 		existingAddress.getFirestations().clear();
 		existingAddress.putFirestation(existingFirestation); //firestation.attachAddress(this);
@@ -150,23 +153,31 @@ public class FirestationServiceImpl implements FirestationService {
 		
 		if (stationAddressAddress == null) {
 			existingFirestationOpt = Optional.ofNullable(firestations.get(stationNumber));
-			Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No Station with this number"));
+			Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No Station with this number : "+stationNumber));
+			if (existingFirestation.getAddressS().size() == 0) {
+				throw new ResourceNotFoundException("Non-existing mapping to this fire station : "+stationNumber);
+			}
 			existingFirestation.getAddressS().values().stream().forEach(address -> address.removeFirestation(existingFirestation));
 			existingFirestation.getAddressS().clear();
 			logger.info("{} : delete mapping to fire station {} with succes", requestService.requestToString(request), stationNumber);
 		} else if (stationNumber == 0) {
 			existingAddressOpt = Optional.ofNullable(allAddressS.get(stationAddressAddress));
-			Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address"));
+			Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address : "+stationAddressAddress));
+			if (existingAddress.getFirestations().size() == 0) {
+				throw new ResourceNotFoundException("Non-existing mapping from this address : "+stationAddressAddress);
+			}
 			existingAddress.getFirestations().values().stream().forEach(firestationLocal -> firestationLocal.detachAddress(existingAddress));
 			existingAddress.getFirestations().clear();
 			existingFirestationOpt = Optional.of(firestation);
 			logger.info("{} : delete mapping address {} to fire station with succes", requestService.requestToString(request), stationAddressAddress);
 		} else {
 			existingAddressOpt = Optional.ofNullable(allAddressS.get(stationAddressAddress));
-			Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address"));
+			Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address : "+stationAddressAddress));
 			existingFirestationOpt = Optional.ofNullable(firestations.get(stationNumber));
-			Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No Station with this number"));
-			existingAddress.removeFirestation(existingFirestation);
+			Firestation existingFirestation = existingFirestationOpt.orElseThrow(() -> new ResourceNotFoundException("No Station with this number : "+stationNumber));
+			if (existingAddress.removeFirestation(existingFirestation) == null) {
+				throw new ResourceNotFoundException("Non-existing mapping address "+stationAddressAddress+" to fire station "+stationNumber);
+			}
 			existingFirestation.detachAddress(existingAddress);
 			existingFirestationOpt = Optional.of(new Firestation());
 			logger.info("{} : delete mapping address {} to fire station {} with succes", requestService.requestToString(request), stationAddressAddress, stationNumber);

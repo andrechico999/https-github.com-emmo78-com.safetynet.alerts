@@ -21,6 +21,7 @@ import com.safetynet.alerts.dto.FirestationPersonDTO;
 import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
 import com.safetynet.alerts.dto.FirestationAddressPersonsDTO;
 import com.safetynet.alerts.exception.BadRequestException;
+import com.safetynet.alerts.exception.ResourceConflictException;
 import com.safetynet.alerts.service.FirestationService;
 
 @RestController
@@ -66,7 +67,7 @@ public class FirestationController {
 	}
 	
     @PostMapping("/firestation")
-    public ResponseEntity<FirestationDTO> createFirestation(@RequestBody Optional<FirestationDTO> firestation, WebRequest request) throws ResourceNotFoundException, BadRequestException {
+    public ResponseEntity<FirestationDTO> createFirestation(@RequestBody Optional<FirestationDTO> firestation, WebRequest request) throws ResourceNotFoundException, ResourceConflictException, BadRequestException {
     	if (!firestation.isPresent()) {
     		throw new BadRequestException("Correct request should be a json firestation body");
     	}
