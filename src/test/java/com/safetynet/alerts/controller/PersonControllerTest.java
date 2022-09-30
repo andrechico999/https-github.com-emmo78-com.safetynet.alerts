@@ -64,7 +64,7 @@ public class PersonControllerTest {
 		@Test
 		@Tag("Nominal case HTTPStatus.OK")
 	    @DisplayName("personInfoFirstNameLastNameTest should return HTTPStatus.OK and a List containing a PersonAddressNameDTO with lastName set")
-		public void personInfoFirstNameLastNameTestShouldReturnHTTPStatusOK() {
+		public void personInfoFirstNameLastNameTestShouldReturnHTTPStatusOKAndListPersonAddressNameDTO() {
 			//GIVEN
 			Optional<String> firstNameOpt = Optional.of("FirstName");
 			Optional<String> lastNameOpt = Optional.of("LastName");
@@ -72,15 +72,20 @@ public class PersonControllerTest {
 			PersonAddressNameDTO personAddressNameDTO = new PersonAddressNameDTO();
 			personAddressNameDTO.setLastName("LastName");
 			personsAddressNameDTO.add(personAddressNameDTO);	
-			when(personService.findPersonsByFirstNameAndLastName(firstNameOpt.get(), lastNameOpt.get(), request)).thenReturn(personsAddressNameDTO);
+			try {
+				when(personService.findPersonsByFirstNameAndLastName(firstNameOpt.get(), lastNameOpt.get(), request)).thenReturn(personsAddressNameDTO);
+			} catch (ResourceNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			ResponseEntity<List<PersonAddressNameDTO>> responseEntity = null;
 			
 			//WHEN
 			try {
 				responseEntity = personController.personInfoFirstNameLastName(firstNameOpt, lastNameOpt, request);
-			} catch (ResourceNotFoundException | BadRequestException e) {
+			} catch (ResourceNotFoundException | BadRequestException e1) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e1.printStackTrace();
 			}
 			//THEN
 			assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
@@ -108,7 +113,7 @@ public class PersonControllerTest {
 		@Test
 		@Tag("Nominal case HTTPStatus.OK")
 	    @DisplayName("createPersonTest should return HTTPStatus.OK and the Person created")
-		public void personInfoFirstNameLastNameTestShouldReturnHTTPStatusOK() {
+		public void createPersonTestShouldReturnHTTPStatusOK() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
 			personDTO.setFirstName("FirstName");
@@ -121,16 +126,67 @@ public class PersonControllerTest {
 			Optional<PersonDTO> personDTOOpt = Optional.of(personDTO);
 			try {
 				when(personService.createPerson(personDTO, request)).thenReturn(personDTO);
-			} catch (ResourceConflictException e1) {
+			} catch (ResourceConflictException e) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				e.printStackTrace();
 			}
 			ResponseEntity<PersonDTO> responseEntity = null;
 			
 			//WHEN
 			try {
 				responseEntity = personController.createPerson(personDTOOpt, request);
-			} catch (ResourceConflictException | BadRequestException e) {
+			} catch (ResourceConflictException | BadRequestException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			//THEN
+			assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+			assertThat(responseEntity.getBody()).isEqualTo(personDTO);
+		}
+		
+		@Test
+		@Tag("Corner case BadRequestException")
+	    @DisplayName("createPersonTest should throw BadRequestException")
+		public void createPersonTestShouldThrowBadRequestException() {
+			//GIVEN
+			Optional<PersonDTO> personDTOOpt = Optional.ofNullable(null);
+			//WHEN
+			//THEN
+			assertThrows(BadRequestException.class, () -> personController.createPerson(personDTOOpt, request));
+		}
+	}
+	
+	@Nested
+    @Tag("updatePerson tests")
+    @DisplayName("updatePerson tests")
+    class updatePersonTests {
+		
+		@Test
+		@Tag("Nominal case HTTPStatus.OK")
+	    @DisplayName("updatePersonTest should return HTTPStatus.OK and the Person updated")
+		public void updatePersonTestShouldReturnHTTPStatusOK() {
+			//GIVEN
+			PersonDTO personDTO = new PersonDTO();
+			personDTO.setFirstName("FirstName");
+			personDTO.setLastName("LastName");
+			personDTO.setAddress("Address");
+			personDTO.setCity("City");
+			personDTO.setZip("12345");
+			personDTO.setPhone("012-345-678");
+			personDTO.setEmail("email@email.com");
+			Optional<PersonDTO> personDTOOpt = Optional.of(personDTO);
+			try {
+				when(personService.updatePerson(personDTO, request)).thenReturn(personDTO);
+			} catch (ResourceNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ResponseEntity<PersonDTO> responseEntity = null;
+			
+			//WHEN
+			try {
+				responseEntity = personController.updatePerson(personDTOOpt, request);
+			} catch (ResourceNotFoundException | BadRequestException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -141,17 +197,64 @@ public class PersonControllerTest {
 		
 		@Test
 		@Tag("Corner case BadRequestException")
-	    @DisplayName("createPersonTest should throw BadRequestException")
-		public void personInfoFirstNameLastNameTestShouldThrowBadRequestException() {
+	    @DisplayName("updatePersonTest should throw BadRequestException")
+		public void updatePersonTestShouldThrowBadRequestException() {
 			//GIVEN
 			Optional<PersonDTO> personDTOOpt = Optional.ofNullable(null);
 			//WHEN
 			//THEN
-			assertThrows(BadRequestException.class, () -> personController.createPerson(personDTOOpt, request));
+			assertThrows(BadRequestException.class, () -> personController.updatePerson(personDTOOpt, request));
 		}
 	}
 	
-	
-	
-	
+	@Nested
+    @Tag("deletePerson tests")
+    @DisplayName("deletePerson tests")
+    class deletePersonTests {
+		
+		@Test
+		@Tag("Nominal case HTTPStatus.OK")
+	    @DisplayName("deletePersonTest should return HTTPStatus.OK and a person with null field")
+		public void deletePersonTestShouldReturnHTTPStatusOK() {
+			//GIVEN
+			PersonDTO personDTO = new PersonDTO();
+			personDTO.setFirstName("FirstName");
+			personDTO.setLastName("LastName");
+			personDTO.setAddress("Address");
+			personDTO.setCity("City");
+			personDTO.setZip("12345");
+			personDTO.setPhone("012-345-678");
+			personDTO.setEmail("email@email.com");
+			Optional<PersonDTO> personDTOOpt = Optional.of(personDTO);
+			try {
+				when(personService.deletePerson(personDTO, request)).thenReturn(new PersonDTO());
+			} catch (ResourceNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ResponseEntity<PersonDTO> responseEntity = null;
+			
+			//WHEN
+			try {
+				responseEntity = personController.deletePerson(personDTOOpt, request);
+			} catch (ResourceNotFoundException | BadRequestException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//THEN
+			assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+			assertThat(responseEntity.getBody()).isEqualTo(new PersonDTO());
+		}
+		
+		@Test
+		@Tag("Corner case BadRequestException")
+	    @DisplayName("deletePersonTest should throw BadRequestException")
+		public void deletePersonTestShouldThrowBadRequestException() {
+			//GIVEN
+			Optional<PersonDTO> personDTOOpt = Optional.ofNullable(null);
+			//WHEN
+			//THEN
+			assertThrows(BadRequestException.class, () -> personController.deletePerson(personDTOOpt, request));
+		}
+	}
 }
