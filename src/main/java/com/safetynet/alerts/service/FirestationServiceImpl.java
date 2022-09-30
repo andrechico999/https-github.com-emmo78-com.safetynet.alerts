@@ -14,6 +14,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.WebRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTO;
@@ -40,6 +41,9 @@ public class FirestationServiceImpl implements FirestationService {
 	@Autowired
 	private FirestationDTOService firestationDTOService;
 	
+    @Autowired
+    private ObjectMapper objectMapper;
+	
 	@Autowired
 	private WriteToFile fileWriter;
 	
@@ -65,6 +69,7 @@ public class FirestationServiceImpl implements FirestationService {
 		}
 		List<FirestationPersonDTO> firestationPersonsDTO = firestationDTOService.firestationPersonsToDTO(findPersonsByStationNumber(stationNumber));
 		logger.info("{} : found {} person(s) covered by the fire station", requestService.requestToString(request), firestationPersonsDTO.size()-1);
+		fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonsDTO));
 		return firestationPersonsDTO;
 	}
 	
@@ -76,9 +81,10 @@ public class FirestationServiceImpl implements FirestationService {
 		} catch (NumberFormatException ex) {
 			throw new BadRequestException("Correct request is to specify an integer for the station number");
 		}
-		List<FirestationPersonPhoneDTO> firestationPersonsPhonesDTO = firestationDTOService.firestationPersonsToPhonesDTO(findPersonsByStationNumber(stationNumber));
-		logger.info("{} : found {} phone numbers served by the fire station", requestService.requestToString(request), firestationPersonsPhonesDTO.size());
-		return firestationPersonsPhonesDTO;
+		List<FirestationPersonPhoneDTO> firestationPersonPhonesDTO = firestationDTOService.firestationPersonsToPhonesDTO(findPersonsByStationNumber(stationNumber));
+		logger.info("{} : found {} phone numbers served by the fire station", requestService.requestToString(request), firestationPersonPhonesDTO.size());
+		fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonPhonesDTO));
+		return firestationPersonPhonesDTO;
 	}
 
 	@Override
@@ -103,6 +109,7 @@ public class FirestationServiceImpl implements FirestationService {
 		}
 		List<FirestationAddressPersonsDTO> firestationsAddressPersonsDTO = firestationDTOService.firestationsAddressToDTO(stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).distinct().collect(Collectors.toList()));
 		logger.info("{} : found {} household(s) served by the fire station", requestService.requestToString(request), firestationsAddressPersonsDTO.size());
+		fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersonsDTO));
 		return firestationsAddressPersonsDTO;
 	}
 

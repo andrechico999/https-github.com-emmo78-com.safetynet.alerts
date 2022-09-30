@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.dto.MedicalrecordDTO;
 import com.safetynet.alerts.model.Medicalrecord;
 
-
-
 @Service
 public class MedicalrecordDTOServiceImpl implements MedicalrecordDTOService {
 

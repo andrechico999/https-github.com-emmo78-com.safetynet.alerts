@@ -49,7 +49,7 @@ public class MedicalrecordServiceImpl implements MedicalrecordService {
 			medicalrecords.put(id, medicalrecord);
 			jsonRepository.setMedicalrecordToPerson(id);
 		} else {
-			throw new ResourceConflictException("Medicalrecord "+id+"  already exist");  
+			throw new ResourceConflictException("Medicalrecord "+id+" already exist");  
 		}
 		logger.info("{} : create medical record {} with success", requestService.requestToString(request), id);
 		return medicalrecordDTOService.convertMedicalrecordToDTO(medicalrecords.get(id));

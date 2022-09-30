@@ -34,6 +34,5 @@ public class Firestation {
 	
 	public void detachAddress(Address address) {
 		addressS.remove(address.getAddress());
-	}
-	
+	}	
 }

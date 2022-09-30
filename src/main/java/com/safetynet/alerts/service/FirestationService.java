@@ -53,7 +53,7 @@ public interface FirestationService {
 	
 	/**
 	 * return list of all households served by the barracks. This list must group people by address.
-	 * @param stationNumber : the station number
+	 * @param stationNumbers : the station number
 	 * @param request : WebRequest parameters
 	 * @return the list address with their household
 	 * @throws BadRequestException : "Correct request is to specify a list of integer for the station numbers"

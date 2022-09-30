@@ -20,7 +20,7 @@ import com.safetynet.alerts.model.Person;
  * persons Map : contains the persons. Key is the Sting id
  * medicalrecords Map : contains the medicalrecords. Key is the String id
  * 
- * All succes are log level DEBUG
+ * All success are log level DEBUG
  * All exception are log level ERROR "message"+e.toString() 
  *  
  * @author Olivier MOREL
@@ -106,13 +106,13 @@ public interface JsonRepository {
 	void setPersonMedicalrecord(Person person, String id);
 	
 	/**
-	 * calculate age from date of birth
+	 * calculate age from date of birth or 0 if date of birth after now.
 	 * @param person : to set Age
 	 */
 	public void setAge(Person person);
 	
 	/**
-	 * Attach to Medicalrecord his person if exist
+	 * Attach to a medical record its person if exists (use setPersonMedicalRecord)
 	 * @param id : common person and medical record identifier
 	 */
 	void setMedicalrecordToPerson(String id);

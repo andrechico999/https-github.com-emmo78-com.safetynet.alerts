@@ -14,6 +14,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.WebRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.safetynet.alerts.dto.AddressAdultChildDTO;
 import com.safetynet.alerts.dto.AddressPersonDTO;
@@ -37,6 +38,9 @@ public class AddressServiceImpl implements AddressService {
     @Autowired
 	private AddressDTOService addressDTOService;
     
+    @Autowired
+    private ObjectMapper objectMapper;
+    
 	@Autowired
 	private WriteToFile fileWriter;
 	
@@ -57,6 +61,7 @@ public class AddressServiceImpl implements AddressService {
 			return new ResourceNotFoundException("No address found");})
 				.getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
 		logger.info("{} : found {} child(ren)", requestService.requestToString(request), addressChildrenDTO.size());
+		fileWriter.writeToFile(objectMapper.valueToTree(addressChildrenDTO));
 		return addressChildrenDTO;
 	}
 
@@ -65,6 +70,7 @@ public class AddressServiceImpl implements AddressService {
 		((AddressDTOServiceImpl) addressDTOService).setStationNumbers(findFirestationssByAddress(address).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList()));
 		List<AddressPersonDTO> addressPersonsDTO = addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
 		logger.info("{} : found {} person(s)", requestService.requestToString(request), addressPersonsDTO.size()-1, address);
+		fileWriter.writeToFile(objectMapper.valueToTree(addressPersonsDTO));
 		return addressPersonsDTO; 
 	}
 
@@ -77,6 +83,7 @@ public class AddressServiceImpl implements AddressService {
 		}
  		List<AddressPersonEmailDTO> addressPersonEmailDTO = addressDTOService.addressPersonEmailToDTO(addressCity.stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList())); 
  		logger.info("{} : found {} email(s)", requestService.requestToString(request), addressPersonEmailDTO.size(), city);
+		fileWriter.writeToFile(objectMapper.valueToTree(addressPersonEmailDTO));
  		return addressPersonEmailDTO;
 	}
 
