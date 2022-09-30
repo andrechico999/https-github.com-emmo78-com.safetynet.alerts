@@ -33,7 +33,7 @@ public class PersonController {
 		/*Cette url doit retourner la personne et la liste des personnes habitant à la même adresse
 		 * ainsi que la liste des personnes portant le même nom (lastName, address, age, email, medicalrecord)
 		 */		
-		if (!firstName.isPresent() && lastName.isPresent()) {
+		if (!(firstName.isPresent() && lastName.isPresent())) {
 			throw new BadRequestException("Correct request should be http://localhost:8080/personInfo?firstName=john&lastName=boyd");
 		}
 	return new ResponseEntity<>(personService.findPersonsByFirstNameAndLastName(firstName.get(), lastName.get(), request), HttpStatus.OK);
