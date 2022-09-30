@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode //for Assertions in UnitTest
+@EqualsAndHashCode //for Assertions in UnitTests
 public class PersonDTO {
 	private String firstName;
 	private String lastName;

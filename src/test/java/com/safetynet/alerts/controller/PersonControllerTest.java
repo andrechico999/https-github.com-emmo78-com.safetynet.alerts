@@ -113,7 +113,7 @@ public class PersonControllerTest {
 		@Test
 		@Tag("Nominal case HTTPStatus.OK")
 	    @DisplayName("createPersonTest should return HTTPStatus.OK and the Person created")
-		public void createPersonTestShouldReturnHTTPStatusOK() {
+		public void createPersonTestShouldReturnHTTPStatusOKAndCreatedPerson() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
 			personDTO.setFirstName("FirstName");
@@ -164,7 +164,7 @@ public class PersonControllerTest {
 		@Test
 		@Tag("Nominal case HTTPStatus.OK")
 	    @DisplayName("updatePersonTest should return HTTPStatus.OK and the Person updated")
-		public void updatePersonTestShouldReturnHTTPStatusOK() {
+		public void updatePersonTestShouldReturnHTTPStatusOKAndUpdatedPerson() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
 			personDTO.setFirstName("FirstName");
@@ -214,8 +214,8 @@ public class PersonControllerTest {
 		
 		@Test
 		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("deletePersonTest should return HTTPStatus.OK and a person with null field")
-		public void deletePersonTestShouldReturnHTTPStatusOK() {
+	    @DisplayName("deletePersonTest should return HTTPStatus.OK and a person with null fields")
+		public void deletePersonTestShouldReturnHTTPStatusOKAndFieldsNullPerson() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
 			personDTO.setFirstName("FirstName");
