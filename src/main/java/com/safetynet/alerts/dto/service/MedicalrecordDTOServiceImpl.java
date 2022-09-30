@@ -12,8 +12,6 @@ import org.springframework.stereotype.Service;
 import com.safetynet.alerts.dto.MedicalrecordDTO;
 import com.safetynet.alerts.model.Medicalrecord;
 
-
-
 @Service
 public class MedicalrecordDTOServiceImpl implements MedicalrecordDTOService {
 
@@ -41,15 +39,27 @@ public class MedicalrecordDTOServiceImpl implements MedicalrecordDTOService {
 		Converter<LocalDate, String> localDateToString = new AbstractConverter<LocalDate, String>() {
 			@Override
 			protected String convert(LocalDate date) {
-				return date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+				String dateStr;
+				if (date == null) {
+					dateStr = null;
+				} else {
+					dateStr = date.format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+				}
+				return dateStr;
 			}	
 		};
 		modelMapper.typeMap(Medicalrecord.class, MedicalrecordDTO.class).addMappings(mapper -> 
 			mapper.using(localDateToString).map(Medicalrecord::getBirthdate, MedicalrecordDTO::setBirthdate));
 		MedicalrecordDTO medicalrecordDTO = modelMapper.map(medicalrecord, MedicalrecordDTO.class);
-		String[] names = medicalrecord.getId().split(" ");
-		medicalrecordDTO.setFirstName(names[0]);
-		medicalrecordDTO.setLastName(names[1]);
+		String id = medicalrecord.getId();
+		if (id == null) {
+			medicalrecordDTO.setFirstName(null);
+			medicalrecordDTO.setLastName(null);
+		} else {
+			String[] names = id.split(" ");
+			medicalrecordDTO.setFirstName(names[0]);
+			medicalrecordDTO.setLastName(names[1]);
+		}
 		return medicalrecordDTO;
 	}
 }

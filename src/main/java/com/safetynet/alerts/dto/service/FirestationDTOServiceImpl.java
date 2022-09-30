@@ -1,34 +1,30 @@
 package com.safetynet.alerts.dto.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.alerts.dto.FirestationAddressPersonsDTO;
 import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTOPerson;
 import com.safetynet.alerts.dto.FirestationPersonDTOStats;
 import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
-import com.safetynet.alerts.dto.FirestationsPersonDTO;
 import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Firestation;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.WriteToFile;
 
 @Service
 public class FirestationDTOServiceImpl implements FirestationDTOService {
     @Autowired
 	private ModelMapper modelMapper;
     
-    @Autowired
-    private ObjectMapper objectMapper;
-    
 	@Autowired
-	private WriteToFile fileWriter;
+	private AddressDTOService addressDTOService;
 	
 	@Override
 	public Firestation convertFirestationFromDTO(FirestationDTO firestationDTO) {
@@ -44,7 +40,7 @@ public class FirestationDTOServiceImpl implements FirestationDTOService {
 			mapper.map(Firestation::getStationNumber, FirestationDTO::setStation);
 			});
 		FirestationDTO firestationDTO = modelMapper.map(firestation, FirestationDTO.class);
-		firestationDTO.setAddress(firestation.getAddressS().get(addressAddress).getAddress());
+		firestationDTO.setAddress(Optional.ofNullable(firestation.getAddressS().get(addressAddress)).orElseGet(() -> new Address()).getAddress());
 		return firestationDTO;
 	}
 
@@ -55,11 +51,11 @@ public class FirestationDTOServiceImpl implements FirestationDTOService {
 		modelMapper.typeMap(Person.class, FirestationPersonDTOPerson.class).addMapping(src -> src.getAddress().getAddress(), FirestationPersonDTOPerson::setAddress);
 		List<FirestationPersonDTO> firestationPersonsDTO = firestationPersons.stream().map(this::convertFirestationPersonToDTO).collect(Collectors.toList());  
 		firestationPersonsDTO.add(new FirestationPersonDTOStats(FirestationPersonDTOPerson.getNumAdult(),FirestationPersonDTOPerson.getNumChild()));
-		fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonsDTO));
 		return firestationPersonsDTO;
 	}
 	
-	private FirestationPersonDTO convertFirestationPersonToDTO(Person person) {
+	@Override
+	public FirestationPersonDTO convertFirestationPersonToDTO(Person person) {
 		FirestationPersonDTOPerson firestationPersonDTO = modelMapper.map(person, FirestationPersonDTOPerson.class);
 		firestationPersonDTO.sumAdultAndChild(person);
 		return firestationPersonDTO;
@@ -67,21 +63,18 @@ public class FirestationDTOServiceImpl implements FirestationDTOService {
 	
 	@Override
 	public List<FirestationPersonPhoneDTO> firestationPersonsToPhonesDTO(List<Person> firestationPersons) {
-		List<FirestationPersonPhoneDTO> firestationPersonPhonesDTO = firestationPersons.stream().map(person -> modelMapper.map(person, FirestationPersonPhoneDTO.class)).distinct().collect(Collectors.toList());
-		fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonPhonesDTO));
-		return firestationPersonPhonesDTO;
+		return firestationPersons.stream().map(person -> modelMapper.map(person, FirestationPersonPhoneDTO.class)).distinct().collect(Collectors.toList());
 	}
 
 	@Override
-	public List<FirestationsPersonDTO> firestationsAddressPersonsToDTO(List<Person> firestationsPersons) {
-		modelMapper.typeMap(Person.class, FirestationsPersonDTO.class).addMappings(mapper -> {
-			mapper.map(src -> src.getAddress().getAddress(), FirestationsPersonDTO::setAddress);
-			//mapper.<String>map(Person::getAge, FirestationsPersonDTO::setAge); //ModelMapper Handling Mismatches
-			mapper.map(src -> src.getMedicalrecord().getMedications(), FirestationsPersonDTO::setMedications);
-			mapper.map(src -> src.getMedicalrecord().getAllergies(), FirestationsPersonDTO::setAllergies);
-		});	
-		List<FirestationsPersonDTO> firestationsAddressPersonsDTO = firestationsPersons.stream().map(person -> modelMapper.map(person, FirestationsPersonDTO.class)).collect(Collectors.toList());
-		fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersonsDTO));
-		return firestationsAddressPersonsDTO;
+	public List<FirestationAddressPersonsDTO> firestationsAddressToDTO(List<Address> firestationsAddress) {
+		return firestationsAddress.stream().map(this::convertFirestationsAddressToDTO).collect(Collectors.toList());
+	}
+	
+	@Override
+	public FirestationAddressPersonsDTO convertFirestationsAddressToDTO(Address address) {
+		FirestationAddressPersonsDTO firestationAddressPersonsDTO = modelMapper.map(address, FirestationAddressPersonsDTO.class);
+		firestationAddressPersonsDTO.setHouseHolds(address.getPersons().values().stream().map(person -> addressDTOService.addressPersonToDTO(person)).collect(Collectors.toList()));
+		return firestationAddressPersonsDTO;
 	}
 }
