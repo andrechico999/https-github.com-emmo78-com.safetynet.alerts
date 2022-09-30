@@ -26,7 +26,9 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import com.safetynet.alerts.dto.PersonAddressNameDTO;
+import com.safetynet.alerts.dto.PersonDTO;
 import com.safetynet.alerts.exception.BadRequestException;
+import com.safetynet.alerts.exception.ResourceConflictException;
 import com.safetynet.alerts.service.PersonService;
 
 
@@ -55,12 +57,12 @@ public class PersonControllerTest {
 	}
 	
 	@Nested
-    @Tag("personInfoFirstNameLastNameTest")
-    @DisplayName("personInfoFirstNameLastNameTest")
-    class NominalCases {
+    @Tag("personInfoFirstNameLastName tests")
+    @DisplayName("personInfoFirstNameLastName tests")
+    class PersonInfoTests {
 		
 		@Test
-		@Tag("Nominal case")
+		@Tag("Nominal case HTTPStatus.OK")
 	    @DisplayName("personInfoFirstNameLastNameTest should return HTTPStatus.OK and a List containing a PersonAddressNameDTO with lastName set")
 		public void personInfoFirstNameLastNameTestShouldReturnHTTPStatusOK() {
 			//GIVEN
@@ -86,7 +88,7 @@ public class PersonControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("Corner case BadRequestException")
 	    @DisplayName("personInfoFirstNameLastNameTest should throw BadRequestException")
 		public void personInfoFirstNameLastNameTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -96,6 +98,60 @@ public class PersonControllerTest {
 			//THEN
 			assertThrows(BadRequestException.class, () -> personController.personInfoFirstNameLastName(firstNameOpt, lastNameOpt, request));
 		}
-		
 	}
+
+	@Nested
+    @Tag("createPerson tests")
+    @DisplayName("createPerson tests")
+    class createPersonTests {
+		
+		@Test
+		@Tag("Nominal case HTTPStatus.OK")
+	    @DisplayName("createPersonTest should return HTTPStatus.OK and the Person created")
+		public void personInfoFirstNameLastNameTestShouldReturnHTTPStatusOK() {
+			//GIVEN
+			PersonDTO personDTO = new PersonDTO();
+			personDTO.setFirstName("FirstName");
+			personDTO.setLastName("LastName");
+			personDTO.setAddress("Address");
+			personDTO.setCity("City");
+			personDTO.setZip("12345");
+			personDTO.setPhone("012-345-678");
+			personDTO.setEmail("email@email.com");
+			Optional<PersonDTO> personDTOOpt = Optional.of(personDTO);
+			try {
+				when(personService.createPerson(personDTO, request)).thenReturn(personDTO);
+			} catch (ResourceConflictException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			ResponseEntity<PersonDTO> responseEntity = null;
+			
+			//WHEN
+			try {
+				responseEntity = personController.createPerson(personDTOOpt, request);
+			} catch (ResourceConflictException | BadRequestException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			//THEN
+			assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+			assertThat(responseEntity.getBody()).isEqualTo(personDTO);
+		}
+		
+		@Test
+		@Tag("Corner case BadRequestException")
+	    @DisplayName("createPersonTest should throw BadRequestException")
+		public void personInfoFirstNameLastNameTestShouldThrowBadRequestException() {
+			//GIVEN
+			Optional<PersonDTO> personDTOOpt = Optional.ofNullable(null);
+			//WHEN
+			//THEN
+			assertThrows(BadRequestException.class, () -> personController.createPerson(personDTOOpt, request));
+		}
+	}
+	
+	
+	
+	
 }
