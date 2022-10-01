@@ -23,6 +23,7 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -44,6 +45,7 @@ public class PersonServiceImpl implements PersonService {
 	@Autowired
 	private WriteToFile fileWriter;
 	
+	@Setter // Needed for Unit Test
 	private Map<String, Person> persons;
 
 	@PostConstruct
