@@ -3,8 +3,6 @@ package com.safetynet.alerts.repository;
 import java.io.File;
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -15,15 +13,15 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Repository
+@Slf4j
 public class WriteToFileImpl implements WriteToFile {
-	
-	private final Logger logger = LoggerFactory.getLogger(WriteToFileImpl.class);
 	
 	@Value("${fileDataOutJson.path}")
 	private String dataOutFileJson;
-
 	
 	@Autowired
     private ObjectMapper objectMapper;
@@ -35,9 +33,9 @@ public class WriteToFileImpl implements WriteToFile {
 		((DefaultPrettyPrinter) pp).indentObjectsWith(new DefaultIndenter("\t", "\012"));
 		try {
 			objectMapper.writer(pp).writeValue(new File(dataOutFileJson), jsonNode);
-			logger.debug("wrote json to file");
+			log.debug("wrote json to file");
 		} catch (IOException e) { // StreamWriteException and DatabindException are already caught by the alternative IOException
-			logger.error("Unable to write Json to file\n\t"+e.toString());
+			log.error("Unable to write Json to file\n\t"+e.toString());
 		}
 	}
 }

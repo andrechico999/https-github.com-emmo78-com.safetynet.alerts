@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -16,10 +14,10 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.safetynet.alerts.dto.FirestationAddressPersonsDTO;
 import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.dto.FirestationPersonDTO;
 import com.safetynet.alerts.dto.FirestationPersonPhoneDTO;
-import com.safetynet.alerts.dto.FirestationAddressPersonsDTO;
 import com.safetynet.alerts.dto.service.FirestationDTOService;
 import com.safetynet.alerts.exception.BadRequestException;
 import com.safetynet.alerts.exception.ResourceConflictException;
@@ -30,11 +28,12 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class FirestationServiceImpl implements FirestationService {
 	
-	private Logger logger = LoggerFactory.getLogger(FirestationServiceImpl.class);
-
 	@Autowired
 	private JsonRepository jsonNodeService;
 	
@@ -68,7 +67,7 @@ public class FirestationServiceImpl implements FirestationService {
 			throw new BadRequestException("Correct request is to specify an integer for the station number");
 		}
 		List<FirestationPersonDTO> firestationPersonsDTO = firestationDTOService.firestationPersonsToDTO(findPersonsByStationNumber(stationNumber));
-		logger.info("{} : found {} person(s) covered by the fire station", requestService.requestToString(request), firestationPersonsDTO.size()-1);
+		log.info("{} : found {} person(s) covered by the fire station", requestService.requestToString(request), firestationPersonsDTO.size()-1);
 		fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonsDTO));
 		return firestationPersonsDTO;
 	}
@@ -82,7 +81,7 @@ public class FirestationServiceImpl implements FirestationService {
 			throw new BadRequestException("Correct request is to specify an integer for the station number");
 		}
 		List<FirestationPersonPhoneDTO> firestationPersonPhonesDTO = firestationDTOService.firestationPersonsToPhonesDTO(findPersonsByStationNumber(stationNumber));
-		logger.info("{} : found {} phone numbers served by the fire station", requestService.requestToString(request), firestationPersonPhonesDTO.size());
+		log.info("{} : found {} phone numbers served by the fire station", requestService.requestToString(request), firestationPersonPhonesDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(firestationPersonPhonesDTO));
 		return firestationPersonPhonesDTO;
 	}
@@ -108,7 +107,7 @@ public class FirestationServiceImpl implements FirestationService {
 			throw new ResourceNotFoundException("No fire station found");
 		}
 		List<FirestationAddressPersonsDTO> firestationsAddressPersonsDTO = firestationDTOService.firestationsAddressToDTO(stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).distinct().collect(Collectors.toList()));
-		logger.info("{} : found {} household(s) served by the fire station", requestService.requestToString(request), firestationsAddressPersonsDTO.size());
+		log.info("{} : found {} household(s) served by the fire station", requestService.requestToString(request), firestationsAddressPersonsDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersonsDTO));
 		return firestationsAddressPersonsDTO;
 	}
@@ -128,7 +127,7 @@ public class FirestationServiceImpl implements FirestationService {
 			throw new ResourceConflictException("Address : "+addressAddress+" has already a firestation");
 		}
 		existingAddress.putFirestation(existingFirestation); //firestation.attachAddress(this);
-		logger.info("{} : add mapping address {} to fire station {} with succes", requestService.requestToString(request), existingAddress.getAddress(), existingFirestation.getStationNumber());
+		log.info("{} : add mapping address {} to fire station {} with succes", requestService.requestToString(request), existingAddress.getAddress(), existingFirestation.getStationNumber());
 		return firestationDTOService.convertFirestationToDTO(existingFirestationOpt.get(), addressAddress);
 	}
 
@@ -146,7 +145,7 @@ public class FirestationServiceImpl implements FirestationService {
 		existingAddress.getFirestations().values().stream().forEach(firestationLocal -> firestationLocal.detachAddress(existingAddress));
 		existingAddress.getFirestations().clear();
 		existingAddress.putFirestation(existingFirestation); //firestation.attachAddress(this);
-		logger.info("{} : update mapping address {} to fire station {} with succes", requestService.requestToString(request), existingAddress.getAddress(), existingFirestation.getStationNumber());
+		log.info("{} : update mapping address {} to fire station {} with succes", requestService.requestToString(request), existingAddress.getAddress(), existingFirestation.getStationNumber());
 		return firestationDTOService.convertFirestationToDTO(existingFirestationOpt.get(), addressAddress);
 	}
 
@@ -166,7 +165,7 @@ public class FirestationServiceImpl implements FirestationService {
 			}
 			existingFirestation.getAddressS().values().stream().forEach(address -> address.removeFirestation(existingFirestation));
 			existingFirestation.getAddressS().clear();
-			logger.info("{} : delete mapping to fire station {} with succes", requestService.requestToString(request), stationNumber);
+			log.info("{} : delete mapping to fire station {} with succes", requestService.requestToString(request), stationNumber);
 		} else if (stationNumber == 0) {
 			existingAddressOpt = Optional.ofNullable(allAddressS.get(stationAddressAddress));
 			Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address : "+stationAddressAddress));
@@ -176,7 +175,7 @@ public class FirestationServiceImpl implements FirestationService {
 			existingAddress.getFirestations().values().stream().forEach(firestationLocal -> firestationLocal.detachAddress(existingAddress));
 			existingAddress.getFirestations().clear();
 			existingFirestationOpt = Optional.of(firestation);
-			logger.info("{} : delete mapping address {} to fire station with succes", requestService.requestToString(request), stationAddressAddress);
+			log.info("{} : delete mapping address {} to fire station with succes", requestService.requestToString(request), stationAddressAddress);
 		} else {
 			existingAddressOpt = Optional.ofNullable(allAddressS.get(stationAddressAddress));
 			Address existingAddress = existingAddressOpt.orElseThrow(() -> new ResourceNotFoundException("Non-existent address : "+stationAddressAddress));
@@ -187,7 +186,7 @@ public class FirestationServiceImpl implements FirestationService {
 			}
 			existingFirestation.detachAddress(existingAddress);
 			existingFirestationOpt = Optional.of(new Firestation());
-			logger.info("{} : delete mapping address {} to fire station {} with succes", requestService.requestToString(request), stationAddressAddress, stationNumber);
+			log.info("{} : delete mapping address {} to fire station {} with succes", requestService.requestToString(request), stationAddressAddress, stationNumber);
 		}
 		return firestationDTOService.convertFirestationToDTO(existingFirestationOpt.get(), stationAddressAddress);
 	}

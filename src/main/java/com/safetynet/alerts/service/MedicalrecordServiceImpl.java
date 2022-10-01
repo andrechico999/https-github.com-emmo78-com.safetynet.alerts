@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -20,10 +18,11 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class MedicalrecordServiceImpl implements MedicalrecordService {
-	
-	private Logger logger = LoggerFactory.getLogger(MedicalrecordServiceImpl.class);
 	
 	@Autowired
 	private JsonRepository jsonRepository;
@@ -51,7 +50,7 @@ public class MedicalrecordServiceImpl implements MedicalrecordService {
 		} else {
 			throw new ResourceConflictException("Medicalrecord "+id+" already exist");  
 		}
-		logger.info("{} : create medical record {} with success", requestService.requestToString(request), id);
+		log.info("{} : create medical record {} with success", requestService.requestToString(request), id);
 		return medicalrecordDTOService.convertMedicalrecordToDTO(medicalrecords.get(id));
 	}
 
@@ -64,7 +63,7 @@ public class MedicalrecordServiceImpl implements MedicalrecordService {
 		Optional.ofNullable(medicalrecord.getBirthdate()).ifPresent(birthdate -> medicalrecordToUpdate.setBirthdate(birthdate));   
 		Optional.ofNullable(medicalrecord.getMedications()).ifPresent(medications -> medicalrecordToUpdate.setMedications(medications));				
 		Optional.ofNullable(medicalrecord.getAllergies()).ifPresent(allergies -> medicalrecordToUpdate.setAllergies(allergies));
-		logger.info("{} : update medical record {} with success", requestService.requestToString(request), id);
+		log.info("{} : update medical record {} with success", requestService.requestToString(request), id);
 		return medicalrecordDTOService.convertMedicalrecordToDTO(medicalrecords.get(id));
 	}
 
@@ -78,7 +77,7 @@ public class MedicalrecordServiceImpl implements MedicalrecordService {
 		} else {
 			throw new ResourceNotFoundException("Medicalrecord with id "+id+" does not exist for delete");  
 		}
-		logger.info("{} : delete medical record {} with success", requestService.requestToString(request), id);		
+		log.info("{} : delete medical record {} with success", requestService.requestToString(request), id);		
 		return medicalrecordDTOService.convertMedicalrecordToDTO(Optional.ofNullable(((JsonRepositoryImpl) jsonRepository).getPersons().get(id)).orElseGet(() -> {return new Person();}).getMedicalrecord());
 	}
 }

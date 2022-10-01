@@ -41,8 +41,8 @@ public class AddressControllerTest {
 	@Mock
 	private AddressService addressService;
 
-	MockHttpServletRequest requestMock;
-	WebRequest request;
+	private MockHttpServletRequest requestMock;
+	private WebRequest request;
 
 	@BeforeEach
 	public void setUpPerTest() {

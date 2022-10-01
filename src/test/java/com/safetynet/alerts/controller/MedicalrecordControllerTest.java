@@ -41,8 +41,8 @@ public class MedicalrecordControllerTest {
 	@Mock
 	private MedicalrecordService medicalrecordService;
 	
-	MockHttpServletRequest requestMock;
-	WebRequest request;
+	private MockHttpServletRequest requestMock;
+	private WebRequest request;
 	
 	@BeforeEach
 	public void setUpPerTest() {

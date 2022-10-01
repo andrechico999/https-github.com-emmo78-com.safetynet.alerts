@@ -12,18 +12,18 @@ public class RequestServiceImpl implements RequestService {
 	}
 
 	public String requestToString(WebRequest request) {
-		StringBuffer bodyParameters = new StringBuffer(request.getDescription(false)+"?"); 
+		StringBuffer parameters = new StringBuffer(request.getDescription(false)+"?"); 
 		request.getParameterMap().forEach((p,v) -> {
-			bodyParameters.append(p+"=");
+			parameters.append(p+"=");
 			int i=0;
 			while (i<(v.length-1)) {
-				bodyParameters.append(v[i]+",");
+				parameters.append(v[i]+",");
 				i++;}
-			bodyParameters.append(v[i]+"&");
+			parameters.append(v[i]+"&");
 		});
-		int length = bodyParameters.length();
-		bodyParameters.delete(length-1, length);
-		return bodyParameters.toString();
+		int length = parameters.length();
+		parameters.delete(length-1, length);
+		return parameters.toString();
 	}
 
 }

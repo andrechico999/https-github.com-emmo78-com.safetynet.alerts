@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +29,14 @@ import com.safetynet.alerts.model.Person;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
 @Getter
+@Slf4j
 public class JsonRepositoryImpl implements JsonRepository {
 
-	@Getter(AccessLevel.NONE)
-	private Logger logger = LoggerFactory.getLogger(JsonRepositoryImpl.class);
-		
 	@Autowired
 	@Getter(AccessLevel.NONE)
 	ObjectMapper objectMapper;
@@ -74,13 +71,13 @@ public class JsonRepositoryImpl implements JsonRepository {
 	public void jsonNodeServiceImpl() {
 		allAddressS = new HashMap<>();
 		persons = convertPersonsDTO(getPersonsFromFile());
-		logger.debug("persons Map filled and in IoC");
+		log.debug("persons Map filled and in IoC");
 		firestations = convertFirestations(getFirestationsFromFile());
-		logger.debug("firestations Map filled and in IoC");
+		log.debug("firestations Map filled and in IoC");
 		medicalrecords = convertMedicalrecords(getMedicalrecordsFromFile());
-		logger.debug("medicalrecords Map filled and in IoC");
+		log.debug("medicalrecords Map filled and in IoC");
 		setPersonsMedicalrecords(persons);
-		logger.debug("medicalrecords attached to persons");
+		log.debug("medicalrecords attached to persons");
 	}
 		
 	@Override
@@ -163,7 +160,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 		} else {
 			person.setMedicalrecord(new Medicalrecord());
 			person.setAge(0);
-			logger.warn("No medical record for {}", id);
+			log.warn("No medical record for {}", id);
 		}
 	}
 
@@ -172,7 +169,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 		int age = Period.between(person.getMedicalrecord().getBirthdate(),LocalDate.now()).getYears();
 		if (age < 0) {
 			age = 0;
-			logger.warn("negative age for {} so set age to 0", person.getId());
+			log.warn("negative age for {} so set age to 0", person.getId());
 		}
 		person.setAge(age);
 	}
@@ -183,7 +180,7 @@ public class JsonRepositoryImpl implements JsonRepository {
 		if (person != null) {
 			setPersonMedicalrecord(person, id);
 		} else {
-			logger.warn("No person for medical record {}", id);
+			log.warn("No person for medical record {}", id);
 		}
 	}
 

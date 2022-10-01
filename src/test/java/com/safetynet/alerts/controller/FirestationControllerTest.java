@@ -46,8 +46,8 @@ public class FirestationControllerTest {
 	@Mock
 	private FirestationService firestationService;
 	
-	MockHttpServletRequest requestMock;
-	WebRequest request;
+	private MockHttpServletRequest requestMock;
+	private WebRequest request;
 	
 	@BeforeEach
 	public void setUpPerTest() {
