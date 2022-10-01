@@ -22,7 +22,7 @@ import com.safetynet.alerts.service.MedicalrecordService;
 public class MedicalrecordController {
 
 	@Autowired
-	MedicalrecordService medicalrecordService;
+	private MedicalrecordService medicalrecordService;
 	
     @PostMapping("/medicalRecord")
     public ResponseEntity<MedicalrecordDTO> createMedicalrecord(@RequestBody Optional<MedicalrecordDTO> medicalrecord, WebRequest request) throws ResourceConflictException, BadRequestException {

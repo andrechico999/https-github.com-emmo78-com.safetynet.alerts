@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,11 +23,12 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class PersonServiceImpl implements PersonService {
 
-	private Logger logger = LoggerFactory.getLogger(PersonServiceImpl.class);
-	
 	@Autowired
 	private JsonRepository jsonRepository;
 	
@@ -62,7 +61,7 @@ public class PersonServiceImpl implements PersonService {
 			fileWriter.writeToFile(NullNode.instance);
 			return new ResourceNotFoundException("No person found");})
 				.getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList()));
-		logger.info("{} : found {} persons", requestService.requestToString(request), personsAddressNameDTO.size());
+		log.info("{} : found {} persons", requestService.requestToString(request), personsAddressNameDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(personsAddressNameDTO));
 		return personsAddressNameDTO;
 	}
@@ -78,7 +77,7 @@ public class PersonServiceImpl implements PersonService {
 		} else {
 			throw new ResourceConflictException("Person "+id+" already exist");
 		}
-		logger.info("{} : create person {} with success", requestService.requestToString(request), id);
+		log.info("{} : create person {} with success", requestService.requestToString(request), id);
 		return personDTOService.convertPersonToDTO (person);
 	}
 	
@@ -104,7 +103,7 @@ public class PersonServiceImpl implements PersonService {
 			personToUpdate.setPhone(phone));   
 		Optional.ofNullable(person.getEmail()).ifPresent(email -> 
 			personToUpdate.setEmail(email));
-		logger.info("{} : update person {} with success", requestService.requestToString(request), id);
+		log.info("{} : update person {} with success", requestService.requestToString(request), id);
 		return personDTOService.convertPersonToDTO(jsonRepository.setPersonAddress(personToUpdate));
 	}
 	
@@ -115,7 +114,7 @@ public class PersonServiceImpl implements PersonService {
 		Optional<Person> personToRemoveOpt = Optional.ofNullable(persons.remove(id));
 		Person personToRemove = personToRemoveOpt.orElseThrow(() -> new ResourceNotFoundException("Person with id "+id+" does not exist for delete"));
 		personToRemove.getAddress().detachPerson(personToRemove);
-		logger.info("{} : delete person {} with success", requestService.requestToString(request), id);
+		log.info("{} : delete person {} with success", requestService.requestToString(request), id);
 		return personDTOService.convertPersonToDTO(Optional.ofNullable(persons.get(id)).orElseGet(() -> new Person()));
 	}	
 }

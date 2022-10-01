@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -27,11 +25,12 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class AddressServiceImpl implements AddressService {
 	
-	private Logger logger = LoggerFactory.getLogger(AddressServiceImpl.class);
-
 	@Autowired
 	private JsonRepository jsonNodeService;
 	
@@ -60,7 +59,7 @@ public class AddressServiceImpl implements AddressService {
 			fileWriter.writeToFile(NullNode.instance);
 			return new ResourceNotFoundException("No address found");})
 				.getPersons().values().stream().filter(person -> person.getAge() <= 18).sorted((p1, p2) -> p1.getLastName().compareTo(p2.getLastName())).collect(Collectors.toList()));
-		logger.info("{} : found {} child(ren)", requestService.requestToString(request), addressChildrenDTO.size());
+		log.info("{} : found {} child(ren)", requestService.requestToString(request), addressChildrenDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(addressChildrenDTO));
 		return addressChildrenDTO;
 	}
@@ -69,7 +68,7 @@ public class AddressServiceImpl implements AddressService {
 	public List<AddressPersonDTO> findPersonsByAddress(String address, WebRequest request) throws ResourceNotFoundException {
 		((AddressDTOServiceImpl) addressDTOService).setStationNumbers(findFirestationssByAddress(address).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList()));
 		List<AddressPersonDTO> addressPersonsDTO = addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
-		logger.info("{} : found {} person(s)", requestService.requestToString(request), addressPersonsDTO.size()-1, address);
+		log.info("{} : found {} person(s)", requestService.requestToString(request), addressPersonsDTO.size()-1, address);
 		fileWriter.writeToFile(objectMapper.valueToTree(addressPersonsDTO));
 		return addressPersonsDTO; 
 	}
@@ -82,7 +81,7 @@ public class AddressServiceImpl implements AddressService {
 			throw new ResourceNotFoundException("No city found");
 		}
  		List<AddressPersonEmailDTO> addressPersonEmailDTO = addressDTOService.addressPersonEmailToDTO(addressCity.stream().flatMap(address -> address.getPersons().values().stream()).collect(Collectors.toList())); 
- 		logger.info("{} : found {} email(s)", requestService.requestToString(request), addressPersonEmailDTO.size(), city);
+ 		log.info("{} : found {} email(s)", requestService.requestToString(request), addressPersonEmailDTO.size(), city);
 		fileWriter.writeToFile(objectMapper.valueToTree(addressPersonEmailDTO));
  		return addressPersonEmailDTO;
 	}
