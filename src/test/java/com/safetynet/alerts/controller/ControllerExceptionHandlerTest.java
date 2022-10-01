@@ -1,8 +1,8 @@
 package com.safetynet.alerts.controller;
 
-import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +21,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.safetynet.alerts.dto.FirestationDTO;
 import com.safetynet.alerts.exception.BadRequestException;
 import com.safetynet.alerts.exception.ResourceConflictException;
 import com.safetynet.alerts.service.RequestService;
@@ -30,6 +33,8 @@ public class ControllerExceptionHandlerTest {
 
 	@InjectMocks
 	private ControllerExceptionHandler controllerExceptionHandler;
+	
+	ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Mock
 	private RequestService requestService;
@@ -41,10 +46,6 @@ public class ControllerExceptionHandlerTest {
 	public void setUpPerTest() {
 		requestMock = new MockHttpServletRequest();
 		requestMock.setServerName("http://localhost:8080");
-		requestMock.setRequestURI("/phoneAlert");
-		requestMock.setQueryString("firestation=1");
-		requestMock.setMethod("GET");
-		request = new ServletWebRequest(requestMock);
 	}
 	
 	@AfterEach
@@ -58,13 +59,17 @@ public class ControllerExceptionHandlerTest {
 	@DisplayName("badRequestExceptionTest should return a ResponseEntity with error message and HttpStatus.BAD_REQUEST")
 	public void badRequestExceptionTest() {
 		//GIVEN
-		BadRequestException ex = new BadRequestException("Correct parameter value is an integer");
-		when(requestService.requestToString(any(WebRequest.class))).thenReturn("/phoneAlert?firestation=1");
+		requestMock.setRequestURI("/phoneAlert");
+		requestMock.setParameter("firestation", "a");
+		requestMock.setMethod("GET");
+		request = new ServletWebRequest(requestMock);
+		BadRequestException ex = new BadRequestException("Correct request is to specify an integer for the station number");
+		when(requestService.requestToString(any(WebRequest.class))).thenReturn("uri=/phoneAlert?firestation=a");
 		//WHEN
 		ResponseEntity<ErrorMessage> responseEntity = controllerExceptionHandler.badRequestException(ex, request);
 		//THEN
 		assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.BAD_REQUEST);
-		assertThat(responseEntity.getBody()).asString().contains("Correct parameter value is an integer");
+		assertThat(responseEntity.getBody()).asString().contains("Correct request is to specify an integer for the station number");
 	}
 	
 	@Test
@@ -72,27 +77,43 @@ public class ControllerExceptionHandlerTest {
 	@DisplayName("resourceNotFoundExceptionTest should return a ResponseEntity with error message and HttpStatus.NOT_FOUND")
 	public void resourceNotFoundExceptionTest() {
 		//GIVEN
-		ResourceNotFoundException ex = new ResourceNotFoundException("No Firestation wtih this number 1");
-		when(requestService.requestToString(any(WebRequest.class))).thenReturn("/phoneAlert?firestation=1");
+		requestMock.setRequestURI("/phoneAlert");
+		requestMock.setParameter("firestation", "5");
+		requestMock.setMethod("GET");
+		request = new ServletWebRequest(requestMock);
+		ResourceNotFoundException ex = new ResourceNotFoundException("No fire station found");
+		when(requestService.requestToString(any(WebRequest.class))).thenReturn("uri=/phoneAlert?firestation=5");
 		//WHEN
 		ResponseEntity<ErrorMessage> responseEntity = controllerExceptionHandler.resourceNotFoundException(ex, request);
 		//THEN
 		assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
-		assertThat(responseEntity.getBody()).asString().contains("No Firestation wtih this number 1");
+		assertThat(responseEntity.getBody()).asString().contains("No fire station found");
 	}
 
 	@Test
 	@Tag("resourceConflictException test")
-	@DisplayName("resourceConflictExceptionTest should return a ResponseEntity with error message and HttpStatus.NOT_FOUND")
+	@DisplayName("resourceConflictExceptionTest should return a ResponseEntity with error message and HttpStatus.CONFLICT")
 	public void resourceConflictExceptionTest() {
+		requestMock.setRequestURI("/firestation");
+		FirestationDTO firestationDTO = new FirestationDTO();
+		firestationDTO.setAddress("1509 Culver St");
+		firestationDTO.setStation("3");
+		try {
+			requestMock.setContent(objectMapper.writeValueAsBytes(firestationDTO));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		requestMock.setMethod("POST");
+		request = new ServletWebRequest(requestMock);
+
 		//GIVEN
-		ResourceConflictException ex = new ResourceConflictException("Firestation 1 already exists");
-		when(requestService.requestToString(any(WebRequest.class))).thenReturn("/phoneAlert?firestation=1");
+		ResourceConflictException ex = new ResourceConflictException("Address : 1509 Culver St has already a firestation");
+		when(requestService.requestToString(any(WebRequest.class))).thenReturn("uri=/firestation");
 		//WHEN
 		ResponseEntity<ErrorMessage> responseEntity = controllerExceptionHandler.resourceConflictException(ex, request);
 		//THEN
 		assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.CONFLICT);
-		assertThat(responseEntity.getBody()).asString().contains("Firestation 1 already exists");
+		assertThat(responseEntity.getBody()).asString().contains("Address : 1509 Culver St has already a firestation");
 	}
 
 }
