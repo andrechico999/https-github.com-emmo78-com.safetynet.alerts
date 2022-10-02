@@ -298,4 +298,59 @@ public class PersonServiceTest {
 			assertThrows(ResourceNotFoundException.class, () -> personService.updatePerson(personDTOexpected, request));
 		}
 	}
+
+	@Nested
+	@Tag("DELETE Person Tests")
+	@DisplayName("deletePerson tests")
+	public class DeletePersonTestClass {
+		
+		@Test
+		@Tag("Nominal case")
+		@DisplayName("deletePersonTest should delete and and return a person with null fields")
+		public void deletePersonTestShouldDeletePersonAndReturnNullFieldsPerson() {
+			//GIVEN
+			requestMock.setRequestURI("/person");
+			requestMock.setMethod("DELETE");
+			request = new ServletWebRequest(requestMock);
+			PersonDTO personDTOToDelete = new PersonDTO("FirstName1", "LastName1", "address1", "city", "12345", "123-456-789", "person1@email.com");
+			Address addressExpected = personService.getPersons().get("FirstName1 LastName1").getAddress();
+			when(personDTOService.convertPersonFromDTO(any(PersonDTO.class))).then(invocation -> {
+				Person person = modelMapper.map(invocation.getArgument(0, PersonDTO.class), Person.class);
+				person.buildId();
+				return person;
+			});
+			when(personDTOService.convertPersonToDTO(any(Person.class))).then(invocation -> modelMapper.map(invocation.getArgument(0, Person.class), PersonDTO.class));
+			//WHEN
+			PersonDTO personDTOResult = null;
+			try {
+				personDTOResult = personService.deletePerson(personDTOToDelete, request);
+			} catch (ResourceNotFoundException e) {
+				e.printStackTrace();
+			}
+			//THEN
+			assertThat(personDTOResult).isEqualTo(new PersonDTO());
+			assertThat(personService.getPersons()).doesNotContainKey("FirstName1 LastName1");
+			assertThat(addressExpected.getPersons()).doesNotContainKey("FirstName1 LastName1").containsKey("FirstName2 LastName1").containsKey("FirstName3 LastName3");
+		}
+		
+		@Test
+		@Tag("Corner case")
+		@DisplayName("deletePersonTest should throw a ResourceNotFoundException")
+		public void deletePersonTestShouldThrowResourceNotFoundException() {
+			//GIVEN
+			requestMock.setRequestURI("/person");
+			requestMock.setMethod("DELETE");
+			request = new ServletWebRequest(requestMock);
+			PersonDTO personDTOexpected = new PersonDTO("FirstName5", "LastName5", "address5", "city", "12345", "567-890-123", "person5@email.com");
+			when(personDTOService.convertPersonFromDTO(any(PersonDTO.class))).then(invocation -> {
+				Person person = modelMapper.map(invocation.getArgument(0, PersonDTO.class), Person.class);
+				person.buildId();
+				return person;
+			});
+			//WHEN
+			//THEN
+			assertThrows(ResourceNotFoundException.class, () -> personService.deletePerson(personDTOexpected, request));
+		}
+	}
+
 }
