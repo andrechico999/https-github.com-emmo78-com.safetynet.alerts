@@ -74,8 +74,9 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public List<AddressPersonEmailDTO> findemailPersonsByCity(String city, WebRequest request) throws ResourceNotFoundException {
-		List<Address> addressCity = allAddressS.values().stream().filter(address -> address.getCity().equals(requestService.upperCasingFirstLetter(city))).collect(Collectors.toList());
+	public List<AddressPersonEmailDTO> findemailPersonsByCity(String cityRequest, WebRequest request) throws ResourceNotFoundException {
+		String city = requestService.upperCasingFirstLetter(cityRequest); //Local variable city defined in an enclosing scope must be final or effectively final
+		List<Address> addressCity = allAddressS.values().stream().filter(address -> address.getCity().equals(city)).collect(Collectors.toList());
  		if ( addressCity.size() == 0) {
  			fileWriter.writeToFile(NullNode.instance);
 			throw new ResourceNotFoundException("No city found");

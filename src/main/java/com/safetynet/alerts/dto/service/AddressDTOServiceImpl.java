@@ -37,7 +37,7 @@ public class AddressDTOServiceImpl implements AddressDTOService {
 	@Override
 	public AddressAdultChildDTO convertAddressChildrenToDTO(Person child) {
 		AddressChildDTO addressChildDTO = modelMapper.map(child, AddressChildDTO.class);
-		addressChildDTO.setAdults(child.getAddress().getPersons().values().stream().filter(person -> person.equals(child)&&(person.getAge() > 18)).map(person -> modelMapper.map(person, AddressAdultChildDTO.class)).collect(Collectors.toList()));
+		addressChildDTO.setAdults(child.getAddress().getPersons().values().stream().filter(person -> person.getLastName().equals(child.getLastName())&&(person.getAge() > 18)).map(person -> modelMapper.map(person, AddressAdultChildDTO.class)).collect(Collectors.toList()));
 		return addressChildDTO;
 	}
 

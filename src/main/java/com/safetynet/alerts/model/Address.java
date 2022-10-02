@@ -4,24 +4,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
+@AllArgsConstructor //needed for Unit Tests
 public class Address {
 	
-	@EqualsAndHashCode.Include
 	private String address;
-
 	private String city;
 	private String zip;
 	
+	@EqualsAndHashCode.Exclude
 	@Setter(AccessLevel.NONE)
 	private Map<Integer, Firestation> firestations;
 
+	@EqualsAndHashCode.Exclude
 	@Setter(AccessLevel.NONE)
 	private Map<String, Person> persons;
 
@@ -32,6 +34,14 @@ public class Address {
 
 	public Address(String address) {
 		this.address = address;
+		persons = new HashMap<>();
+		firestations= new HashMap<>();
+	}
+	
+	public Address(Address address) {
+		this.address = address.address;
+		this.city = address.city;
+		this.zip= address.zip;
 		persons = new HashMap<>();
 		firestations= new HashMap<>();
 	}

@@ -3,6 +3,9 @@ package com.safetynet.alerts.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -106,12 +109,18 @@ public class FirestationServiceImpl implements FirestationService {
 			fileWriter.writeToFile(NullNode.instance);
 			throw new ResourceNotFoundException("No fire station found");
 		}
-		List<FirestationAddressPersonsDTO> firestationsAddressPersonsDTO = firestationDTOService.firestationsAddressToDTO(stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).distinct().collect(Collectors.toList()));
+		List<FirestationAddressPersonsDTO> firestationsAddressPersonsDTO = firestationDTOService.firestationsAddressToDTO(stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).filter(distinctByKey(Address::getAddress)).collect(Collectors.toList()));
 		log.info("{} : found {} household(s) served by the fire station", requestService.requestToString(request), firestationsAddressPersonsDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersonsDTO));
 		return firestationsAddressPersonsDTO;
 	}
 
+	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) 
+	{
+	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+	
 	@Override
 	public FirestationDTO addMappingAddressToFirestation(FirestationDTO firestationDTO, WebRequest request) throws ResourceNotFoundException, ResourceConflictException {
 		Firestation firestation = firestationDTOService.convertFirestationFromDTO(firestationDTO);

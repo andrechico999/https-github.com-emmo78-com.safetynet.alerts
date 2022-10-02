@@ -1,45 +1,46 @@
 [
 	{
-		"lastName" : "Cooper",
-		"phone" : "841-874-6874",
-		"age" : "28",
-		"medications" : [
-			"hydrapermazol:300mg",
-			"dodoxadin:30mg"
-		],
-		"allergies" : [
-			"shellfish"
-		]
-	},
-	{
-		"lastName" : "Peters",
-		"phone" : "841-874-8888",
-		"age" : "57",
-		"medications" : [ ],
-		"allergies" : [ ]
-	},
-	{
+		"firstName" : "Tenley",
 		"lastName" : "Boyd",
-		"phone" : "841-874-9888",
-		"age" : "57",
-		"medications" : [
-			"aznol:200mg"
-		],
-		"allergies" : [
-			"nillacilan"
+		"age" : "10",
+		"adults" : [
+			{
+				"firstName" : "John",
+				"lastName" : "Boyd",
+				"age" : "38"
+			},
+			{
+				"firstName" : "Jacob",
+				"lastName" : "Boyd",
+				"age" : "33"
+			},
+			{
+				"firstName" : "Felicia",
+				"lastName" : "Boyd",
+				"age" : "36"
+			}
 		]
 	},
 	{
-		"lastName" : "B",
-		"phone" : "841-874-6512",
-		"age" : "0",
-		"medications" : [ ],
-		"allergies" : [ ]
-	},
-	{
-		"stationNumbers" : [
-			"3",
-			"4"
+		"firstName" : "Roger",
+		"lastName" : "Boyd",
+		"age" : "5",
+		"adults" : [
+			{
+				"firstName" : "John",
+				"lastName" : "Boyd",
+				"age" : "38"
+			},
+			{
+				"firstName" : "Jacob",
+				"lastName" : "Boyd",
+				"age" : "33"
+			},
+			{
+				"firstName" : "Felicia",
+				"lastName" : "Boyd",
+				"age" : "36"
+			}
 		]
 	}
 ]

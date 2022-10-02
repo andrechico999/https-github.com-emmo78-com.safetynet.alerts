@@ -18,11 +18,14 @@ import com.safetynet.alerts.dto.PersonAddressNameDTO;
 import com.safetynet.alerts.dto.PersonDTO;
 import com.safetynet.alerts.dto.service.PersonDTOService;
 import com.safetynet.alerts.exception.ResourceConflictException;
+import com.safetynet.alerts.model.Address;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -44,6 +47,8 @@ public class PersonServiceImpl implements PersonService {
 	@Autowired
 	private WriteToFile fileWriter;
 	
+	@Getter // Needed for Unit Test
+	@Setter // Needed for Unit Test
 	private Map<String, Person> persons;
 
 	@PostConstruct
@@ -60,7 +65,7 @@ public class PersonServiceImpl implements PersonService {
 		List<PersonAddressNameDTO> personsAddressNameDTO = personDTOService.personsAddressNameToDTO(Optional.ofNullable(persons.get(id)).orElseThrow(() -> {
 			fileWriter.writeToFile(NullNode.instance);
 			return new ResourceNotFoundException("No person found");})
-				.getAddress().getPersons().values().stream().filter(person -> person.equals(persons.get(id))).collect(Collectors.toList()));
+				.getAddress().getPersons().values().stream().filter(person -> person.getLastName().equals(persons.get(id).getLastName())).collect(Collectors.toList()));
 		log.info("{} : found {} persons", requestService.requestToString(request), personsAddressNameDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(personsAddressNameDTO));
 		return personsAddressNameDTO;
@@ -78,7 +83,7 @@ public class PersonServiceImpl implements PersonService {
 			throw new ResourceConflictException("Person "+id+" already exist");
 		}
 		log.info("{} : create person {} with success", requestService.requestToString(request), id);
-		return personDTOService.convertPersonToDTO (person);
+		return personDTOService.convertPersonToDTO(person);
 	}
 	
 	@Override
@@ -87,22 +92,24 @@ public class PersonServiceImpl implements PersonService {
 		String id = person.getId();
 		Optional<Person> personToUpdateOpt = Optional.ofNullable(persons.get(id));
 		Person personToUpdate = personToUpdateOpt.orElseThrow(() -> new ResourceNotFoundException("No person with id "+id+" to Update"));
+		Address addressToUpdate = new Address(personToUpdate.getAddress());
 		Optional.ofNullable(person.getAddress().getAddress()).ifPresent(address -> {
 			personToUpdate.getAddress().detachPerson(personToUpdate);
-			personToUpdate.getAddress().setAddress(address);				
+			addressToUpdate.setAddress(address);				
 		});   
 		Optional.ofNullable(person.getAddress().getCity()).ifPresent(city -> {
 			personToUpdate.getAddress().detachPerson(personToUpdate);
-			personToUpdate.getAddress().setCity(city);				
+			addressToUpdate.setCity(city);				
 		});   
 		Optional.ofNullable(person.getAddress().getZip()).ifPresent(zip -> {
 			personToUpdate.getAddress().detachPerson(personToUpdate);
-			personToUpdate.getAddress().setZip(zip);				
-		});   
+			addressToUpdate.setZip(zip);				
+		});
 		Optional.ofNullable(person.getPhone()).ifPresent(phone -> 
 			personToUpdate.setPhone(phone));   
 		Optional.ofNullable(person.getEmail()).ifPresent(email -> 
 			personToUpdate.setEmail(email));
+		personToUpdate.setAddress(addressToUpdate);
 		log.info("{} : update person {} with success", requestService.requestToString(request), id);
 		return personDTOService.convertPersonToDTO(jsonRepository.setPersonAddress(personToUpdate));
 	}
