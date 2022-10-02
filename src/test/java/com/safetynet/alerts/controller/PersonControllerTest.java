@@ -71,6 +71,9 @@ public class PersonControllerTest {
 			List<PersonAddressNameDTO> personsAddressNameDTO = new ArrayList<>();
 			PersonAddressNameDTO personAddressNameDTO = new PersonAddressNameDTO();
 			personAddressNameDTO.setLastName("LastName");
+			personAddressNameDTO.setAddress("address1");
+			personAddressNameDTO.setAge("21");
+			personAddressNameDTO.setEmail("email@email.com");
 			personsAddressNameDTO.add(personAddressNameDTO);	
 			try {
 				when(personService.findPersonsByFirstNameAndLastName(firstNameOpt.get(), lastNameOpt.get(), request)).thenReturn(personsAddressNameDTO);

@@ -18,6 +18,8 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -33,7 +35,9 @@ public class MedicalrecordServiceImpl implements MedicalrecordService {
 	@Autowired
 	private RequestService requestService;
 	
-    private Map<String, Medicalrecord> medicalrecords;
+	@Getter // Needed for Unit Test
+	@Setter // Needed for Unit Test
+	private Map<String, Medicalrecord> medicalrecords;
 
 	@PostConstruct
 	public void personServiceImpl() {

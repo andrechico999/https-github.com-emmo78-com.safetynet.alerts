@@ -66,12 +66,7 @@ public class MedicalrecordControllerTest {
 	    @DisplayName("createMedicalrecordTest should return HTTPStatus.OK and the medical record created")
 		public void createMedicalrecordTestShouldReturnHTTPStatusOKAndMedcialrecordCreated() {
 			//GIVEN
-			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO();
-			medicalrecordDTO.setFirstName("FirstName");
-			medicalrecordDTO.setLastName("LastName");
-			medicalrecordDTO.setBirthdate(LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-			medicalrecordDTO.setMedications(new ArrayList<String>());
-			medicalrecordDTO.setAllergies(new ArrayList<String>());
+			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO("FirstName", "LastName", LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")), new ArrayList<String>(), new ArrayList<String>());
 			Optional<MedicalrecordDTO> medicalrecordDTOOpt = Optional.of(medicalrecordDTO);
 			try {
 				when(medicalrecordService.createMedicalrecord(medicalrecordDTO, request)).thenReturn(medicalrecordDTO);
@@ -115,12 +110,7 @@ public class MedicalrecordControllerTest {
 	    @DisplayName("updateMedicalrecordTest should return HTTPStatus.OK and the medical record updated")
 		public void updateMedicalrecordTestShouldReturnHTTPStatusOKAndUpdatedMedicalrecord() {
 			//GIVEN
-			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO();
-			medicalrecordDTO.setFirstName("FirstName");
-			medicalrecordDTO.setLastName("LastName");
-			medicalrecordDTO.setBirthdate(LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-			medicalrecordDTO.setMedications(new ArrayList<String>());
-			medicalrecordDTO.setAllergies(new ArrayList<String>());
+			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO("FirstName", "LastName", LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")), new ArrayList<String>(), new ArrayList<String>());
 			Optional<MedicalrecordDTO> medicalrecordDTOOpt = Optional.of(medicalrecordDTO);
 			try {
 				when(medicalrecordService.updateMedicalrecord(medicalrecordDTO, request)).thenReturn(medicalrecordDTO);
@@ -164,12 +154,7 @@ public class MedicalrecordControllerTest {
 	    @DisplayName("deleteMedicalrecordTest should return HTTPStatus.OK and a Medicalrecord with null field")
 		public void deleteMedicalrecordTestShouldReturnHTTPStatusOKAndANullFieldsMedicalrecord() {
 			//GIVEN
-			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO();
-			medicalrecordDTO.setFirstName("FirstName");
-			medicalrecordDTO.setLastName("LastName");
-			medicalrecordDTO.setBirthdate(LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-			medicalrecordDTO.setMedications(new ArrayList<String>());
-			medicalrecordDTO.setAllergies(new ArrayList<String>());
+			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO("FirstName", "LastName", LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")), new ArrayList<String>(), new ArrayList<String>());
 			Optional<MedicalrecordDTO> medicalrecordDTOOpt = Optional.of(medicalrecordDTO);
 			try {
 				when(medicalrecordService.deleteMedicalrecord(medicalrecordDTO, request)).thenReturn(new MedicalrecordDTO());

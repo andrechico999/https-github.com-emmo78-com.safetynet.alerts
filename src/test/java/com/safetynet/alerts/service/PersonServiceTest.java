@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,6 +83,12 @@ public class PersonServiceTest {
 			mapper.<String>map(src -> src.getAddress().getZip(), PersonDTO::setZip);
 		});
 	}
+	
+	@AfterAll
+	public static void unSetForAllTests() {
+		modelMapper = null;
+	}
+	
 
 	@BeforeEach
 	public void setUpForEachTests() {
@@ -153,6 +160,7 @@ public class PersonServiceTest {
 						.collect(Collectors.toList());
 			});
 
+			//Select persons 1 and 2
 			List<PersonAddressNameDTO> personsAddressNameDTOexpected = personsTest.values().stream()
 					.filter(person -> person.getLastName().equals("LastName1")
 							&& person.getAddress().getAddress().equals("address1"))
@@ -167,6 +175,7 @@ public class PersonServiceTest {
 			}
 
 			// THEN
+			// Verifies that the actual group contains exactly the given values and nothing else, in any order.
 			assertThat(personsAddressNameDTOresult).containsExactlyInAnyOrderElementsOf(personsAddressNameDTOexpected);
 		}
 
