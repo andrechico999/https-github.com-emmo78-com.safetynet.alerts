@@ -32,7 +32,6 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
-import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,10 +54,9 @@ public class FirestationServiceImpl implements FirestationService {
 	@Autowired
 	private RequestService requestService;
 
-	@Getter
 	@Setter
 	private Map<Integer, Firestation> firestations;
-	@Getter
+
 	@Setter
 	private Map<String, Address> allAddressS;
 

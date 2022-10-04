@@ -25,6 +25,7 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -46,6 +47,7 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired
 	private RequestService requestService;
 	
+	@Setter
 	private Map<String, Address> allAddressS;
 
 	@PostConstruct
@@ -65,7 +67,7 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public List<AddressPersonDTO> findPersonsByAddress(String address, WebRequest request) throws ResourceNotFoundException {
+	public List<AddressPersonDTO> findPersonsByAddress(String address, WebRequest request) throws ResourceNotFoundException { 
 		((AddressDTOServiceImpl) addressDTOService).setStationNumbers(findFirestationssByAddress(address).stream().map(firestation -> String.valueOf(firestation.getStationNumber())).collect(Collectors.toList()));
 		List<AddressPersonDTO> addressPersonsDTO = addressDTOService.addressPersonsToDTO(allAddressS.get(address).getPersons().values().stream().collect(Collectors.toList()));
 		log.info("{} : found {} person(s)", requestService.requestToString(request), addressPersonsDTO.size()-1, address);
