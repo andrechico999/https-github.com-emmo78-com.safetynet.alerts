@@ -23,8 +23,8 @@ public class ComSafetynetAlertsApplication {
 	@Bean
 	public ObjectMapper objectMapper() {
 		return new ObjectMapper();
-	} 
-
+	}
+	
 	public static void main(String[] args) {
 		SpringApplication.run(ComSafetynetAlertsApplication.class, args);		
 	}
