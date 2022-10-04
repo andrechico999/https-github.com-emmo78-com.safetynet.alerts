@@ -28,7 +28,7 @@ public class RequestServiceTest {
 	}
 	
 	@Test
-	@Tag("upperCasingFirstLetter test")
+	@Tag("RequestServiceTest")
 	@DisplayName("upperCasingFirstLetter test should Capitalize the first letter and lowercase the rest")
 	public void upperCasingFirstLetterTest() {
 		//GIVEN
@@ -40,19 +40,20 @@ public class RequestServiceTest {
 	}
 	
 	@Test
-	@Tag("requestToString test")
+	@Tag("RequestServiceTest")
 	@DisplayName("requestToString test chain a WebRequest uri+parameters into a String")
 	public void requestToStringTest() {
 		//GIVEN
 		requestMock = new MockHttpServletRequest();
 		requestMock.setServerName("http://localhost:8080");
 		requestMock.setRequestURI("/phoneAlert");
-		requestMock.setParameter("firestation", "1");
+		String[] params = {"1", "2"};
+		requestMock.setParameter("firestation", params);
 		request = new ServletWebRequest(requestMock);
 		//WHEN
 		String parameters = requestService.requestToString(request);
 		//THEN
-		assertThat(parameters).isEqualTo("uri=/phoneAlert?firestation=1");
+		assertThat(parameters).isEqualTo("uri=/phoneAlert?firestation=1,2");
 	}
 	
 }

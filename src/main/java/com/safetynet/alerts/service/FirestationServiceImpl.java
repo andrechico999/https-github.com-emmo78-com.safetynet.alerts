@@ -1,9 +1,10 @@
 package com.safetynet.alerts.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -31,6 +32,8 @@ import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 import com.safetynet.alerts.repository.WriteToFile;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -38,7 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FirestationServiceImpl implements FirestationService {
 	
 	@Autowired
-	private JsonRepository jsonNodeService;
+	private JsonRepository jsonRepository;
 	
 	@Autowired
 	private FirestationDTOService firestationDTOService;
@@ -52,13 +55,20 @@ public class FirestationServiceImpl implements FirestationService {
 	@Autowired
 	private RequestService requestService;
 
+	@Getter
+	@Setter
 	private Map<Integer, Firestation> firestations;
+	@Getter
+	@Setter
 	private Map<String, Address> allAddressS;
+
+	// for filter(distinctByKey(Address::getAddress))
+	private static Set<Object> seen;
 	
 	@PostConstruct
 	public void firestationServiceImpl() {
-		firestations = ((JsonRepositoryImpl) jsonNodeService).getFirestations();
-		allAddressS = ((JsonRepositoryImpl) jsonNodeService).getAllAddressS();
+		firestations = ((JsonRepositoryImpl) jsonRepository).getFirestations();
+		allAddressS = ((JsonRepositoryImpl) jsonRepository).getAllAddressS();
 	}
 		
 	@Override
@@ -76,7 +86,7 @@ public class FirestationServiceImpl implements FirestationService {
 	}
 	
 	@Override
-	public List<FirestationPersonPhoneDTO> findPersonPhonesByFirestation (String stationNum, WebRequest request) throws BadRequestException, ResourceNotFoundException {
+	public List<FirestationPersonPhoneDTO> findPersonPhonesByFirestation(String stationNum, WebRequest request) throws BadRequestException, ResourceNotFoundException {
 		int stationNumber = 0;
 		try {
 			stationNumber = Integer.parseInt(stationNum);
@@ -109,16 +119,17 @@ public class FirestationServiceImpl implements FirestationService {
 			fileWriter.writeToFile(NullNode.instance);
 			throw new ResourceNotFoundException("No fire station found");
 		}
+		seen = new HashSet<>();
 		List<FirestationAddressPersonsDTO> firestationsAddressPersonsDTO = firestationDTOService.firestationsAddressToDTO(stationNumbers.stream().flatMap(stationNumber -> firestations.get(stationNumber).getAddressS().values().stream()).filter(distinctByKey(Address::getAddress)).collect(Collectors.toList()));
 		log.info("{} : found {} household(s) served by the fire station", requestService.requestToString(request), firestationsAddressPersonsDTO.size());
 		fileWriter.writeToFile(objectMapper.valueToTree(firestationsAddressPersonsDTO));
+		seen = null;
 		return firestationsAddressPersonsDTO;
 	}
 
-	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) 
+	private <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) 
 	{
-	    Map<Object, Boolean> seen = new ConcurrentHashMap<>();
-	    return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	    return t -> seen.add(keyExtractor.apply(t));
 	}
 	
 	@Override

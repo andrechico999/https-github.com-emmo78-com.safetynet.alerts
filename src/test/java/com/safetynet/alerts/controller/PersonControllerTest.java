@@ -48,6 +48,7 @@ public class PersonControllerTest {
 	public void setUpPerTest() {
 		requestMock = new MockHttpServletRequest();
 		request = new ServletWebRequest(requestMock);
+
 	}
 	
 	@AfterEach
@@ -57,13 +58,13 @@ public class PersonControllerTest {
 	}
 	
 	@Nested
-    @Tag("personInfoFirstNameLastName tests")
-    @DisplayName("personInfoFirstNameLastName tests")
+    @Tag("GET")
+    @DisplayName("GET /personInfo?firstName=<firstName>&lastName=<lastName> tests")
     class PersonInfoTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("personInfoFirstNameLastNameTest should return HTTPStatus.OK and a List containing a PersonAddressNameDTO with lastName set")
+		@Tag("NominalCase")
+	    @DisplayName("personInfoFirstNameLastNameTest should return HTTPStatus.OK and a List containing a PersonAddressNameDTO")
 		public void personInfoFirstNameLastNameTestShouldReturnHTTPStatusOKAndListPersonAddressNameDTO() {
 			//GIVEN
 			Optional<String> firstNameOpt = Optional.of("FirstName");
@@ -96,7 +97,7 @@ public class PersonControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("personInfoFirstNameLastNameTest should throw BadRequestException")
 		public void personInfoFirstNameLastNameTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -109,13 +110,13 @@ public class PersonControllerTest {
 	}
 
 	@Nested
-    @Tag("createPerson tests")
-    @DisplayName("createPerson tests")
+    @Tag("POST")
+    @DisplayName("POST /person create tests")
     class createPersonTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("createPersonTest should return HTTPStatus.OK and the Person created")
+		@Tag("NominalCase")
+	    @DisplayName("createPersonTest should return HTTPStatus.OK and the PersonDTO created")
 		public void createPersonTestShouldReturnHTTPStatusOKAndCreatedPerson() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
@@ -148,7 +149,7 @@ public class PersonControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("createPersonTest should throw BadRequestException")
 		public void createPersonTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -160,13 +161,13 @@ public class PersonControllerTest {
 	}
 	
 	@Nested
-    @Tag("updatePerson tests")
-    @DisplayName("updatePerson tests")
+    @Tag("PUT")
+    @DisplayName("PUT /person update tests")
     class updatePersonTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("updatePersonTest should return HTTPStatus.OK and the Person updated")
+		@Tag("NominalCase")
+	    @DisplayName("updatePersonTest should return HTTPStatus.OK and the PersonDTO updated")
 		public void updatePersonTestShouldReturnHTTPStatusOKAndUpdatedPerson() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
@@ -199,7 +200,7 @@ public class PersonControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("updatePersonTest should throw BadRequestException")
 		public void updatePersonTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -211,13 +212,13 @@ public class PersonControllerTest {
 	}
 	
 	@Nested
-    @Tag("deletePerson tests")
-    @DisplayName("deletePerson tests")
+    @Tag("DELETE")
+    @DisplayName("DELETE /person delete tests")
     class deletePersonTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("deletePersonTest should return HTTPStatus.OK and a person with null fields")
+		@Tag("NominalCase")
+	    @DisplayName("deletePersonTest should return HTTPStatus.OK and a new PersonDTO")
 		public void deletePersonTestShouldReturnHTTPStatusOKAndFieldsNullPerson() {
 			//GIVEN
 			PersonDTO personDTO = new PersonDTO();
@@ -250,7 +251,7 @@ public class PersonControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("deletePersonTest should throw BadRequestException")
 		public void deletePersonTestShouldThrowBadRequestException() {
 			//GIVEN

@@ -57,14 +57,14 @@ public class MedicalrecordControllerTest {
 	}
 	
 	@Nested
-    @Tag("createMedicalrecord tests")
-    @DisplayName("createMedicalrecord tests")
+    @Tag("POST")
+    @DisplayName("POST /medicalRecord create tests")
     class createMedicalrecordTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("createMedicalrecordTest should return HTTPStatus.OK and the medical record created")
-		public void createMedicalrecordTestShouldReturnHTTPStatusOKAndMedcialrecordCreated() {
+		@Tag("NominalCase")
+	    @DisplayName("createMedicalrecordTest should return HTTPStatus.OK and the MedicalrecordDTO created")
+		public void createMedicalrecordTestShouldReturnHTTPStatusOKAndMedicalrecordCreated() {
 			//GIVEN
 			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO("FirstName", "LastName", LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")), new ArrayList<String>(), new ArrayList<String>());
 			Optional<MedicalrecordDTO> medicalrecordDTOOpt = Optional.of(medicalrecordDTO);
@@ -89,7 +89,7 @@ public class MedicalrecordControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("createMedicalrecordTest should throw BadRequestException")
 		public void createMedicalrecordTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -101,13 +101,13 @@ public class MedicalrecordControllerTest {
 	}
 	
 	@Nested
-    @Tag("updateMedicalrecord tests")
-    @DisplayName("updateMedicalrecord tests")
+    @Tag("PUT")
+    @DisplayName("PUT /medicalRecord update tests")
     class updateMedicalrecordTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("updateMedicalrecordTest should return HTTPStatus.OK and the medical record updated")
+		@Tag("NominalCase")
+	    @DisplayName("updateMedicalrecordTest should return HTTPStatus.OK and the MedicalrecordDTO updated")
 		public void updateMedicalrecordTestShouldReturnHTTPStatusOKAndUpdatedMedicalrecord() {
 			//GIVEN
 			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO("FirstName", "LastName", LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")), new ArrayList<String>(), new ArrayList<String>());
@@ -133,7 +133,7 @@ public class MedicalrecordControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("updateMedicalrecordTest should throw BadRequestException")
 		public void updateMedicalrecordTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -145,13 +145,13 @@ public class MedicalrecordControllerTest {
 	}
 	
 	@Nested
-    @Tag("deleteMedicalrecord tests")
-    @DisplayName("deleteMedicalrecord tests")
+    @Tag("DELETE")
+    @DisplayName("DELETE /medicalRecord delete tests")
     class deleteMedicalrecordTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("deleteMedicalrecordTest should return HTTPStatus.OK and a Medicalrecord with null field")
+		@Tag("NominalCase")
+	    @DisplayName("deleteMedicalrecordTest should return HTTPStatus.OK and a new MedicalrecordDTO")
 		public void deleteMedicalrecordTestShouldReturnHTTPStatusOKAndANullFieldsMedicalrecord() {
 			//GIVEN
 			MedicalrecordDTO medicalrecordDTO = new MedicalrecordDTO("FirstName", "LastName", LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")), new ArrayList<String>(), new ArrayList<String>());
@@ -177,7 +177,7 @@ public class MedicalrecordControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("deleteMedicalrecordTest should throw BadRequestException")
 		public void deleteMedicalrecordTestShouldThrowBadRequestException() {
 			//GIVEN

@@ -57,12 +57,12 @@ public class AddressControllerTest {
 	}
 
 	@Nested
-	@Tag("childAlertAddress tests")
-	@DisplayName("childAlertAddress tests")
+	@Tag("GET")
+	@DisplayName("GET /childAlert?address=<address> tests")
 	class AddressStationNumber {
 
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
+		@Tag("NominalCase")
 		@DisplayName("childAlertAddressTest should return HTTPStatus.OK and a List containing an AddressChildDTO")
 		public void childAlertAddressTestShouldReturnHTTPStatusOKAndListAddressAdultChildDTO() {
 			// GIVEN
@@ -95,7 +95,7 @@ public class AddressControllerTest {
 		}
 
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 		@DisplayName("childAlertAddressTest should throw BadRequestException")
 		public void childAlertAddressTestShouldThrowBadRequestException() {
 			// GIVEN
@@ -108,12 +108,12 @@ public class AddressControllerTest {
 	}
 
 	@Nested
-	@Tag("fireAddress tests")
-	@DisplayName("fireAddress tests")
+	@Tag("GET")
+	@DisplayName("GET /fire?address=<address> tests")
 	class FireAddress {
 
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
+		@Tag("NominalCase")
 		@DisplayName("fireAddressTest should return HTTPStatus.OK and a List containing an AddressPersonDTO")
 		public void fireAddressTestShouldReturnHTTPStatusOKAndListAddressPersonDTO() {
 			// GIVEN
@@ -147,7 +147,7 @@ public class AddressControllerTest {
 		}
 
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 		@DisplayName("fireAddressTest should throw BadRequestException")
 		public void fireAddressTestShouldThrowBadRequestException() {
 			// GIVEN
@@ -160,13 +160,13 @@ public class AddressControllerTest {
 	}
 
 	@Nested
-	@Tag("communityEmailCity tests")
-	@DisplayName("communityEmailCity tests")
+	@Tag("GET")
+	@DisplayName("GET /communityEmail?city=<city> tests")
 	class CommunityEmailCity {
 
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-		@DisplayName("communityEmailCityTest should return HTTPStatus.OK and a List containing a AddressPersonEmailDTO")
+		@Tag("NominalCase")
+		@DisplayName("communityEmailCityTest should return HTTPStatus.OK and a List containing an AddressPersonEmailDTO")
 		public void communityEmailCityTestShouldReturnHTTPStatusOKAndListAddressPersonEmailDTO() {
 			// GIVEN
 			Optional<String> cityOpt = Optional.of("City");
@@ -195,7 +195,7 @@ public class AddressControllerTest {
 		}
 
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 		@DisplayName("communityEmailCityTest should throw BadRequestException")
 		public void communityEmailCityTestShouldThrowBadRequestException() {
 			// GIVEN

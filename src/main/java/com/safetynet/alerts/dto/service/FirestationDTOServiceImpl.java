@@ -36,9 +36,7 @@ public class FirestationDTOServiceImpl implements FirestationDTOService {
 
 	@Override
 	public FirestationDTO convertFirestationToDTO(Firestation firestation, String addressAddress) {
-		modelMapper.typeMap(Firestation.class, FirestationDTO.class).addMappings(mapper -> {
-			mapper.map(Firestation::getStationNumber, FirestationDTO::setStation);
-			});
+		modelMapper.typeMap(Firestation.class, FirestationDTO.class).addMapping(Firestation::getStationNumber, FirestationDTO::setStation);
 		FirestationDTO firestationDTO = modelMapper.map(firestation, FirestationDTO.class);
 		firestationDTO.setAddress(Optional.ofNullable(firestation.getAddressS().get(addressAddress)).orElseGet(() -> new Address()).getAddress());
 		return firestationDTO;
@@ -74,7 +72,7 @@ public class FirestationDTOServiceImpl implements FirestationDTOService {
 	@Override
 	public FirestationAddressPersonsDTO convertFirestationsAddressToDTO(Address address) {
 		FirestationAddressPersonsDTO firestationAddressPersonsDTO = modelMapper.map(address, FirestationAddressPersonsDTO.class);
-		firestationAddressPersonsDTO.setHouseHolds(address.getPersons().values().stream().map(person -> addressDTOService.addressPersonToDTO(person)).collect(Collectors.toList()));
+		firestationAddressPersonsDTO.setHouseHold(address.getPersons().values().stream().map(person -> addressDTOService.addressPersonToDTO(person)).collect(Collectors.toList()));
 		return firestationAddressPersonsDTO;
 	}
 }

@@ -68,7 +68,7 @@ with a count of the number of adults and the number of children (age <= 18 years
 ]  
 
 http://localhost:8080/phoneAlert?firestation=1  
-return list of telephone numbers of residents served by the fire station  
+return list of phone numbers of residents served by the fire station  
 no duplicate  
 [  
     {  

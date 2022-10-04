@@ -62,13 +62,13 @@ public class FirestationControllerTest {
 	}
 	
 	@Nested
-    @Tag("firestationStationNumber tests")
-    @DisplayName("firestationStationNumber tests")
+    @Tag("GET")
+    @DisplayName("GET /firestation?stationNumber=<station_number> tests")
     class FirestationStationNumber {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("firestationStationNumberTest should return HTTPStatus.OK and a List containing a FirestationPersonDTO with firstName and lastName set")
+		@Tag("NominalCase")
+	    @DisplayName("firestationStationNumberTest should return HTTPStatus.OK and a List containing a FirestationPersonDTO")
 		public void firestationStationNumberTestShouldReturnHTTPStatusOKAndListFirestationPersonDTO() {
 			//GIVEN
 			Optional<String> stationNumberOpt = Optional.of("1");
@@ -100,7 +100,7 @@ public class FirestationControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("firestationStationNumberTest should throw BadRequestException")
 		public void firestationStationNumberTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -112,12 +112,12 @@ public class FirestationControllerTest {
 	}
 
 	@Nested
-    @Tag("phoneAlertFirestationNumber tests")
-    @DisplayName("phoneAlertFirestationNumber tests")
+    @Tag("GET")
+    @DisplayName("GET /phoneAlert?firestation=<firestation_number> tests")
     class PhoneAlertFirestationNumber {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
+		@Tag("NominalCase")
 	    @DisplayName("phoneAlertFirestationNumberTest should return HTTPStatus.OK and a List containing a FirestationPersonPhoneDTO")
 		public void phoneAlertFirestationNumberTestShouldReturnHTTPStatusOKAndListFirestationPersonPhoneDTO() {
 			//GIVEN
@@ -147,7 +147,7 @@ public class FirestationControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("phoneAlertFirestationNumberTest should throw BadRequestException")
 		public void phoneAlertFirestationNumberTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -159,12 +159,12 @@ public class FirestationControllerTest {
 	}
 
 	@Nested
-    @Tag("floodStationNumbers tests")
-    @DisplayName("floodStationNumbers tests")
+    @Tag("GET")
+    @DisplayName("GET /flood/stations?stations=<a list of station_numbers> tests")
     class FloodStationNumbers {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
+		@Tag("NominalCase")
 	    @DisplayName("floodStationNumbersTest should return HTTPStatus.OK and a List containing a FirestationAddressPersonsDTO")
 		public void floodStationNumbersTestShouldReturnHTTPStatusOKAndListFirestationAddressPersonsDTO() {
 			//GIVEN
@@ -175,7 +175,7 @@ public class FirestationControllerTest {
 			firestationAddressPersonDTO.setAddress("Address");
 			firestationAddressPersonDTO.setCity("City");
 			firestationAddressPersonDTO.setZip("12345");
-			firestationAddressPersonDTO.setHouseHolds(new ArrayList<AddressPersonDTO>());
+			firestationAddressPersonDTO.setHouseHold(new ArrayList<AddressPersonDTO>());
 			firestationAddressPersonsDTO.add(firestationAddressPersonDTO);	
 			try {
 				when(firestationService.findAddressPersonsByFiresations(stationNumbersOpt.get(), request)).thenReturn(firestationAddressPersonsDTO);
@@ -198,7 +198,7 @@ public class FirestationControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("floodStationNumbersTest should throw BadRequestException")
 		public void floodStationNumbersTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -210,13 +210,13 @@ public class FirestationControllerTest {
 	}
 	
 	@Nested
-    @Tag("createFirestation tests")
-    @DisplayName("createFirestation tests")
+    @Tag("POST")
+    @DisplayName("POST /firestation create tests")
     class createFirestationTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("createFirestationTest should return HTTPStatus.OK and the Firestation created")
+		@Tag("NominalCase")
+	    @DisplayName("createFirestationTest should return HTTPStatus.OK and the FirestationDTO created")
 		public void createFirestationTestShouldReturnHTTPStatusOKAndCreatedFirestation() {
 			//GIVEN
 			FirestationDTO firestationDTO = new FirestationDTO();
@@ -244,7 +244,7 @@ public class FirestationControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("createFirestationTest should throw BadRequestException")
 		public void createFirestationTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -256,13 +256,13 @@ public class FirestationControllerTest {
 	}
 	
 	@Nested
-    @Tag("updateFirestation tests")
-    @DisplayName("updateFirestation tests")
+    @Tag("PUT")
+    @DisplayName("PUT /firestation update tests")
     class updateFirestationTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("updateFirestationTest should return HTTPStatus.OK and the Firestation updated")
+		@Tag("NominalCase")
+	    @DisplayName("updateFirestationTest should return HTTPStatus.OK and the FirestationDTO updated")
 		public void updateFirestationTestShouldReturnHTTPStatusOKAndUpdatedFirestation() {
 			//GIVEN
 			FirestationDTO firestationDTO = new FirestationDTO();
@@ -291,7 +291,7 @@ public class FirestationControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("updateFirestationTest should throw BadRequestException")
 		public void updateFirestationTestShouldThrowBadRequestException() {
 			//GIVEN
@@ -303,13 +303,13 @@ public class FirestationControllerTest {
 	}
 	
 	@Nested
-    @Tag("deleteFirestation tests")
-    @DisplayName("deleteFirestation tests")
+    @Tag("DELETE")
+    @DisplayName("DELETE /firestation delete tests")
     class deleteFirestationTests {
 		
 		@Test
-		@Tag("Nominal case HTTPStatus.OK")
-	    @DisplayName("deleteFirestationTest should return HTTPStatus.OK and a firestation with null fields")
+		@Tag("NominalCase")
+	    @DisplayName("deleteFirestationTest should return HTTPStatus.OK and a new FirestationDTO")
 		public void deleteFirestationTestShouldReturnHTTPStatusOKAndFieldsNullFirestation() {
 			//GIVEN
 			FirestationDTO firestationDTO = new FirestationDTO();
@@ -337,7 +337,7 @@ public class FirestationControllerTest {
 		}
 		
 		@Test
-		@Tag("Corner case BadRequestException")
+		@Tag("CornerCase")
 	    @DisplayName("deleteFirestationTest should throw BadRequestException")
 		public void deleteFirestationTestShouldThrowBadRequestException() {
 			//GIVEN

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@AllArgsConstructor
+
 public class Firestation {
 	
 	@EqualsAndHashCode.Include

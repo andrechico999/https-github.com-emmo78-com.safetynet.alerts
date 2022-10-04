@@ -36,7 +36,6 @@ import com.safetynet.alerts.dto.service.MedicalrecordDTOService;
 import com.safetynet.alerts.exception.ResourceConflictException;
 import com.safetynet.alerts.model.Medicalrecord;
 import com.safetynet.alerts.model.Person;
-import com.safetynet.alerts.repository.JsonRepository;
 import com.safetynet.alerts.repository.JsonRepositoryImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -116,14 +115,15 @@ public class MedicalrecordServiceTest {
 	}
 
 	@Nested
-	@Tag("POST Medicalrecord Tests")
-	@DisplayName("createMedicalrecord tests")
+	@Tag("POST")
+	@DisplayName("POST /medicalRecord create tests")
 	public class CreateMedicalrecordTestClass {
 		
 		@Test
-		@Tag("Nominal case")
-		@DisplayName("createMedicalrecordTest should put the medicalrecord in medicalrecords IoC and return it")
+		@Tag("NominalCase")
+		@DisplayName("createMedicalrecordTest should create a medicalrecord in IoC and return it")
 		public void createMedicalrecordTestShouldPutMedicalrecordInIoCAndReturnIt() {
+			
 			//GIVEN
 			requestMock.setRequestURI("/medicalRecord");
 			requestMock.setMethod("POST");
@@ -137,6 +137,7 @@ public class MedicalrecordServiceTest {
 				medicalrecord.setId(medicalrecordDTO.getFirstName()+" "+medicalrecordDTO.getLastName());
 				return medicalrecord;
 			});
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI());
 			when(medicalrecordDTOService.convertMedicalrecordToDTO(any(Medicalrecord.class))).then(invocation -> {
 				Medicalrecord medicalrecord = invocation.getArgument(0, Medicalrecord.class);
 				MedicalrecordDTO medicalrecordDTO = modelMapper.map(medicalrecord, MedicalrecordDTO.class);
@@ -154,16 +155,14 @@ public class MedicalrecordServiceTest {
 			}
 			//THEN
 			assertThat(medicalrecordDTOResult).isEqualTo(medicalrecordDTOExpected);
-			assertThat(medicalrecordService.getMedicalrecords()).containsEntry("FirstName3 LastName3", medicalrecordExpected);
+			assertThat(medicalrecordsTest).containsEntry("FirstName3 LastName3", medicalrecordExpected);
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("createMedicalrecordTest should throw a ResourceConflictException")
 		public void createMedicalrecordTestShouldThrowResourceConflictException() {
 			//GIVEN
-			requestMock.setRequestURI("/medicalRecord");
-			requestMock.setMethod("POST");
 			request = new ServletWebRequest(requestMock);
 			MedicalrecordDTO medicalrecordDTOExpected = new MedicalrecordDTO("FirstName1", "LastName1", "01/01/2001", Arrays.asList("a1nol:110mg", "b1nol:120mg"), Arrays.asList());
 			Medicalrecord medicalrecordExpected = modelMapper.map(medicalrecordDTOExpected, Medicalrecord.class);
@@ -181,13 +180,13 @@ public class MedicalrecordServiceTest {
 	}
 
 	@Nested
-	@Tag("PUT Medicalrecord Tests")
-	@DisplayName("updateMedicalrecord tests")
+	@Tag("PUT")
+	@DisplayName("PUT /medicalRecord update tests")
 	public class UpdateMedicalrecordTestClass {
 		
 		@Test
-		@Tag("Nominal case")
-		@DisplayName("updateMedicalrecordTest should update the medicalrecord in medicalrecords IoC and return it")
+		@Tag("NominalCase")
+		@DisplayName("updateMedicalrecordTest should update the medicalrecord in IoC and return it")
 		public void updateMedicalrecordTestShouldUpdateMedicalrecordInIoCAndReturnIt() {
 			//GIVEN
 			requestMock.setRequestURI("/medicalRecord");
@@ -202,6 +201,7 @@ public class MedicalrecordServiceTest {
 				medicalrecord.setId(medicalrecordDTO.getFirstName()+" "+medicalrecordDTO.getLastName());
 				return medicalrecord;
 			});
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI());
 			when(medicalrecordDTOService.convertMedicalrecordToDTO(any(Medicalrecord.class))).then(invocation -> {
 				Medicalrecord medicalrecord = invocation.getArgument(0, Medicalrecord.class);
 				MedicalrecordDTO medicalrecordDTO = modelMapper.map(medicalrecord, MedicalrecordDTO.class);
@@ -219,16 +219,14 @@ public class MedicalrecordServiceTest {
 			}
 			//THEN
 			assertThat(medicalrecordDTOResult).isEqualTo(medicalrecordDTOExpected);
-			assertThat(medicalrecordService.getMedicalrecords()).containsEntry("FirstName1 LastName1", medicalrecordExpected);
+			assertThat(medicalrecordsTest).containsEntry("FirstName1 LastName1", medicalrecordExpected);
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("updateMedicalrecordTest should throw a ResourceNotFoundException")
 		public void updateMedicalrecordTestShouldThrowResourceNotFoundException() {
 			//GIVEN
-			requestMock.setRequestURI("/medicalRecord");
-			requestMock.setMethod("PUT");
 			request = new ServletWebRequest(requestMock);
 			MedicalrecordDTO medicalrecordDTOExpected = new MedicalrecordDTO("FirstName3", "LastName3", "03/03/2003", Arrays.asList("a3nol:310mg", "b3nol:320mg"), Arrays.asList("peanut"));
 			Medicalrecord medicalrecordExpected = modelMapper.map(medicalrecordDTOExpected, Medicalrecord.class);
@@ -246,13 +244,13 @@ public class MedicalrecordServiceTest {
 	}
 	
 	@Nested
-	@Tag("DELETE Medicalrecord Tests")
-	@DisplayName("deleteMedicalrecord tests")
+	@Tag("DELETE")
+	@DisplayName("DELETE /medicalRecord delete tests")
 	public class DeleteMedicalrecordTestClass {
 		
 		@Test
-		@Tag("Nominal case")
-		@DisplayName("deleteMedicalrecordTest should delete the medicalrecord in medicalrecords IoC and return a new one")
+		@Tag("NominalCase")
+		@DisplayName("deleteMedicalrecordTest should delete the medicalrecord in IoC and return a new MedicalrecordDTO with null fields")
 		public void deleteMedicalrecordTestShouldDeleteMedicalrecordInIoCAndReturnANewOne() {
 			//GIVEN
 			requestMock.setRequestURI("/medicalRecord");
@@ -267,6 +265,7 @@ public class MedicalrecordServiceTest {
 				medicalrecord.setId(medicalrecordDTO.getFirstName()+" "+medicalrecordDTO.getLastName());
 				return medicalrecord;
 			});
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI());
 			when(medicalrecordDTOService.convertMedicalrecordToDTO(any(Medicalrecord.class))).then(invocation -> {
 				Medicalrecord medicalrecord = invocation.getArgument(0, Medicalrecord.class);
 				MedicalrecordDTO medicalrecordDTO = modelMapper.map(medicalrecord, MedicalrecordDTO.class);
@@ -284,16 +283,14 @@ public class MedicalrecordServiceTest {
 			}
 			//THEN
 			assertThat(medicalrecordDTOResult).isEqualTo(new MedicalrecordDTO());
-			assertThat(medicalrecordService.getMedicalrecords()).doesNotContainKey("FirstName1 LastName1");
+			assertThat(medicalrecordsTest).doesNotContainKey("FirstName1 LastName1");
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("deleteMedicalrecordTest should throw a ResourceNotFoundException")
 		public void deleteMedicalrecordTestShouldThrowResourceNotFoundException() {
 			//GIVEN
-			requestMock.setRequestURI("/medicalRecord");
-			requestMock.setMethod("DELETE");
 			request = new ServletWebRequest(requestMock);
 			MedicalrecordDTO medicalrecordDTOExpected = new MedicalrecordDTO("FirstName3", "LastName3", "03/03/2003", Arrays.asList("a3nol:310mg", "b3nol:320mg"), Arrays.asList("peanut"));
 			Medicalrecord medicalrecordExpected = modelMapper.map(medicalrecordDTOExpected, Medicalrecord.class);

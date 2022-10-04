@@ -55,7 +55,7 @@ public class ControllerExceptionHandlerTest {
 	}
 	
 	@Test
-	@Tag("badRequestException test")
+	@Tag("BadRequestException")
 	@DisplayName("badRequestExceptionTest should return a ResponseEntity with error message and HttpStatus.BAD_REQUEST")
 	public void badRequestExceptionTest() {
 		//GIVEN
@@ -73,7 +73,7 @@ public class ControllerExceptionHandlerTest {
 	}
 	
 	@Test
-	@Tag("resourceNotFoundException test")
+	@Tag("ResourceNotFoundException")
 	@DisplayName("resourceNotFoundExceptionTest should return a ResponseEntity with error message and HttpStatus.NOT_FOUND")
 	public void resourceNotFoundExceptionTest() {
 		//GIVEN
@@ -91,7 +91,7 @@ public class ControllerExceptionHandlerTest {
 	}
 
 	@Test
-	@Tag("resourceConflictException test")
+	@Tag("ResourceConflictException")
 	@DisplayName("resourceConflictExceptionTest should return a ResponseEntity with error message and HttpStatus.CONFLICT")
 	public void resourceConflictExceptionTest() {
 		requestMock.setRequestURI("/firestation");

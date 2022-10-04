@@ -2,14 +2,20 @@ package com.safetynet.alerts.dto;
 
 import com.safetynet.alerts.model.Person;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class FirestationPersonDTOPerson implements FirestationPersonDTO {
-	@Getter @Setter private static int numAdult;
-	@Getter @Setter private static int numChild;
+	@Getter
+	@Setter
+	private static int numAdult;
+	@Getter
+	@Setter
+	private static int numChild;
 	
 	private String firstName;
 	private String lastName;

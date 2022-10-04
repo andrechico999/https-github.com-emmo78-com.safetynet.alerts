@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,6 @@ public class PersonServiceTest {
 	public static void unSetForAllTests() {
 		modelMapper = null;
 	}
-	
 
 	@BeforeEach
 	public void setUpForEachTests() {
@@ -131,18 +131,17 @@ public class PersonServiceTest {
 	}
 
 	@Nested
-	@Tag("GET Person Tests")
-	@DisplayName("findPersonsByFirstNameAndLastName tests")
+	@Tag("GET")
+	@DisplayName("GET /personInfo?firstName=<firstName>&lastName=<lastName> tests")
 	public class FindPersonsByFirstNameAndLastNameTestClass {
 		@Test
-		@Tag("Nominal case")
+		@Tag("NominalCase")
 		@DisplayName("findPersonsByFirstNameAndLastNameTest should return list of people with the same name living at the address of the specified person")
-		public void findPersonsByFirstNameAndLastNameTestShouldReturnPeopleLivingWithSoPersonAddressNameDTO() {
-
+		public void findPersonsByFirstNameAndLastNameTestShouldReturnPeopleLivingWithPersonAddressNameDTO() {
+			
 			// GIVEN
 			requestMock.setRequestURI("/personInfo");
-			requestMock.setParameter("firstName", "FirstName1");
-			requestMock.setParameter("lastName", "LastName1");
+			requestMock.setQueryString("?firstName=FirstName1&lastName=LastName1"); //So request person1
 			requestMock.setMethod("GET");
 			request = new ServletWebRequest(requestMock);
 			when(requestService.upperCasingFirstLetter(any(String.class))).thenReturn("FirstName1")
@@ -160,34 +159,31 @@ public class PersonServiceTest {
 						.collect(Collectors.toList());
 			});
 
-			//Select persons 1 and 2
-			List<PersonAddressNameDTO> personsAddressNameDTOexpected = personsTest.values().stream()
-					.filter(person -> person.getLastName().equals("LastName1")
-							&& person.getAddress().getAddress().equals("address1"))
-					.map(person -> modelMapper.map(person, PersonAddressNameDTO.class)).collect(Collectors.toList());
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI()+requestMock.getQueryString());
+
+			//Select persons 1 and 2 with LastName1 and address1
+			List<PersonAddressNameDTO> personsAddressNameDTOExpected = new ArrayList<>();
+			personsAddressNameDTOExpected.add(modelMapper.map(personsTest.get("FirstName1 LastName1"), PersonAddressNameDTO.class));
+			personsAddressNameDTOExpected.add(modelMapper.map(personsTest.get("FirstName2 LastName1"), PersonAddressNameDTO.class));
 
 			// WEN
-			List<PersonAddressNameDTO> personsAddressNameDTOresult=null;
+			List<PersonAddressNameDTO> personsAddressNameDTOResult=null;
 			try {
-				personsAddressNameDTOresult = personService.findPersonsByFirstNameAndLastName("FirstName1", "LastName1", request);
+				personsAddressNameDTOResult = personService.findPersonsByFirstNameAndLastName("FirstName1", "LastName1", request);
 			} catch (ResourceNotFoundException e) {
 				e.printStackTrace();
 			}
 
 			// THEN
 			// Verifies that the actual group contains exactly the given values and nothing else, in any order.
-			assertThat(personsAddressNameDTOresult).containsExactlyInAnyOrderElementsOf(personsAddressNameDTOexpected);
+			assertThat(personsAddressNameDTOResult).containsExactlyInAnyOrderElementsOf(personsAddressNameDTOExpected);
 		}
 
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("findPersonsByFirstNameAndLastNameTest should throw a ResourceNotFoundException")
 		public void findPersonsByFirstNameAndLastNameTestshouldThrowResourceNotFoundException() {
 			// GIVEN
-			requestMock.setRequestURI("/personInfo");
-			requestMock.setParameter("firstName", "FirstName5");
-			requestMock.setParameter("lastName", "LastName1");
-			requestMock.setMethod("GET");
 			request = new ServletWebRequest(requestMock);
 			when(requestService.upperCasingFirstLetter(any(String.class))).thenReturn("FirstName5")
 					.thenReturn("LastName1");
@@ -199,12 +195,12 @@ public class PersonServiceTest {
 	}
 
 	@Nested
-	@Tag("POST Person Tests")
-	@DisplayName("createPerson tests")
+	@Tag("POST")
+	@DisplayName("POST /person create tests")
 	public class CreatePersonTestClass {
 		
 		@Test
-		@Tag("Nominal case")
+		@Tag("NominalCase")
 		@DisplayName("createPersonTest should put the person in persons IoC and return it")
 		public void createPersonTestShouldPutPersonInIoCAndReturnIt() {
 			//GIVEN
@@ -220,6 +216,7 @@ public class PersonServiceTest {
 				return person;
 			});
 			when(jsonRepository.setPersonAddress(any(Person.class))).then(invocation -> invocation.getArgument(0, Person.class));
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI());
 			when(personDTOService.convertPersonToDTO(any(Person.class))).then(invocation -> modelMapper.map(invocation.getArgument(0, Person.class), PersonDTO.class));
 			//WHEN
 			PersonDTO personDTOResult = null;
@@ -230,16 +227,14 @@ public class PersonServiceTest {
 			}
 			//THEN
 			assertThat(personDTOResult).isEqualTo(personDTOExpected);
-			assertThat(personService.getPersons()).containsEntry("FirstName5 LastName5", personExpected);
+			assertThat(personsTest).containsEntry("FirstName5 LastName5", personExpected);
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("createPersonTest should throw a ResourceConflictException")
 		public void createPersonTestShouldThrowResourceConflictException() {
 			//GIVEN
-			requestMock.setRequestURI("/person");
-			requestMock.setMethod("POST");
 			request = new ServletWebRequest(requestMock);
 			PersonDTO personDTOexpected = new PersonDTO("FirstName1", "LastName1", "address1", "city", "12345", "123-456-789", "person1@email.com");
 			when(personDTOService.convertPersonFromDTO(any(PersonDTO.class))).then(invocation -> {
@@ -254,13 +249,13 @@ public class PersonServiceTest {
 	}
 	
 	@Nested
-	@Tag("PUT Person Tests")
-	@DisplayName("updatePerson tests")
+	@Tag("PUT")
+	@DisplayName("PUT /person update tests")
 	public class UpdatePersonTestClass {
 		
 		@Test
-		@Tag("Nominal case")
-		@DisplayName("updatePersonTest should update and and return the person")
+		@Tag("NominalCase")
+		@DisplayName("updatePersonTest should update in IoC and and return the person")
 		public void updatePersonTestShouldUpdateAndReturnIt() {
 			//GIVEN
 			requestMock.setRequestURI("/person");
@@ -275,6 +270,7 @@ public class PersonServiceTest {
 				return person;
 			});
 			when(jsonRepository.setPersonAddress(any(Person.class))).then(invocation -> invocation.getArgument(0, Person.class));
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI());
 			when(personDTOService.convertPersonToDTO(any(Person.class))).then(invocation -> modelMapper.map(invocation.getArgument(0, Person.class), PersonDTO.class));
 			//WHEN
 			PersonDTO personDTOResult = null;
@@ -285,16 +281,14 @@ public class PersonServiceTest {
 			}
 			//THEN
 			assertThat(personDTOResult).isEqualTo(personDTOExpected);
-			assertThat(personService.getPersons()).containsEntry("FirstName1 LastName1", personExpected);
+			assertThat(personsTest).containsEntry("FirstName1 LastName1", personExpected);
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("updatePersonTest should throw a ResourceNotFoundException")
 		public void updatePersonTestShouldThrowResourceNotFoundException() {
 			//GIVEN
-			requestMock.setRequestURI("/person");
-			requestMock.setMethod("PUT");
 			request = new ServletWebRequest(requestMock);
 			PersonDTO personDTOexpected = new PersonDTO("FirstName5", "LastName5", "address5", "city", "12345", "567-890-123", "person5@email.com");
 			when(personDTOService.convertPersonFromDTO(any(PersonDTO.class))).then(invocation -> {
@@ -309,25 +303,26 @@ public class PersonServiceTest {
 	}
 
 	@Nested
-	@Tag("DELETE Person Tests")
-	@DisplayName("deletePerson tests")
+	@Tag("DELETE")
+	@DisplayName("DELETE /person delete tests")
 	public class DeletePersonTestClass {
 		
 		@Test
-		@Tag("Nominal case")
-		@DisplayName("deletePersonTest should delete and and return a person with null fields")
+		@Tag("NominalCase")
+		@DisplayName("deletePersonTest should delete in IoC and and return a new personDTO with null fields")
 		public void deletePersonTestShouldDeletePersonAndReturnNullFieldsPerson() {
 			//GIVEN
 			requestMock.setRequestURI("/person");
 			requestMock.setMethod("DELETE");
 			request = new ServletWebRequest(requestMock);
 			PersonDTO personDTOToDelete = new PersonDTO("FirstName1", "LastName1", "address1", "city", "12345", "123-456-789", "person1@email.com");
-			Address addressExpected = personService.getPersons().get("FirstName1 LastName1").getAddress();
+			Address addressExpected = personsTest.get("FirstName1 LastName1").getAddress();
 			when(personDTOService.convertPersonFromDTO(any(PersonDTO.class))).then(invocation -> {
 				Person person = modelMapper.map(invocation.getArgument(0, PersonDTO.class), Person.class);
 				person.buildId();
 				return person;
 			});
+			when(requestService.requestToString(any(WebRequest.class))).thenReturn(requestMock.getMethod()+" : "+requestMock.getRequestURI());
 			when(personDTOService.convertPersonToDTO(any(Person.class))).then(invocation -> modelMapper.map(invocation.getArgument(0, Person.class), PersonDTO.class));
 			//WHEN
 			PersonDTO personDTOResult = null;
@@ -338,17 +333,15 @@ public class PersonServiceTest {
 			}
 			//THEN
 			assertThat(personDTOResult).isEqualTo(new PersonDTO());
-			assertThat(personService.getPersons()).doesNotContainKey("FirstName1 LastName1");
+			assertThat(personsTest).doesNotContainKey("FirstName1 LastName1");
 			assertThat(addressExpected.getPersons()).doesNotContainKey("FirstName1 LastName1").containsKey("FirstName2 LastName1").containsKey("FirstName3 LastName3");
 		}
 		
 		@Test
-		@Tag("Corner case")
+		@Tag("CornerCase")
 		@DisplayName("deletePersonTest should throw a ResourceNotFoundException")
 		public void deletePersonTestShouldThrowResourceNotFoundException() {
 			//GIVEN
-			requestMock.setRequestURI("/person");
-			requestMock.setMethod("DELETE");
 			request = new ServletWebRequest(requestMock);
 			PersonDTO personDTOexpected = new PersonDTO("FirstName5", "LastName5", "address5", "city", "12345", "567-890-123", "person5@email.com");
 			when(personDTOService.convertPersonFromDTO(any(PersonDTO.class))).then(invocation -> {
