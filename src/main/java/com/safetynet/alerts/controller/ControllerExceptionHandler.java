@@ -27,21 +27,21 @@ public class ControllerExceptionHandler {
 	public ResponseEntity<ErrorMessage> badRequestException(BadRequestException ex, WebRequest request) {
 		log.error("Bad request {} : {} : {}", requestService.requestToString(request), ((ServletWebRequest) request).getHttpMethod(), ex.getMessage()); 
 		ErrorMessage message = new ErrorMessage(ex.getMessage());
-		return new ResponseEntity<ErrorMessage>(message, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(value = ResourceNotFoundException.class)
 	public ResponseEntity<ErrorMessage> resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
 		log.error("Not found {} : {} : {}", requestService.requestToString(request), ((ServletWebRequest) request).getHttpMethod(), ex.getMessage());
 		ErrorMessage message = new ErrorMessage(ex.getMessage());
-		return new ResponseEntity<ErrorMessage>(message, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(value = ResourceConflictException.class)
 	public ResponseEntity<ErrorMessage> resourceConflictException(ResourceConflictException ex, WebRequest request) {
 		log.error("Conflict {} : {} : {}", requestService.requestToString(request), ((ServletWebRequest) request).getHttpMethod(), ex.getMessage());
 		ErrorMessage message = new ErrorMessage(ex.getMessage());
-		return new ResponseEntity<ErrorMessage>(message, HttpStatus.CONFLICT);
+		return new ResponseEntity<>(message, HttpStatus.CONFLICT);
 	}
 	
 }
