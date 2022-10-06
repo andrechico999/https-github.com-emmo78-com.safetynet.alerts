@@ -25,26 +25,10 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/using-boot-build-systems.html#using-boot-maven-java-version -->
 		<java.version>1.8</java.version>
-		<!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-spring -->
-		<dep.cucumber.version>7.7.0</dep.cucumber.version>
 		<!-- for sonarcloud -->
 		<sonar.organization>emmo78</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
-	
-	<dependencyManagement>
-		<dependencies>
-			<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter -->
-			<!-- https://github.com/junit-team/junit5-samples/blob/r5.8.2/junit5-jupiter-starter-maven/pom.xml -->
-			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>5.9.0</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	
 	<dependencies>
 		<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/using-boot-build-systems.html#using-boot-starter-poms -->
@@ -57,6 +41,7 @@
 			<!-- add Tomcat and Spring WebMvc -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<!-- Exclude Logback for logging -->
 		    <exclusions>
     		    <exclusion>
             		<groupId>org.springframework.boot</groupId>
@@ -64,6 +49,7 @@
         		</exclusion>
     		</exclusions>
 		</dependency>
+		<!-- Include Log4j2 for logging -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-log4j2</artifactId>
@@ -102,40 +88,13 @@
 		    <version>3.1.0</version>
 		</dependency>
 		<dependency>
-			<!-- Support for common test dependencies, including JUnit, Hamcrest and Mockito -->
+			<!-- Support for common test dependencies, including JUnit, AssertJ, Hamcrest and Mockito -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://junit.org/junit5/docs/current/user-guide/#dependency-metadata-junit-jupiter -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- For Cucumber testing frameworks built on JUnit 3 or JUnit 4 APIs -->
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<scope>test</scope>
-		</dependency>		
-
-		<!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<scope>test</scope>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<!-- https://docs.spring.io/spring-boot/docs/1.2.3.RELEASE/reference/html/getting-started-first-application.html#getting-started-first-application-executable-jar -->
