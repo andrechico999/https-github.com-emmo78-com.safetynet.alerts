@@ -1,11 +1,11 @@
 package com.safetynet.alerts.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -221,11 +220,9 @@ public class AddressServiceTest {
 			requestMock.setQueryString("?address=address3"); // Request address1
 			requestMock.setMethod("GET");
 			request = new ServletWebRequest(requestMock);
-//			@SuppressWarnings("unchecked")
-//			ArgumentCaptor<List<String>> stationNumbers = ArgumentCaptor.forClass(List.class);
-
-			
-			doAnswer(invocation -> null).when(addressDTOService).setStationNumbers(anyList());
+			@SuppressWarnings("unchecked")
+			ArgumentCaptor<List<String>> stationNumbers = ArgumentCaptor.forClass(List.class);
+			doNothing().when(addressDTOService).setStationNumbers(ArgumentMatchers.<String>anyList());
 			when(addressDTOService.addressPersonsToDTO(ArgumentMatchers.<Person>anyList())).then(invocation -> {
 				List<Person> addressPersons = invocation.getArgument(0);
 				return addressPersons.stream()
@@ -235,7 +232,7 @@ public class AddressServiceTest {
 			when(requestService.requestToString(any(WebRequest.class))).thenReturn(
 					requestMock.getMethod() + " : " + requestMock.getRequestURI() + requestMock.getQueryString());
 		
-//			List<String> stationNumbersExpected = Arrays.asList("1", "2");
+			List<String> stationNumbersExpected = Arrays.asList("1", "2");
 			
 			// WHEN
 			List<AddressPersonDTO> addressPersonsDTOResult = null;
@@ -246,8 +243,9 @@ public class AddressServiceTest {
 			}
 
 			// THEN
+			verify(addressDTOService, times(1)).setStationNumbers(stationNumbers.capture());
 			assertThat(addressPersonsDTOResult).containsExactly(modelMapper.map(person5, AddressPersonDTOPerson.class));
-//			assertThat(stationNumbers.capture()).containsExactlyInAnyOrderElementsOf(stationNumbersExpected);
+			assertThat(stationNumbers.getValue()).containsExactlyInAnyOrderElementsOf(stationNumbersExpected);
 		}
 		
 		@Test
