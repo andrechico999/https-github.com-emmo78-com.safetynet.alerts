@@ -16,7 +16,7 @@
 	<groupId>com.safetynet</groupId>
 	<artifactId>alerts</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>comSafetynetAlerts</name>
+	<name>ComSafetynetAlerts</name>
 	<description>SafetyNet Alert Spring Boot application</description>
 	<packaging>jar</packaging>
 	
